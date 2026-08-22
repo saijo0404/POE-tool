@@ -1,0 +1,12 @@
+{
+  "league": "Auto",
+  "poesessid": "",
+  "accountName": "",
+  "autoSnapshotEnabled": true,
+  "autoSnapshotIntervalMinutes": 60,
+  "useDemoData": false,
+  "poetoken": "",
+  "cf_clearance": "",
+  "userAgent": "",
+  "hotkey": "ctrl+c+d"
+}

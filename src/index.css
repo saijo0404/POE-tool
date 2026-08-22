@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-dark: #090c10;
+  --bg-card: #101622;
+  --bg-card-hover: #172030;
+  --bg-panel: #0d121c;
+  
+  --border-gold: #c8aa6e;
+  --border-gold-dark: #8c7849;
+  --border-subtle: rgba(200, 170, 110, 0.2);
+  
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-gold: #f3d179;
+
+  --rarity-normal: #c8c8c8;
+  --rarity-magic: #8888ff;
+  --rarity-rare: #ffff77;
+  --rarity-unique: #af6025;
+  --rarity-currency: #aa9e82;
+  --rarity-gem: #1ba29b;
+  --rarity-divcard: #0e8f7f;
+
+  --accent-blue: #38bdf8;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-purple: #a855f7;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(200, 170, 110, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(14, 143, 127, 0.05) 0%, transparent 50%);
+}
+
+.poe-font {
+  font-family: 'Cinzel', serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-gold-dark);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-gold);
+}
+
+/* Buttons */
+.poe-btn {
+  background: linear-gradient(180deg, #2a2216 0%, #151009 100%);
+  border: 1px solid var(--border-gold-dark);
+  color: var(--text-gold);
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.poe-btn:hover {
+  background: linear-gradient(180deg, #3d301e 0%, #241b0f 100%);
+  border-color: var(--border-gold);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(200, 170, 110, 0.4);
+  transform: translateY(-1px);
+}
+
+.poe-btn-primary {
+  background: linear-gradient(180deg, #8c7849 0%, #4a3d20 100%);
+  border-color: var(--border-gold);
+  color: #ffffff;
+}
+
+.poe-btn-primary:hover {
+  background: linear-gradient(180deg, #a8915b 0%, #5e4e29 100%);
+  box-shadow: 0 0 16px rgba(243, 209, 121, 0.5);
+}
+
+/* Card Containers */
+.poe-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.poe-card:hover {
+  border-color: rgba(200, 170, 110, 0.4);
+}
+
+/* Rarity Badges */
+.rarity-Normal { color: var(--rarity-normal); border-color: var(--rarity-normal); }
+.rarity-Magic { color: var(--rarity-magic); border-color: var(--rarity-magic); }
+.rarity-Rare { color: var(--rarity-rare); border-color: var(--rarity-rare); }
+.rarity-Unique { color: var(--rarity-unique); border-color: var(--rarity-unique); }
+.rarity-Currency { color: var(--rarity-currency); border-color: var(--rarity-currency); }
+.rarity-Gem { color: var(--rarity-gem); border-color: var(--rarity-gem); }
+.rarity-DivinationCard { color: var(--rarity-divcard); border-color: var(--rarity-divcard); }
+
+/* Inputs */
+.poe-input {
+  background: #07090e;
+  border: 1px solid rgba(200, 170, 110, 0.3);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.poe-input:focus {
+  border-color: var(--border-gold);
+  box-shadow: 0 0 8px rgba(200, 170, 110, 0.3);
+}
+
+/* Toast popup */
+.toast-notice {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #172030;
+  border: 1px solid var(--border-gold);
+  color: var(--text-gold);
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

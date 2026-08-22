@@ -1,0 +1,82 @@
+# Logs & Diagnostics
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+poe-tool.log
+poe_tool_error.log
+coverage/
+*.lcov
+.nyc_output
+
+# Build outputs (Vite & Frontend)
+dist/
+dist-ssr/
+dist-server/
+dist-exe/
+build/
+*.local
+
+# Tauri / Rust Build outputs
+target/
+src-tauri/target/
+
+# Binaries & Executables
+*.exe
+*.dll
+*.so
+*.dylib
+*.msi
+*.app
+*.deb
+*.rpm
+*.AppImage
+*.dmg
+
+# User Sensitive Data, Local Cache & Snapshots
+data/settings.json
+data/wealth_snapshots.json
+data/ninja_cache.json
+data/image_cache/
+data/image_cache/*
+server/data/settings.json
+server/data/wealth_snapshots.json
+server/data/ninja_cache.json
+server/data/image_cache/
+server/data/image_cache/*
+.cache/
+*.cache
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+!.env.example
+
+# Editor, OS & Temporary files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.tmp
+*.bak
+.turbo/
+.eslintcache
+
+# Node modules
+node_modules/
+
