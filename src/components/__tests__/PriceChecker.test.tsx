@@ -1,9 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PriceChecker } from '../PriceChecker';
-import axios from 'axios';
-
-vi.mock('axios');
+import { poeApi } from '../../services/api';
 
 describe('PriceChecker Component', () => {
   const defaultProps = {
@@ -11,31 +9,46 @@ describe('PriceChecker Component', () => {
     onShowToast: vi.fn(),
   };
 
-  it('renders input area and clipboard paste button', () => {
-    vi.mocked(axios.get).mockResolvedValue({ data: {} });
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
 
-    render(<PriceChecker {...defaultProps} />);
+  it('renders input area and clipboard paste button', async () => {
+    await act(async () => {
+      render(<PriceChecker {...defaultProps} />);
+    });
 
     expect(screen.getByPlaceholderText(/在遊戲中對著裝備按 Ctrl\+C，然後貼上至此處/i)).toBeInTheDocument();
     expect(screen.getAllByText(/讀取剪貼簿/i)[0]).toBeInTheDocument();
   });
 
   it('handles externalText prop and updates item text', async () => {
-    vi.mocked(axios.get).mockResolvedValue({ data: {} });
-    vi.mocked(axios.post).mockResolvedValue({
-      data: {
-        name: 'Mageblood',
-        baseType: 'Heavy Belt',
-        rarity: 'Unique',
-        implicits: [],
-        explicits: []
-      }
+    const externalSample = `Rarity: Unique\nMageblood\nHeavy Belt`;
+    vi.spyOn(poeApi, 'parseItem').mockResolvedValue({
+      name: 'Mageblood',
+      baseType: 'Heavy Belt',
+      rarity: 'Unique',
+      language: 'en',
+      rawText: externalSample,
+      implicits: [],
+      explicits: [],
+    });
+    vi.spyOn(poeApi, 'searchTrade').mockResolvedValue({
+      id: 'trade-mb',
+      total: 10,
+      estimatedMinPriceDivine: 150,
+      estimatedMinPriceChaos: 24000,
+      estimatedMedianPriceDivine: 160,
+      estimatedMedianPriceChaos: 25600,
+      tradeUrl: '',
+      listings: [],
     });
 
-    const externalSample = `Rarity: Unique\nMageblood\nHeavy Belt`;
     const { rerender } = render(<PriceChecker {...defaultProps} externalText="" />);
 
-    rerender(<PriceChecker {...defaultProps} externalText={externalSample} />);
+    await act(async () => {
+      rerender(<PriceChecker {...defaultProps} externalText={externalSample} />);
+    });
 
     const textarea = screen.getByPlaceholderText(/在遊戲中對著裝備按 Ctrl\+C，然後貼上至此處/i) as HTMLTextAreaElement;
     expect(textarea.value).toBe(externalSample);

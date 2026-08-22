@@ -154,3 +154,37 @@ fn parse_and_apply_rate_limit(channel: RequestChannel, limit_str: &str, state_st
         state.throttle_delay_ms = max_wait_suggested;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_rate_limit_block_and_expiry() {
+        assert!(!is_trade_rate_limited() || get_rate_limit_remaining_seconds() > 0);
+
+        set_rate_limit_block(5);
+        assert!(is_trade_rate_limited());
+        let remaining = get_rate_limit_remaining_seconds();
+        assert!(remaining <= 5 && remaining >= 1);
+    }
+
+    #[test]
+    fn test_parse_and_apply_rate_limit_headers() {
+        let channel = RequestChannel::Search;
+        
+        // Standard normal header
+        parse_and_apply_rate_limit(channel, "15:10:60,30:300:1800", "5:10:0,10:300:0");
+        
+        // High utilization (> 70%)
+        parse_and_apply_rate_limit(channel, "10:10:60", "8:10:0");
+        
+        // Saturated (near limit)
+        parse_and_apply_rate_limit(channel, "10:10:60", "10:10:0");
+
+        // Edge case: malformed or empty strings (no panic)
+        parse_and_apply_rate_limit(channel, "", "");
+        parse_and_apply_rate_limit(channel, "abc:xyz", "invalid");
+        parse_and_apply_rate_limit(channel, "0:10:0", "0:0:0");
+    }
+}

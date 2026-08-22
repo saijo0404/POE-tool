@@ -249,17 +249,16 @@ fn parse_single_mod_line(line: &str, mod_type: ModType, is_armour: bool, is_weap
     let mut range_min: Option<f64> = None;
     let mut range_max: Option<f64> = None;
     if let Some(cap) = ROLL_RANGE_RE.find(clean) {
-        let inside = &cap.as_str()[1..cap.as_str().len() - 1]; // strip ( and )
-        let nums: Vec<f64> = VALUE_EXTRACT_RE
-            .find_iter(inside)
-            .filter_map(|m| m.as_str().parse::<f64>().ok())
-            .collect();
-        if nums.len() >= 2 {
-            range_min = Some(nums[0]);
-            range_max = Some(nums[nums.len() - 1]);
-        } else if nums.len() == 1 {
-            range_min = Some(nums[0]);
-            range_max = Some(nums[0]);
+        let inside = &cap.as_str()[1..cap.as_str().len() - 1].trim(); // strip ( and )
+        if let Some((first, second)) = inside.split_once("--") {
+            range_min = first.parse::<f64>().ok();
+            range_max = format!("-{}", second).parse::<f64>().ok();
+        } else if let Some(dash_idx) = inside[1..].find('-').map(|i| i + 1) {
+            range_min = inside[..dash_idx].parse::<f64>().ok();
+            range_max = inside[dash_idx + 1..].parse::<f64>().ok();
+        } else if let Ok(single) = inside.parse::<f64>() {
+            range_min = Some(single);
+            range_max = Some(single);
         }
     }
 
@@ -506,5 +505,81 @@ Energy Shield: 976
         let cold_res = &parsed.explicits[2];
         assert_eq!(cold_res.value, Some(46.0));
         assert_eq!(cold_res.min_value, Some(42.0)); // Tier MIN is 42
+    }
+
+    #[test]
+    fn test_parse_empty_and_whitespace_text() {
+        let empty_parsed = parse_item_text("");
+        assert_eq!(empty_parsed.name, "");
+        assert_eq!(empty_parsed.implicits.len(), 0);
+        assert_eq!(empty_parsed.explicits.len(), 0);
+
+        let space_parsed = parse_item_text("   \n\r\t   ");
+        assert_eq!(space_parsed.name, "");
+    }
+
+    #[test]
+    fn test_parse_unidentified_item() {
+        let text = r#"Item Class: Boots
+Rarity: Rare
+Unidentified
+Two-Tone Boots
+--------
+Requirements:
+Level: 70
+--------
+Item Level: 84
+"#;
+        let parsed = parse_item_text(text);
+        assert_eq!(parsed.rarity, "Rare");
+        assert_eq!(parsed.base_type, "Two-Tone Boots");
+        assert_eq!(parsed.item_level, Some(84));
+    }
+
+    #[test]
+    fn test_parse_gem_with_level_and_quality() {
+        let text = r#"Item Class: Skill Gems
+Rarity: Gem
+Awakened Cast On Critical Strike Support
+--------
+Support, Critical, Spell
+Level: 5 (Max)
+Quality: +20% (augmented)
+--------
+Requirements:
+Level: 72
+--------
+Supported Skills have 22% increased Cooldown Recovery Rate
+Supported Spells have 10% more Spell Damage
+"#;
+        let parsed = parse_item_text(text);
+        assert_eq!(parsed.rarity, "Gem");
+        assert_eq!(parsed.name, "Awakened Cast On Critical Strike Support");
+        assert_eq!(parsed.quality, Some(20));
+        assert!(parsed.explicits.len() >= 1);
+    }
+
+    #[test]
+    fn test_parse_map_item() {
+        let text = r#"Item Class: Maps
+Rarity: Rare
+Cursed Plateau
+City Square Map
+--------
+Map Tier: 16
+Item Quantity: +75% (augmented)
+Item Rarity: +42% (augmented)
+Monster Pack Size: +28% (augmented)
+--------
+Item Level: 83
+--------
+Monsters reflect 18% of Physical Damage
+Monsters have 40% chance to Poison on Hit
+"#;
+        let parsed = parse_item_text(text);
+        assert_eq!(parsed.rarity, "Rare");
+        assert_eq!(parsed.base_type, "City Square Map");
+        assert_eq!(parsed.item_level, Some(83));
+        assert!(parsed.explicits.len() >= 2);
     }
 }
