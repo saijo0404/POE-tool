@@ -1,6 +1,7 @@
 # 💎 POE_tool - 流亡黯道 (Path of Exile) 繁體中文即時查價與資產管理工具
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-saijo0404%2FPOE--tool-181717.svg?logo=github&logoColor=white)](https://github.com/saijo0404/POE-tool)
 [![Tauri 2.0](https://img.shields.io/badge/Tauri-2.0-24C8D8.svg?logo=tauri&logoColor=white)](https://tauri.app/)
 [![Rust](https://img.shields.io/badge/Rust-1.80%2B-orange.svg?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white)](https://react.dev/)
@@ -73,7 +74,7 @@
 
 ### 方式 A：Windows 玩家免安裝獨立執行檔 (推薦)
 
-1. 前往 GitHub **Releases** 頁面下載最新版單一執行檔 `POE_tool.exe`。
+1. 前往 GitHub [Releases](https://github.com/saijo0404/POE-tool/releases) 頁面下載最新版單一執行檔 `POE_tool.exe`。
 2. 雙擊執行 `POE_tool.exe`。
 3. 點擊右上角 ⚙️ **「系統設定」** 完成基本設定即可開始使用！
 4. 可透過右上角按鈕將工具設為 **「📌 視窗置頂 (Always on Top)」**，方便在遊戲中隨時對照查價。
@@ -86,8 +87,8 @@
 
 ```bash
 # 1. 複製專案庫
-git clone https://github.com/your-username/POE_tool.git
-cd POE_tool
+git clone https://github.com/saijo0404/POE-tool.git
+cd POE-tool
 
 # 2. 安裝前端依賴
 npm install
@@ -157,7 +158,7 @@ sudo ln -sf /usr/bin/lld-link-18 /usr/local/bin/lld-link
 npm run tauri:build:win
 ```
 產出的單一免安裝執行檔將位於：
-👉 `src-tauri/target/x86_64-pc-windows-msvc/release/poe-tool.exe`（亦已複製至根目錄 `POE_tool.exe`）
+👉 `src-tauri/target/x86_64-pc-windows-msvc/release/poe-tool.exe`
 
 ---
 
@@ -166,8 +167,14 @@ npm run tauri:build:win
 ```text
 POE_tool/
 ├── data/                           # 官方中英詞綴與物品雙向字典 (JSON)
-│   ├── item_dictionary.json        # 5,100+ 中英物品名稱字典
-│   ├── stat_dictionary.json        # 17,600+ 中英詞綴對照字典
+│   ├── ggg_items.json              # 國際服物品資料
+│   ├── ggg_static.json             # 國際服靜態通貨與分類
+│   ├── ggg_stats.json              # 國際服詞綴資料
+│   ├── tw_ggg_items.json           # 台服物品資料
+│   ├── tw_ggg_static.json          # 台服靜態通貨與分類
+│   ├── tw_ggg_stats.json           # 台服詞綴資料
+│   ├── item_dictionary.json        # 5,100+ 中英物品名稱雙向字典
+│   ├── stat_dictionary.json        # 17,600+ 中英詞綴對照雙向字典
 │   └── settings.example.json       # 預設設定檔範本
 ├── src/                            # React 19 + TypeScript 前端介面
 │   ├── components/                 # 核心功能組件 (查價、資產追蹤、流派計算、設定)
@@ -178,7 +185,7 @@ POE_tool/
 │   │   ├── WealthChart.tsx         # 資產歷史趨勢圖
 │   │   └── WealthTracker.tsx       # 倉庫資產總覽
 │   ├── context/                    # React Context (AppState, Settings)
-│   ├── hooks/                      # 業務 Hooks (usePriceChecker, useHotkey)
+│   ├── hooks/                      # 業務 Hooks (usePriceChecker, useClipboardSync)
 │   ├── services/                   # api.ts (原生調用 Tauri 2.0 invoke IPC)
 │   ├── types/                      # poe.ts 跨端資料型別定義
 │   ├── App.tsx                     # 主應用入口與分頁導航
@@ -201,6 +208,8 @@ POE_tool/
 │       │   ├── hotkey.rs           # Win32 SendInput 遊戲按鍵注入與剪貼簿
 │       │   └── storage.rs          # 跨平台 Atomic JSON 檔案儲存
 │       └── lib.rs                  # 應用程式入口點、全域熱鍵與系統匣管理器
+├── .env.example                    # 環境變數範本檔
+├── .gitignore                      # Git 忽略規則（已嚴格隔離憑證與大檔）
 ├── package.json                    # 前端開發與 Tauri 建置腳本
 ├── vite.config.ts                  # Vite 打包配置
 ├── tsconfig.json                   # TypeScript 配置
