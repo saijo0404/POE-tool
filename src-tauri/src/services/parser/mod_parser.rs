@@ -5,8 +5,11 @@ use crate::services::dictionary::{lookup_stat_by_text, lookup_stat_for_armour, l
 
 lazy_static! {
     pub static ref ROLL_RANGE_RE: Regex = Regex::new(r"\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").unwrap();
+    pub static ref POB_RANGE_TAG_RE: Regex = Regex::new(r"\{range:([0-9.]+)\}").unwrap();
     pub static ref VALUE_EXTRACT_RE: Regex = Regex::new(r"[-+]?\d+(?:\.\d+)?").unwrap();
     static ref TAGS_CLEAN_RE: Regex = Regex::new(r"(?i)\s*\{[^}]+\}\s*|\s*\((?:fractured|crafted|enchant|implicit|local|部分|已分裂|分裂|工藝|附魔|固定詞綴)\)\s*").unwrap();
+    static ref POB_PLUS_RANGE_RE: Regex = Regex::new(r"^\+\s*\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").unwrap();
+    static ref POB_PERCENT_RANGE_RE: Regex = Regex::new(r"(?:^|\s)\(([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)\s*%").unwrap();
 }
 
 pub fn normalize_stat_id_for_mod_type(id: &str, mod_type: &ModType) -> String {
@@ -64,27 +67,63 @@ pub fn extract_roll_range(line: &str) -> (Option<f64>, Option<f64>) {
     }
 }
 
+pub fn clean_mod_line_and_extract_values(raw_line: &str) -> (String, Option<f64>, Option<f64>, Option<f64>) {
+    let mut line = raw_line.trim().to_string();
+
+    let pob_range_ratio = POB_RANGE_TAG_RE.captures(&line).and_then(|c| c[1].parse::<f64>().ok());
+    let (range_min, range_max) = extract_roll_range(&line);
+
+    let pob_val = if let (Some(min), Some(max)) = (range_min, range_max) {
+        if let Some(r) = pob_range_ratio {
+            let interpolated = min + (max - min) * r;
+            Some((interpolated * 10.0).round() / 10.0)
+        } else {
+            Some(min)
+        }
+    } else {
+        range_min
+    };
+
+    line = TAGS_CLEAN_RE.replace_all(&line, " ").to_string();
+    let mut clean_line = line.trim().to_string();
+
+    if clean_line.starts_with("+ (") || clean_line.starts_with("+(") {
+        if let Some(v) = pob_val {
+            clean_line = POB_PLUS_RANGE_RE.replace(&clean_line, format!("+{}", v)).to_string();
+        }
+    } else if clean_line.starts_with('(') || clean_line.contains(" (") {
+        if let Some(v) = pob_val {
+            clean_line = POB_PERCENT_RANGE_RE.replace(&clean_line, format!(" {}%", v)).to_string();
+        }
+    }
+
+    clean_line = ROLL_RANGE_RE.replace_all(&clean_line, "").to_string();
+    let cleaned_text = clean_line.split_whitespace().collect::<Vec<_>>().join(" ");
+
+    let val = VALUE_EXTRACT_RE.find(&cleaned_text)
+        .and_then(|m| m.as_str().parse::<f64>().ok())
+        .or(pob_val);
+
+    (cleaned_text, val, range_min, range_max)
+}
+
 pub fn parse_single_mod_line(line: &str, mod_type: ModType, is_armour: bool, is_weapon: bool) -> Option<ParsedItemMod> {
     let clean = line.trim();
     if clean.is_empty() {
         return None;
     }
-    let (range_min, range_max) = extract_roll_range(clean);
-    let cleaned = ROLL_RANGE_RE.replace_all(clean, "").to_string();
-    let cleaned = TAGS_CLEAN_RE.replace_all(&cleaned, " ").to_string();
-    let cleaned_line = cleaned.trim();
 
-    let val = VALUE_EXTRACT_RE.find(cleaned_line).and_then(|m| m.as_str().parse::<f64>().ok());
-    if is_skippable_flavor(cleaned_line, val) {
+    let (cleaned_line, val, range_min, range_max) = clean_mod_line_and_extract_values(clean);
+    if is_skippable_flavor(&cleaned_line, val) {
         return None;
     }
 
     let matched_opt = if is_armour {
-        lookup_stat_for_armour(cleaned_line)
+        lookup_stat_for_armour(&cleaned_line)
     } else if is_weapon {
-        lookup_stat_for_weapon(cleaned_line)
+        lookup_stat_for_weapon(&cleaned_line)
     } else {
-        lookup_stat_by_text(cleaned_line)
+        lookup_stat_by_text(&cleaned_line)
     };
 
     if let Some(matched) = matched_opt {
@@ -124,5 +163,12 @@ fn is_skippable_flavor(cleaned_line: &str, val: Option<f64>) -> bool {
         && !cleaned_line.contains("撲殺")
         && !cleaned_line.contains("偷取")
         && !cleaned_line.contains("無法")
+        && !cleaned_line.contains("cannot be removed")
+        && !cleaned_line.contains("Flask Effects")
+        && !cleaned_line.contains("Modifiers for")
+        && !cleaned_line.contains("Unaffected by")
+        && !cleaned_line.contains("Immune to")
+        && !cleaned_line.contains("Hits cannot be Evaded")
+        && !cleaned_line.contains("Enemies Explode")
         && lookup_stat_by_text(cleaned_line).is_none()
 }
