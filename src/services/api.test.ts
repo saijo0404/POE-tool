@@ -1,17 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
 import { poeApi } from './api';
+import { ApiClientFactory } from '../infrastructure/api/ApiClientFactory';
 
 describe('poeApi service client', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     delete (window as any).__TAURI__;
     delete (window as any).__TAURI_INTERNALS__;
+    ApiClientFactory.resetClient();
   });
 
   afterEach(() => {
     delete (window as any).__TAURI__;
     delete (window as any).__TAURI_INTERNALS__;
+    ApiClientFactory.resetClient();
   });
 
   describe('Settings API', () => {

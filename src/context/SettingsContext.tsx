@@ -35,7 +35,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const charactersRef = useRef(characters);
   charactersRef.current = characters;
 
-  const refreshCharacters = useCallback(async () => {
+  const refreshCharacters = useCallback(async (): Promise<void> => {
     try {
       const chars = await poeApi.getCharacters();
       if (Array.isArray(chars)) {
@@ -53,9 +53,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const currentSettings = settingsRef.current;
       const currentChars = charactersRef.current;
       const latestCharLeague = currentChars.length > 0 ? currentChars[0].league : undefined;
-      const leagueToQuery = customLeague || (currentSettings.league !== 'Auto' ? currentSettings.league : (latestCharLeague || 'Standard'));
+      const leagueToQuery = customLeague || (currentSettings.league && currentSettings.league !== 'Auto' ? currentSettings.league : (latestCharLeague || 'Settlers'));
       const priceData = await poeApi.getNinjaPrices(leagueToQuery, forceRefresh);
-      if (priceData?.divineChaosRate) {
+      if (priceData?.divineChaosRate && priceData.divineChaosRate > 0) {
         setDivineRate(priceData.divineChaosRate);
       }
     } catch {
@@ -77,22 +77,22 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (current.poesessid && current.accountName) {
           await refreshCharacters();
         }
+        const currentChars = charactersRef.current;
+        const latestCharLeague = currentChars.length > 0 ? currentChars[0].league : undefined;
+        const targetLeague = current.league && current.league !== 'Auto' ? current.league : (latestCharLeague || 'Settlers');
+        await refreshDivineRate(targetLeague, true);
       }
     } catch {
       console.warn('[SettingsContext] Failed to load settings');
     } finally {
       setIsLoading(false);
     }
-  }, [refreshCharacters]);
+  }, [refreshCharacters, refreshDivineRate]);
 
-  // Initial load on mount
   useEffect(() => {
-    refreshSettings().then(() => {
-      refreshDivineRate();
-    });
-  }, [refreshSettings, refreshDivineRate]);
+    refreshSettings();
+  }, [refreshSettings]);
 
-  // Periodic automatic background polling for live exchange rate every 10 minutes
   useEffect(() => {
     const timer = setInterval(() => {
       refreshDivineRate(undefined, true);
@@ -104,65 +104,64 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [refreshDivineRate]);
 
   const handleUpdateSettings = async (newSettings: Partial<AppSettings>): Promise<AppSettings> => {
-    const updated = await poeApi.updateSettings(newSettings);
-    setSettings(updated);
     try {
-      localStorage.setItem('poe_settings_cache', JSON.stringify(updated));
-    } catch {}
-    if (updated.poesessid && updated.accountName) {
-      refreshCharacters();
+      const updated = await poeApi.updateSettings(newSettings);
+      setSettings(updated);
+      try {
+        localStorage.setItem('poe_settings_cache', JSON.stringify(updated));
+      } catch {}
+      if (updated.league && updated.league !== 'Auto') {
+        refreshDivineRate(updated.league, true);
+      }
+      return updated;
+    } catch {
+      const merged = { ...settings, ...newSettings };
+      setSettings(merged);
+      return merged;
     }
-    if (updated.league) {
-      refreshDivineRate(updated.league, true);
-    }
-    return updated;
   };
 
   const handleLogin = async () => {
-    const result = await poeApi.loginAuth();
-    if (result.success) {
+    const res = await poeApi.loginAuth();
+    if (res.success) {
       await refreshSettings();
-      await refreshDivineRate(undefined, true);
     }
-    return result;
+    return res;
   };
 
   const handleLogout = async () => {
-    await poeApi.logoutAuth();
-    await refreshSettings();
+    try {
+      await poeApi.logoutAuth();
+    } catch {}
+    try {
+      await poeApi.updateSettings({ poesessid: '', accountName: '' });
+    } catch {}
+    setSettings(prev => ({ ...prev, poesessid: '', accountName: '' }));
     setCharacters([]);
   };
 
-  const latestChar = characters.length > 0 ? characters[0] : null;
-  const isKnownLeague = (l?: string): boolean => {
-    if (!l) return false;
-    const norm = l.toLowerCase();
-    return norm.includes('standard') || norm.includes('settlers') || norm.includes('allflame') || norm.includes('hardcore') || norm.includes('ruthless');
-  };
-  const activeLeague = settings.league === 'Auto'
-    ? (isKnownLeague(latestChar?.league) ? latestChar!.league : 'Standard')
-    : (settings.league || 'Standard');
+  const activeLeague = settings.league && settings.league !== 'Auto'
+    ? settings.league
+    : (characters.length > 0 ? characters[0].league : 'Settlers');
 
   return (
     <SettingsContext.Provider
       value={{
         settings,
-        characters,
         isLoading: _isLoading,
-        activeLeague,
-        divineRate,
-        isRateRefreshing,
         updateSettings: handleUpdateSettings,
         refreshSettings,
         refreshCharacters,
         refreshDivineRate,
         login: handleLogin,
-        logout: handleLogout
+        logout: handleLogout,
+        divineRate,
+        isRateRefreshing,
+        characters,
+        activeLeague,
       }}
     >
       {children}
     </SettingsContext.Provider>
   );
 };
-
-export default SettingsProvider;

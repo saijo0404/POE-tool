@@ -23,6 +23,12 @@ describe('SettingsContext', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     globalThis.localStorage.clear();
+    vi.spyOn(poeApi, 'getNinjaPrices').mockResolvedValue({
+      rates: {},
+      divineChaosRate: 150,
+      league: 'Standard'
+    });
+    vi.spyOn(poeApi, 'getCharacters').mockResolvedValue([]);
   });
 
   it('provides default settings and fallback values when rendered within provider', async () => {
@@ -33,11 +39,6 @@ describe('SettingsContext', () => {
       autoSnapshotEnabled: true,
       autoSnapshotIntervalMinutes: 60,
       useDemoData: false
-    });
-    vi.spyOn(poeApi, 'getNinjaPrices').mockResolvedValueOnce({
-      rates: {},
-      divineChaosRate: 160,
-      league: 'Standard'
     });
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -62,11 +63,6 @@ describe('SettingsContext', () => {
 
     vi.spyOn(poeApi, 'getSettings').mockResolvedValueOnce(updatedMock);
     vi.spyOn(poeApi, 'updateSettings').mockResolvedValueOnce(updatedMock);
-    vi.spyOn(poeApi, 'getNinjaPrices').mockResolvedValue({
-      rates: {},
-      divineChaosRate: 155,
-      league: 'Settlers'
-    });
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <SettingsProvider>{children}</SettingsProvider>
@@ -90,7 +86,15 @@ describe('SettingsContext', () => {
       autoSnapshotIntervalMinutes: 60,
       useDemoData: false
     });
-    vi.spyOn(poeApi, 'logoutAuth').mockResolvedValueOnce({ success: true });
+    vi.spyOn(poeApi, 'logoutAuth').mockResolvedValue({ success: true });
+    vi.spyOn(poeApi, 'updateSettings').mockResolvedValue({
+      league: 'Standard',
+      poesessid: '',
+      accountName: '',
+      autoSnapshotEnabled: false,
+      autoSnapshotIntervalMinutes: 60,
+      useDemoData: false
+    });
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <SettingsProvider>{children}</SettingsProvider>

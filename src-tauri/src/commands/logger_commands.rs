@@ -7,5 +7,5 @@ pub fn get_log_contents(lines: Option<usize>) -> Result<String, String> {
 
 #[tauri::command]
 pub fn get_log_file_path() -> Result<String, String> {
-    Ok(get_current_log_path())
+    Ok(get_current_log_path().to_string_lossy().to_string())
 }

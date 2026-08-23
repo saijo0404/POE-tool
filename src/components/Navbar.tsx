@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Pin, PinOff, RefreshCw } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
-import { isTauri, toggleAlwaysOnTop } from '../utils/tauri';
+import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
+import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
 interface NavbarProps {
   activeTab: 'price' | 'wealth' | 'build';
@@ -25,6 +26,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [alwaysOnTop, setAlwaysOnTop] = useState<boolean>(false);
   const divIcon = getImageUrl('https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lNb2RWYWx1ZXMiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/e1a54ff97d/CurrencyModValues.png');
 
+  const displayLeague = propLeague || activeLeague || settings.league || 'Settlers';
+  const divineRate = propDivineRate !== undefined ? propDivineRate : (ctxDivineRate || 150);
+  const accountName = propAccountName !== undefined ? propAccountName : settings.accountName;
+
   const handleManualRefreshRate = async (e: React.MouseEvent) => {
     e.stopPropagation();
     await refreshDivineRate(displayLeague, true);
@@ -36,34 +41,18 @@ export const Navbar: React.FC<NavbarProps> = ({
     setAlwaysOnTop(next);
   };
 
-  const accountName = propAccountName !== undefined ? propAccountName : settings.accountName;
-  const displayLeague = propLeague || activeLeague || settings.league || 'Settlers';
-  const divineRate = propDivineRate !== undefined ? propDivineRate : (ctxDivineRate || 150);
-
   return (
     <header style={{
-      backgroundColor: '#0a0d14',
-      borderBottom: '1px solid rgba(200, 170, 110, 0.25)',
-      padding: '12px 24px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100
+      backgroundColor: '#0a0d14', borderBottom: '1px solid rgba(200, 170, 110, 0.25)',
+      padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      position: 'sticky', top: 0, zIndex: 100
     }}>
-      {/* Brand & Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
+            width: '38px', height: '38px', borderRadius: '50%',
             background: 'radial-gradient(circle, #f3d179 0%, #8c7849 70%, #2a2216 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 12px rgba(243, 209, 121, 0.4)'
+            display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(243, 209, 121, 0.4)'
           }}>
             <Coins size={22} color="#0d121c" />
           </div>
@@ -77,134 +66,58 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* League & Rate Pills */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '16px' }}>
-          <span style={{
-            background: 'rgba(200, 170, 110, 0.12)',
-            border: '1px solid rgba(200, 170, 110, 0.3)',
-            padding: '4px 10px',
-            borderRadius: '12px',
-            fontSize: '0.8rem',
-            color: 'var(--text-gold)'
-          }}>
-            聯盟: <strong>{displayLeague}</strong>
-          </span>
-          {accountName ? (
-            <span style={{
-              background: 'rgba(34, 197, 94, 0.08)',
-              border: '1px solid rgba(34, 197, 94, 0.3)',
-              padding: '4px 10px',
-              borderRadius: '12px',
-              fontSize: '0.8rem',
-              color: '#4ade80',
-              fontWeight: 500
-            }}>
-              👤 {accountName}
-            </span>
-          ) : (
-            <span style={{
-              background: 'rgba(239, 68, 68, 0.08)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              padding: '4px 10px',
-              borderRadius: '12px',
-              fontSize: '0.8rem',
-              color: '#f87171'
-            }}>
-              未登入
-            </span>
-          )}
-          <span style={{
-            background: 'rgba(56, 189, 248, 0.1)',
-            border: '1px solid rgba(56, 189, 248, 0.3)',
-            padding: '4px 10px',
-            borderRadius: '12px',
-            fontSize: '0.8rem',
-            color: 'var(--accent-blue)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <img src={divIcon} alt="Div" referrerPolicy="no-referrer" style={{ width: '16px', height: '16px' }} />
-            <span>1 Divine = <strong>{divineRate} Chaos</strong></span>
-            <button
-              onClick={handleManualRefreshRate}
-              disabled={isRateRefreshing}
-              title="點擊強制刷新神聖石即時匯率"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: isRateRefreshing ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '2px',
-                color: 'var(--accent-blue)',
-                opacity: isRateRefreshing ? 0.6 : 0.9,
-                transition: 'transform 0.2s, opacity 0.2s'
-              }}
-            >
-              <RefreshCw
-                size={13}
-                style={{
-                  animation: isRateRefreshing ? 'spin 1s linear infinite' : 'none'
-                }}
-              />
-            </button>
-          </span>
-        </div>
+        <ConnectionStatusBadge
+          displayLeague={displayLeague}
+          accountName={accountName}
+          divineRate={divineRate}
+          divIcon={divIcon}
+          isRateRefreshing={isRateRefreshing}
+          onManualRefreshRate={handleManualRefreshRate}
+          alwaysOnTop={alwaysOnTop}
+          onTogglePin={handleTogglePin}
+        />
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <button
-          className={`poe-btn ${activeTab === 'price' ? 'poe-btn-primary' : ''}`}
+          type="button"
           onClick={() => setActiveTab('price')}
-          style={{ padding: '8px 16px' }}
+          className={activeTab === 'price' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem' }}
         >
-          <Search size={16} />
-          裝備查價 (Price Checker)
+          <Search size={16} /> 裝備即時查價
         </button>
 
         <button
-          className={`poe-btn ${activeTab === 'wealth' ? 'poe-btn-primary' : ''}`}
+          type="button"
           onClick={() => setActiveTab('wealth')}
-          style={{ padding: '8px 16px' }}
+          className={activeTab === 'wealth' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem' }}
         >
-          <TrendingUp size={16} />
-          每小時資產估算 (Hourly Wealth Tracker)
+          <TrendingUp size={16} /> 每小時資產估算
         </button>
 
         <button
-          className={`poe-btn ${activeTab === 'build' ? 'poe-btn-primary' : ''}`}
+          type="button"
           onClick={() => setActiveTab('build')}
-          style={{ padding: '8px 16px' }}
+          className={activeTab === 'build' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem' }}
         >
-          <Calculator size={16} />
-          Build 成本估算
+          <Calculator size={16} /> Build 成本計算
         </button>
 
-        {isTauri() && (
-          <button
-            className={`poe-btn ${alwaysOnTop ? 'poe-btn-primary' : ''}`}
-            onClick={handleTogglePin}
-            style={{ padding: '8px 12px', marginLeft: '4px' }}
-            title={alwaysOnTop ? '取消視窗置頂 (Pinned Always on Top)' : '釘選視窗置頂 (Pin on Top)'}
-          >
-            {alwaysOnTop ? <PinOff size={18} /> : <Pin size={18} />}
-          </button>
-        )}
+        <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
 
         <button
-          className="poe-btn"
+          type="button"
           onClick={onOpenSettings}
-          style={{ padding: '8px 12px', marginLeft: '8px' }}
+          className="poe-button-secondary"
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', borderRadius: '8px', fontSize: '0.9rem' }}
           title="系統設定"
         >
-          <Settings size={18} />
+          <Settings size={16} /> 設定
         </button>
-      </div>
+      </nav>
     </header>
   );
 };
-
-export default Navbar;
