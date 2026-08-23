@@ -30,14 +30,36 @@ pub struct TradeQueryRequest {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct TradeItemProperty {
+    pub name: String,
+    pub values: Vec<(String, i64)>,
+    #[serde(default)]
+    pub display_mode: Option<i64>,
+    #[serde(default)]
+    pub r#type: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TradeListingItem {
     pub name: String,
     pub type_line: String,
     pub icon: String,
     pub ilvl: Option<i64>,
     pub corrupted: Option<bool>,
+    pub rarity: Option<String>,
+    pub base_type: Option<String>,
+    pub item_class: Option<String>,
+    pub quality: Option<i64>,
+    pub sockets: Option<String>,
     pub implicit_mods: Option<Vec<String>>,
     pub explicit_mods: Option<Vec<String>>,
+    pub crafted_mods: Option<Vec<String>>,
+    pub fractured_mods: Option<Vec<String>>,
+    pub enchant_mods: Option<Vec<String>>,
+    pub flavour_text: Option<Vec<String>>,
+    pub properties: Option<Vec<TradeItemProperty>>,
+    pub requirements: Option<Vec<TradeItemProperty>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

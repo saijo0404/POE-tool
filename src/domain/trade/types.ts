@@ -32,14 +32,32 @@ export interface TradeQueryRequest {
   searchId?: string;
 }
 
+export interface TradeItemProperty {
+  name: string;
+  values: [string, number][];
+  displayMode?: number;
+  type?: number;
+}
+
 export interface TradeItemDetails {
   name: string;
   typeLine: string;
   icon: string;
+  rarity?: string;
+  baseType?: string;
+  itemClass?: string;
   ilvl?: number;
+  quality?: number;
   corrupted?: boolean;
+  sockets?: string;
   implicitMods?: string[];
   explicitMods?: string[];
+  craftedMods?: string[];
+  fracturedMods?: string[];
+  enchantMods?: string[];
+  flavourText?: string[];
+  properties?: TradeItemProperty[];
+  requirements?: TradeItemProperty[];
 }
 
 export interface TradeListing {

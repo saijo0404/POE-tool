@@ -109,6 +109,32 @@ pub struct PricedItem {
     pub details: Option<String>,
     pub trade_search_url: String,
     pub trade_query_json: Option<String>,
+    #[serde(default)]
+    pub ilvl: Option<i64>,
+    #[serde(default)]
+    pub corrupted: Option<bool>,
+    #[serde(default)]
+    pub sockets: Option<String>,
+    #[serde(default)]
+    pub explicit_mods: Option<Vec<String>>,
+    #[serde(default)]
+    pub implicit_mods: Option<Vec<String>>,
+    #[serde(default)]
+    pub crafted_mods: Option<Vec<String>>,
+    #[serde(default)]
+    pub fractured_mods: Option<Vec<String>>,
+    #[serde(default)]
+    pub enchant_mods: Option<Vec<String>>,
+    #[serde(default)]
+    pub gem_level: Option<i64>,
+    #[serde(default)]
+    pub gem_quality: Option<i64>,
+    #[serde(default)]
+    pub property_energy_shield: Option<f64>,
+    #[serde(default)]
+    pub property_armour: Option<f64>,
+    #[serde(default)]
+    pub property_evasion: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

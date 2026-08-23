@@ -248,4 +248,131 @@ describe('BuildCalculator Component', () => {
     });
     expect(openUrlSpy).toHaveBeenCalledWith('https://trade.search/starforge');
   });
+
+  it('displays detailed item affixes and stats when hovering over a build item', async () => {
+    const mockBuildWithMods = {
+      ...mockBuildResult,
+      categories: {
+        ...mockBuildResult.categories,
+        equipment: {
+          ...mockBuildResult.categories.equipment,
+          items: [
+            {
+              name: 'Mageblood',
+              typeLine: 'Heavy Belt',
+              category: 'equipment' as const,
+              rarity: 'Unique',
+              icon: '',
+              slot: 'Belt',
+              priceChaos: 16000,
+              priceDivine: 100,
+              confidence: 'high' as const,
+              ilvl: 85,
+              corrupted: false,
+              implicitMods: ['+30 to Strength'],
+              explicitMods: [
+                'Magic Utility Flask Effects cannot be removed',
+                'Leftmost 4 Magic Utility Flasks constantly apply their Flask Effects to you'
+              ],
+              craftedMods: ['+15% to all Elemental Resistances']
+            }
+          ]
+        }
+      }
+    };
+
+    vi.spyOn(poeApi, 'calculateBuild').mockResolvedValue(mockBuildWithMods as any);
+
+    await act(async () => {
+      render(<BuildCalculator {...defaultProps} />);
+    });
+
+    const input = screen.getByPlaceholderText(/poe\.ninja/i);
+    fireEvent.change(input, { target: { value: 'https://pobb.in/test-hover' } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /計算成本/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Mageblood')).toBeInTheDocument();
+    });
+
+    const magebloodEl = screen.getByText('Mageblood');
+    fireEvent.mouseEnter(magebloodEl);
+
+    expect(screen.getByText('+30 to Strength')).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes('Leftmost 4 Magic Utility Flasks'))).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes('+15% to all Elemental Resistances'))).toBeInTheDocument();
+  });
+
+  it('retains and displays previously synced live prices when loading build from history', async () => {
+    const onShowToast = vi.fn();
+    vi.spyOn(poeApi, 'calculateBuild').mockResolvedValue(mockBuildResult);
+    vi.spyOn(poeApi, 'fetchBuildItemLivePrice').mockResolvedValue({
+      id: 'trade-live-1',
+      total: 5,
+      estimatedMinPriceDivine: 120,
+      estimatedMinPriceChaos: 19200,
+      estimatedMedianPriceDivine: 125,
+      estimatedMedianPriceChaos: 20000,
+      tradeUrl: '',
+      listings: [],
+    });
+
+    const targetUrl = 'https://pobb.in/test-history-retain';
+
+    // Step 1: Render and load build initially
+    const { unmount } = render(<BuildCalculator {...defaultProps} onShowToast={onShowToast} />);
+
+    const input = screen.getByPlaceholderText(/poe\.ninja/i);
+    fireEvent.change(input, { target: { value: targetUrl } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /計算成本/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Mageblood')).toBeInTheDocument();
+    });
+
+    // Step 2: Sync live price for Mageblood
+    const livePriceBtn = screen.getByRole('button', { name: /同步現貨/i });
+    await act(async () => {
+      fireEvent.click(livePriceBtn);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('官方現貨')).toBeInTheDocument();
+      expect(screen.getByText('120 div')).toBeInTheDocument();
+    });
+
+    unmount();
+
+    // Step 3: Re-render component (simulating app reload or revisiting history)
+    render(<BuildCalculator {...defaultProps} onShowToast={onShowToast} />);
+
+    // Check that history button is present
+    const historyBtn = screen.getByRole('button', { name: /歷史/i });
+    expect(historyBtn).toBeInTheDocument();
+
+    // Open history dropdown and click the history entry
+    await act(async () => {
+      fireEvent.click(historyBtn);
+    });
+
+    const historyEntry = screen.getByText('SlayerGod');
+    expect(historyEntry).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(historyEntry);
+    });
+
+    // Step 4: Verify that the synced live price (120 div) and "官方現貨" badge are retained!
+    await waitFor(() => {
+      expect(screen.getByText('Mageblood')).toBeInTheDocument();
+      expect(screen.getByText('官方現貨')).toBeInTheDocument();
+      expect(screen.getByText('120 div')).toBeInTheDocument();
+    });
+
+    expect(onShowToast).toHaveBeenCalledWith(expect.stringContaining('保留'));
+  });
 });

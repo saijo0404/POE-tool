@@ -78,6 +78,18 @@ fn price_equipment_list(
             rarity: it.rarity.clone(), icon: it.icon.clone(), slot: Some(it.slot.clone()),
             price_chaos, price_divine: price_div, confidence: conf.to_string(), details: Some(details),
             trade_search_url: search_url, trade_query_json: Some(query_json),
+            ilvl: Some(it.ilvl),
+            corrupted: if it.corrupted { Some(true) } else { None },
+            sockets: it.links.map(|l| format!("{}L", l)),
+            explicit_mods: if it.explicit_mods.is_empty() { None } else { Some(it.explicit_mods.clone()) },
+            implicit_mods: if it.implicit_mods.is_empty() { None } else { Some(it.implicit_mods.clone()) },
+            crafted_mods: if it.crafted_mods.is_empty() { None } else { Some(it.crafted_mods.clone()) },
+            fractured_mods: if it.fractured_mods.is_empty() { None } else { Some(it.fractured_mods.clone()) },
+            enchant_mods: if it.enchant_mods.is_empty() { None } else { Some(it.enchant_mods.clone()) },
+            gem_level: None, gem_quality: None,
+            property_energy_shield: it.property_energy_shield,
+            property_armour: it.property_armour,
+            property_evasion: it.property_evasion,
         });
     }
 

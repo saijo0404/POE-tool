@@ -222,4 +222,47 @@ describe('TradeListingView - Travel to Hideout & Whisper Actions', () => {
     fireEvent.change(sortSelect, { target: { value: 'price_desc' } });
     expect(sortChangeSpy).toHaveBeenCalledWith('price_desc');
   });
+
+  it('displays detailed item affixes and stats when hovering over a trade listing item', () => {
+    const listingWithFullItem = {
+      ...mockListingWithHideoutToken,
+      item: {
+        name: 'Headhunter',
+        typeLine: 'Leather Belt',
+        icon: 'https://example.com/headhunter.png',
+        rarity: 'Unique',
+        ilvl: 86,
+        corrupted: true,
+        implicitMods: ['+40 to maximum Life'],
+        explicitMods: [
+          '+55 to Strength',
+          '+55 to Dexterity',
+          'When you Kill a Rare Monster, you gain its Modifiers for 60 seconds'
+        ],
+        craftedMods: ['+20 to maximum Energy Shield'],
+        enchantMods: ['Enchanted mod test']
+      }
+    };
+
+    render(
+      <TradeListingView
+        tradeResults={{
+          ...mockTradeResults,
+          listings: [listingWithFullItem]
+        } as any}
+        copiedId={null}
+        onCopyWhisper={vi.fn()}
+      />
+    );
+
+    const itemElement = screen.getByText('Headhunter');
+    fireEvent.mouseEnter(itemElement);
+
+    expect(screen.getAllByText('Headhunter').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Leather Belt').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('+40 to maximum Life')).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes('When you Kill a Rare Monster'))).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes('+20 to maximum Energy Shield'))).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes('Enchanted mod test'))).toBeInTheDocument();
+  });
 });

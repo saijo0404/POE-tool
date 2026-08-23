@@ -33,6 +33,14 @@ pub fn price_jewel_list(
             rarity: j.rarity.clone(), icon: j.icon.clone(), slot: None,
             price_chaos: p, price_divine: p_div, confidence: "medium".to_string(),
             details: Some("珠寶即時物價估算".to_string()), trade_search_url: search_url, trade_query_json: Some(query_json),
+            ilvl: None, corrupted: None, sockets: None,
+            explicit_mods: if j.explicit_mods.is_empty() { None } else { Some(j.explicit_mods.clone()) },
+            implicit_mods: if j.implicit_mods.is_empty() { None } else { Some(j.implicit_mods.clone()) },
+            crafted_mods: if j.crafted_mods.is_empty() { None } else { Some(j.crafted_mods.clone()) },
+            fractured_mods: if j.fractured_mods.is_empty() { None } else { Some(j.fractured_mods.clone()) },
+            enchant_mods: None,
+            gem_level: None, gem_quality: None,
+            property_energy_shield: None, property_armour: None, property_evasion: None,
         });
     }
 
@@ -65,12 +73,23 @@ pub fn price_flask_list(
             &f.explicit_mods, &[], &[], &[], &f.enchant_mods, None, None, None, None, None, None,
         );
 
+        let mut all_explicits = f.explicit_mods.clone();
+        all_explicits.extend(f.utility_mods.clone());
+
         let display_name = if !f.name.is_empty() && f.name != f.type_line { format!("{} ({})", f.name, f.type_line) } else { f.type_line.clone() };
         flask_items.push(PricedItem {
             name: display_name, type_line: f.type_line.clone(), category: "flask".to_string(),
             rarity: f.rarity.clone(), icon: f.icon.clone(), slot: None,
             price_chaos: p, price_divine: p_div, confidence: "medium".to_string(),
             details: Some("藥劑參考行情".to_string()), trade_search_url: search_url, trade_query_json: Some(query_json),
+            ilvl: None, corrupted: None, sockets: None,
+            explicit_mods: if all_explicits.is_empty() { None } else { Some(all_explicits) },
+            implicit_mods: None,
+            crafted_mods: None,
+            fractured_mods: None,
+            enchant_mods: if f.enchant_mods.is_empty() { None } else { Some(f.enchant_mods.clone()) },
+            gem_level: None, gem_quality: None,
+            property_energy_shield: None, property_armour: None, property_evasion: None,
         });
     }
 
@@ -115,6 +134,10 @@ pub fn price_gem_list(
             slot: if !g.socketed_in.is_empty() { Some(g.socketed_in.clone()) } else { None },
             price_chaos: p, price_divine: p_div, confidence: "high".to_string(),
             details: Some("技能寶石行情".to_string()), trade_search_url: search_url, trade_query_json: Some(query_json),
+            ilvl: None, corrupted: if g.is_vaal { Some(true) } else { None }, sockets: None,
+            explicit_mods: None, implicit_mods: None, crafted_mods: None, fractured_mods: None, enchant_mods: None,
+            gem_level: Some(g.level), gem_quality: Some(g.quality),
+            property_energy_shield: None, property_armour: None, property_evasion: None,
         });
     }
 

@@ -42,43 +42,45 @@ export const TradeListingRow: React.FC<TradeListingRowProps> = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '240px' }}>
-        <div style={{ position: 'relative', flexShrink: 0 }}>
-          <ItemTooltip item={listing.item}>
-            <img
-              src={getImageUrl(listing.item.icon)}
-              alt={listing.item.typeLine || listing.item.name}
-              style={{
-                width: '42px',
-                height: '42px',
-                objectFit: 'contain',
-                background: 'rgba(0,0,0,0.5)',
-                border: '1px solid rgba(200, 170, 110, 0.3)',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            />
-          </ItemTooltip>
-        </div>
+        <ItemTooltip item={listing.item}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <img
+                src={getImageUrl(listing.item.icon)}
+                alt={listing.item.typeLine || listing.item.name}
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  objectFit: 'contain',
+                  background: 'rgba(0,0,0,0.5)',
+                  border: '1px solid rgba(200, 170, 110, 0.3)',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              />
+            </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 600, color: 'var(--text-gold)', fontSize: '0.9rem' }}>
-              {listing.item.name || listing.item.typeLine}
-            </span>
-            {listing.item.name && listing.item.typeLine && (
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>({listing.item.typeLine})</span>
-            )}
-            {listing.item.corrupted && (
-              <span style={{ fontSize: '0.7rem', padding: '1px 4px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', borderRadius: '3px', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
-                已汙染
-              </span>
-            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <span style={{ fontWeight: 600, color: 'var(--text-gold)', fontSize: '0.9rem' }}>
+                  {listing.item.name || listing.item.typeLine}
+                </span>
+                {listing.item.name && listing.item.typeLine && (
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>({listing.item.typeLine})</span>
+                )}
+                {listing.item.corrupted && (
+                  <span style={{ fontSize: '0.7rem', padding: '1px 4px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', borderRadius: '3px', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
+                    已汙染
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                {listing.item.ilvl && <span>物等: {listing.item.ilvl}</span>}
+                {listing.indexedAge && <span>刊登於: {listing.indexedAge}</span>}
+              </div>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-            {listing.item.ilvl && <span>物等: {listing.item.ilvl}</span>}
-            {listing.indexedAge && <span>刊登於: {listing.indexedAge}</span>}
-          </div>
-        </div>
+        </ItemTooltip>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>

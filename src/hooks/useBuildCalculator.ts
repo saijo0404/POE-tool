@@ -5,6 +5,7 @@ import { LocalStorageAdapter } from '../infrastructure/storage/LocalStorageAdapt
 import {
   HISTORY_KEY,
   saveBuildToHistory,
+  updateHistoryCustomPrices,
   getItemKey,
   computeDynamicBuildResult,
   filterAndSortBuildItems,
@@ -43,19 +44,28 @@ export function useBuildCalculator({
     if (!target) { onShowToast('請先輸入 PoB 代碼或 poe.ninja 角色網址'); return; }
     setLoading(true);
     setError(null);
-    setCustomPrices({});
+
+    // Look for existing saved custom prices from history
+    const existingEntry = history.find(h => h.url === target || (h.character && target.includes(h.character)));
+    const savedCustomPrices = existingEntry?.customPrices || {};
+    setCustomPrices(savedCustomPrices);
+
     try {
       const calculated = await poeApi.calculateBuild(target);
       setRawCostResult(calculated);
-      saveBuildToHistory(target, calculated, setHistory);
-      onShowToast('Build 成本計算完成並已儲存快取！');
+      saveBuildToHistory(target, calculated, setHistory, savedCustomPrices);
+      if (Object.keys(savedCustomPrices).length > 0) {
+        onShowToast(`Build 成本計算完成，已載入歷史並保留 ${Object.keys(savedCustomPrices).length} 項已同步現貨價格！`);
+      } else {
+        onShowToast('Build 成本計算完成並已儲存快取！');
+      }
     } catch (err: any) {
       setError(err?.message || '解析失敗，請確認輸入內容是否有效');
       onShowToast('造價計算失敗');
     } finally {
       setLoading(false);
     }
-  }, [buildInput, onShowToast]);
+  }, [buildInput, history, onShowToast]);
 
   const handleSyncLivePrice = useCallback(async (item: PricedItem) => {
     if (!item.tradeQueryJson) return;
@@ -68,15 +78,19 @@ export function useBuildCalculator({
       const minDivine = res?.estimatedMinPriceDivine ?? 0;
 
       if (res && res.total > 0 && (minChaos > 0 || minDivine > 0)) {
-        setCustomPrices(prev => ({
-          ...prev,
-          [key]: {
-            priceDivine: minDivine,
-            priceChaos: minChaos > 0 ? minChaos : item.priceChaos,
-            isLivePrice: true,
-            listingCount: res.total,
-          }
-        }));
+        const newPrice = {
+          priceDivine: minDivine,
+          priceChaos: minChaos > 0 ? minChaos : item.priceChaos,
+          isLivePrice: true,
+          listingCount: res.total,
+        };
+        const updatedCustomPrices = {
+          ...customPrices,
+          [key]: newPrice,
+          [getItemKey(item)]: newPrice,
+        };
+        setCustomPrices(updatedCustomPrices);
+        updateHistoryCustomPrices(buildInput.trim(), updatedCustomPrices, rawCostResult, setHistory);
         onShowToast(`已成功獲取【${item.name || item.typeLine}】官方現貨價：${minDivine > 0 ? `${minDivine} Div` : `${minChaos} C`} (共 ${res.total} 筆刊登)！`);
       } else if (res && res.total === 0) {
         onShowToast(`官方市集目前 0 筆符合掛單 (可點擊 Trade 查看搜尋)`);
@@ -88,7 +102,7 @@ export function useBuildCalculator({
     } finally {
       setSyncingKey(null);
     }
-  }, [rawCostResult, league, onShowToast]);
+  }, [rawCostResult, league, customPrices, buildInput, onShowToast]);
 
   const handleSyncAllLivePrices = useCallback(async () => {
     if (!rawCostResult) return;
@@ -106,6 +120,7 @@ export function useBuildCalculator({
 
     let successCount = 0;
     const targetLeague = rawCostResult?.character?.league || league;
+    const newCustoms = { ...customPrices };
 
     for (let i = 0; i < allItems.length; i++) {
       const item = allItems[i];
@@ -118,15 +133,15 @@ export function useBuildCalculator({
           const minDivine = res?.estimatedMinPriceDivine ?? 0;
 
           if (res && res.total > 0 && (minChaos > 0 || minDivine > 0)) {
-            setCustomPrices(prev => ({
-              ...prev,
-              [key]: {
-                priceDivine: minDivine,
-                priceChaos: minChaos > 0 ? minChaos : item.priceChaos,
-                isLivePrice: true,
-                listingCount: res.total,
-              }
-            }));
+            const entry = {
+              priceDivine: minDivine,
+              priceChaos: minChaos > 0 ? minChaos : item.priceChaos,
+              isLivePrice: true,
+              listingCount: res.total,
+            };
+            newCustoms[key] = entry;
+            newCustoms[getItemKey(item)] = entry;
+            setCustomPrices({ ...newCustoms });
             successCount++;
           }
         }
@@ -135,10 +150,11 @@ export function useBuildCalculator({
         await new Promise(r => setTimeout(r, 650));
       }
     }
+    updateHistoryCustomPrices(buildInput.trim(), newCustoms, rawCostResult, setHistory);
     setSyncingAll(false);
     setSyncProgress(null);
     onShowToast(`🎉 官方現貨同步完成！成功取得 ${successCount} 件物品的即時市集價格。`);
-  }, [rawCostResult, league, onShowToast]);
+  }, [rawCostResult, league, customPrices, buildInput, onShowToast]);
 
   const handleOpenTrade = useCallback(async (item: PricedItem) => {
     const targetLeague = rawCostResult?.character?.league || league;

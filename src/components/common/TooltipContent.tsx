@@ -40,19 +40,61 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({ item, theme }) =
           </div>
         )}
 
+        {item.requirements && item.requirements.length > 0 && (
+          <div style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
+            需求: {item.requirements.map((r, idx) => (
+              <span key={idx} style={{ marginRight: '8px' }}>
+                {r.name}: <span style={{ color: 'var(--text-bright)' }}>{r.values.map(v => v[0]).join(', ')}</span>
+              </span>
+            ))}
+          </div>
+        )}
+
         {item.properties && item.properties.length > 0 && (
           <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
-            {item.properties.map((p, idx) => (
-              <div key={idx} style={{ color: 'var(--text-muted)' }}>
-                {p.name}: <span style={{ color: 'var(--text-bright)' }}>{p.values.map(v => v[0]).join(', ')}</span>
-              </div>
-            ))}
+            {item.properties
+              .filter(p => {
+                // If quality is already shown at top, skip Quality in properties
+                if (item.quality !== undefined && item.quality > 0 && (p.name.toLowerCase() === 'quality' || p.name.includes('品質'))) {
+                  return false;
+                }
+                return true;
+              })
+              .map((p, idx) => {
+                if (p.values && p.values.length > 0) {
+                  let renderedText = p.name;
+                  if (p.name.includes('%0') || p.displayMode === 3) {
+                    p.values.forEach((v, i) => {
+                      renderedText = renderedText.replace(`%${i}`, v[0]);
+                    });
+                    return <div key={idx} style={{ color: 'var(--text-muted)' }}>{renderedText}</div>;
+                  }
+                  return (
+                    <div key={idx} style={{ color: 'var(--text-muted)' }}>
+                      {p.name}: <span style={{ color: 'var(--text-bright)' }}>{p.values.map(v => v[0]).join(', ')}</span>
+                    </div>
+                  );
+                }
+                return <div key={idx} style={{ color: 'var(--text-muted)' }}>{p.name}</div>;
+              })}
+          </div>
+        )}
+
+        {item.enchantMods && item.enchantMods.length > 0 && (
+          <div style={{ color: '#b8d0ff', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
+            {item.enchantMods.map((m, idx) => <div key={idx}>{m} (附魔)</div>)}
           </div>
         )}
 
         {item.implicitMods && item.implicitMods.length > 0 && (
           <div style={{ color: '#8888ff', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
             {item.implicitMods.map((m, idx) => <div key={idx}>{m}</div>)}
+          </div>
+        )}
+
+        {item.fracturedMods && item.fracturedMods.length > 0 && (
+          <div style={{ color: '#caa560', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            {item.fracturedMods.map((m, idx) => <div key={idx}>{m} (已分裂)</div>)}
           </div>
         )}
 
@@ -68,9 +110,9 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({ item, theme }) =
           </div>
         )}
 
-        {item.fracturedMods && item.fracturedMods.length > 0 && (
-          <div style={{ color: '#caa560' }}>
-            {item.fracturedMods.map((m, idx) => <div key={idx}>{m} (已分裂)</div>)}
+        {item.flavourText && item.flavourText.length > 0 && (
+          <div style={{ color: '#af6025', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px', fontSize: '0.78rem' }}>
+            {item.flavourText.map((t, idx) => <div key={idx}>{t}</div>)}
           </div>
         )}
 
