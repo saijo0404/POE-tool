@@ -1,9 +1,7 @@
 use crate::models::stash::{StashProgress, StashTabMeta, WealthSnapshot};
 use crate::services::stash::{
-    clear_snapshots as clear_snapshots_service,
-    create_snapshot as create_snapshot_service,
-    fetch_stash_tabs_meta,
-    get_snapshots as get_snapshots_service,
+    clear_snapshots as clear_snapshots_service, create_snapshot as create_snapshot_service,
+    fetch_stash_tabs_meta, get_snapshots as get_snapshots_service,
     get_stash_progress as get_stash_progress_service,
 };
 

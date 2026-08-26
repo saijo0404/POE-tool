@@ -17,7 +17,7 @@ dist/
 dist-ssr/
 dist-server/
 dist-exe/
-build/
+/build/
 *.local
 
 # Tauri / Rust Build outputs

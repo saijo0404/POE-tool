@@ -1,8 +1,12 @@
+use crate::models::trade::{TradeItemProperty, TradeListing, TradeListingItem};
 use serde_json::Value;
-use crate::models::trade::{TradeListing, TradeListingItem, TradeItemProperty};
 
 pub fn parse_single_listing(it: &Value, div_rate: f64) -> Option<TradeListing> {
-    let listing_obj = if it.get("listing").is_some() { &it["listing"] } else { it };
+    let listing_obj = if it.get("listing").is_some() {
+        &it["listing"]
+    } else {
+        it
+    };
     let price_obj = &listing_obj["price"];
     let raw_item_val = if it.get("item").is_some() {
         &it["item"]
@@ -27,7 +31,10 @@ pub fn parse_single_listing(it: &Value, div_rate: f64) -> Option<TradeListing> {
     let account_obj = &listing_obj["account"];
 
     let amount = price_obj["amount"].as_f64().unwrap_or(0.0);
-    let currency = price_obj["currency"].as_str().unwrap_or("chaos").to_string();
+    let currency = price_obj["currency"]
+        .as_str()
+        .unwrap_or("chaos")
+        .to_string();
     let price_in_chaos = match currency.to_lowercase().as_str() {
         "divine" => amount * div_rate,
         "mirror" => amount * 95000.0,
@@ -36,36 +43,77 @@ pub fn parse_single_listing(it: &Value, div_rate: f64) -> Option<TradeListing> {
     };
     let price_in_divine = (price_in_chaos / div_rate * 100.0).round() / 100.0;
 
-    let raw_whisper = listing_obj["whisper"].as_str().or_else(|| it["whisper"].as_str()).unwrap_or("").to_string();
+    let raw_whisper = listing_obj["whisper"]
+        .as_str()
+        .or_else(|| it["whisper"].as_str())
+        .unwrap_or("")
+        .to_string();
     let account_name = account_obj["name"].as_str().map(|s| s.to_string());
-    let char_name = account_obj["lastCharacterName"].as_str().map(|s| s.to_string());
-    let token = listing_obj["hideout_token"].as_str().or_else(|| listing_obj["whisper_token"].as_str()).map(|s| s.to_string());
-    let is_instant = listing_obj["hideout_token"].is_string() || listing_obj["method"].as_str() == Some("merchant");
+    let char_name = account_obj["lastCharacterName"]
+        .as_str()
+        .map(|s| s.to_string());
+    let token = listing_obj["hideout_token"]
+        .as_str()
+        .or_else(|| listing_obj["whisper_token"].as_str())
+        .map(|s| s.to_string());
+    let is_instant = listing_obj["hideout_token"].is_string()
+        || listing_obj["method"].as_str() == Some("merchant");
 
     let frame_type = item_obj["frameType"].as_i64().unwrap_or(2);
-    let rarity = item_obj["rarity"].as_str().map(|s| s.to_string()).unwrap_or_else(|| map_frame_type_to_rarity(frame_type));
+    let rarity = item_obj["rarity"]
+        .as_str()
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| map_frame_type_to_rarity(frame_type));
 
     let indexed_str = listing_obj["indexed"].as_str().unwrap_or_default();
     let indexed_age = calculate_indexed_age(listing_obj["indexed"].as_str());
 
-    let implicit_mods = extract_mod_list(item_obj, "implicitMods", &["implicits", "implicit_mods", "implicit"])
-        .or_else(|| extract_extended_mods(item_obj, "implicit"));
+    let implicit_mods = extract_mod_list(
+        item_obj,
+        "implicitMods",
+        &["implicits", "implicit_mods", "implicit"],
+    )
+    .or_else(|| extract_extended_mods(item_obj, "implicit"));
 
-    let explicit_mods = extract_mod_list(item_obj, "explicitMods", &[
-        "explicits", "explicit_mods", "explicit", "utilityMods", "utility",
-        "scourgeMods", "crucibleMods", "sanctumMods", "runeMods", "pseudoMods", "mods", "stats"
-    ]).or_else(|| extract_extended_mods(item_obj, "explicit"));
+    let explicit_mods = extract_mod_list(
+        item_obj,
+        "explicitMods",
+        &[
+            "explicits",
+            "explicit_mods",
+            "explicit",
+            "utilityMods",
+            "utility",
+            "scourgeMods",
+            "crucibleMods",
+            "sanctumMods",
+            "runeMods",
+            "pseudoMods",
+            "mods",
+            "stats",
+        ],
+    )
+    .or_else(|| extract_extended_mods(item_obj, "explicit"));
 
     let crafted_mods = extract_mod_list(item_obj, "craftedMods", &["crafted", "crafted_mods"])
         .or_else(|| extract_extended_mods(item_obj, "crafted"));
 
-    let fractured_mods = extract_mod_list(item_obj, "fracturedMods", &["fractured", "fractured_mods"])
-        .or_else(|| extract_extended_mods(item_obj, "fractured"));
+    let fractured_mods =
+        extract_mod_list(item_obj, "fracturedMods", &["fractured", "fractured_mods"])
+            .or_else(|| extract_extended_mods(item_obj, "fractured"));
 
-    let enchant_mods = extract_mod_list(item_obj, "enchantMods", &["enchants", "enchant_mods", "enchant", "runeMods"])
-        .or_else(|| extract_extended_mods(item_obj, "enchant"));
+    let enchant_mods = extract_mod_list(
+        item_obj,
+        "enchantMods",
+        &["enchants", "enchant_mods", "enchant", "runeMods"],
+    )
+    .or_else(|| extract_extended_mods(item_obj, "enchant"));
 
-    let flavour_text = extract_mod_list(item_obj, "flavourText", &["flavorText", "flavour_text", "flavor_text"]);
+    let flavour_text = extract_mod_list(
+        item_obj,
+        "flavourText",
+        &["flavorText", "flavour_text", "flavor_text"],
+    );
 
     let quality = extract_quality(item_obj);
     let properties = parse_properties(&item_obj["properties"]);
@@ -73,13 +121,23 @@ pub fn parse_single_listing(it: &Value, div_rate: f64) -> Option<TradeListing> {
 
     let listing_item = TradeListingItem {
         name: item_obj["name"].as_str().unwrap_or_default().to_string(),
-        type_line: item_obj["typeLine"].as_str().or_else(|| item_obj["baseType"].as_str()).unwrap_or_default().to_string(),
+        type_line: item_obj["typeLine"]
+            .as_str()
+            .or_else(|| item_obj["baseType"].as_str())
+            .unwrap_or_default()
+            .to_string(),
         icon: item_obj["icon"].as_str().unwrap_or_default().to_string(),
         ilvl: item_obj["ilvl"].as_i64(),
         corrupted: item_obj["corrupted"].as_bool(),
         rarity: Some(rarity),
-        base_type: item_obj["baseType"].as_str().or_else(|| item_obj["typeLine"].as_str()).map(|s| s.to_string()),
-        item_class: item_obj["extended"]["category"].as_str().or_else(|| item_obj["itemClass"].as_str()).map(|s| s.to_string()),
+        base_type: item_obj["baseType"]
+            .as_str()
+            .or_else(|| item_obj["typeLine"].as_str())
+            .map(|s| s.to_string()),
+        item_class: item_obj["extended"]["category"]
+            .as_str()
+            .or_else(|| item_obj["itemClass"].as_str())
+            .map(|s| s.to_string()),
         quality,
         sockets: parse_sockets(&item_obj["sockets"]),
         implicit_mods,
@@ -110,7 +168,10 @@ pub fn parse_single_listing(it: &Value, div_rate: f64) -> Option<TradeListing> {
         seller_account: account_name,
         character_name: char_name.clone(),
         seller_ign: char_name,
-        online_status: account_obj["online"]["status"].as_str().unwrap_or("online").to_string(),
+        online_status: account_obj["online"]["status"]
+            .as_str()
+            .unwrap_or("online")
+            .to_string(),
         is_instant: Some(is_instant),
         price_amount: amount,
         price_currency: currency,
@@ -139,7 +200,11 @@ fn map_frame_type_to_rarity(frame_type: i64) -> String {
     }
 }
 
-fn extract_mod_list(item_obj: &Value, primary_key: &str, alias_keys: &[&str]) -> Option<Vec<String>> {
+fn extract_mod_list(
+    item_obj: &Value,
+    primary_key: &str,
+    alias_keys: &[&str],
+) -> Option<Vec<String>> {
     let mut results = Vec::new();
     let mut all_keys = vec![primary_key];
     all_keys.extend_from_slice(alias_keys);
@@ -155,7 +220,8 @@ fn extract_mod_list(item_obj: &Value, primary_key: &str, alias_keys: &[&str]) ->
                         }
                     }
                 } else if let Some(obj) = m.as_object() {
-                    if let Some(s) = obj.get("text")
+                    if let Some(s) = obj
+                        .get("text")
                         .or_else(|| obj.get("name"))
                         .or_else(|| obj.get("line"))
                         .or_else(|| obj.get("string"))
@@ -165,7 +231,8 @@ fn extract_mod_list(item_obj: &Value, primary_key: &str, alias_keys: &[&str]) ->
                         .or_else(|| obj.get("raw"))
                         .or_else(|| obj.get("mod"))
                         .or_else(|| obj.get("stat"))
-                        .and_then(|v| v.as_str()) {
+                        .and_then(|v| v.as_str())
+                    {
                         for line in s.lines() {
                             let t = line.trim();
                             if !t.is_empty() && !results.contains(&t.to_string()) {
@@ -196,7 +263,11 @@ fn extract_mod_list(item_obj: &Value, primary_key: &str, alias_keys: &[&str]) ->
 }
 
 fn extract_extended_mods(item_obj: &Value, category: &str) -> Option<Vec<String>> {
-    let mods_arr = item_obj.get("extended")?.get("mods")?.get(category)?.as_array()?;
+    let mods_arr = item_obj
+        .get("extended")?
+        .get("mods")?
+        .get(category)?
+        .as_array()?;
     let mut results = Vec::new();
     for m in mods_arr {
         if let Some(name) = m.get("name").and_then(|v| v.as_str()) {
@@ -206,7 +277,11 @@ fn extract_extended_mods(item_obj: &Value, category: &str) -> Option<Vec<String>
             }
         }
     }
-    if results.is_empty() { None } else { Some(results) }
+    if results.is_empty() {
+        None
+    } else {
+        Some(results)
+    }
 }
 
 fn extract_quality(item_obj: &Value) -> Option<i64> {
@@ -217,9 +292,14 @@ fn extract_quality(item_obj: &Value) -> Option<i64> {
         for p in props {
             let name = p["name"].as_str().unwrap_or_default();
             if name.eq_ignore_ascii_case("Quality") || name.contains("品質") {
-                if let Some(v_arr) = p["values"].as_array().and_then(|v| v.first()).and_then(|row| row.as_array()).and_then(|pair| pair.first()) {
+                if let Some(v_arr) = p["values"]
+                    .as_array()
+                    .and_then(|v| v.first())
+                    .and_then(|row| row.as_array())
+                    .and_then(|pair| pair.first())
+                {
                     if let Some(s) = v_arr.as_str() {
-                        let cleaned = s.replace('%', "").replace('+', "").trim().to_string();
+                        let cleaned = s.replace(['%', '+'], "").trim().to_string();
                         if let Ok(num) = cleaned.parse::<i64>() {
                             return Some(num);
                         }
@@ -276,24 +356,43 @@ fn parse_properties(val: &Value) -> Option<Vec<TradeItemProperty>> {
             props.push(TradeItemProperty {
                 name: name.to_string(),
                 values,
-                display_mode: p["displayMode"].as_i64().or_else(|| p["display_mode"].as_i64()),
+                display_mode: p["displayMode"]
+                    .as_i64()
+                    .or_else(|| p["display_mode"].as_i64()),
                 r#type: p["type"].as_i64(),
             });
         }
     }
-    if props.is_empty() { None } else { Some(props) }
+    if props.is_empty() {
+        None
+    } else {
+        Some(props)
+    }
 }
 
 fn parse_sockets(val: &Value) -> Option<String> {
     let arr = val.as_array()?;
-    if arr.is_empty() { return None; }
-    let mut groups: std::collections::BTreeMap<i64, Vec<String>> = std::collections::BTreeMap::new();
+    if arr.is_empty() {
+        return None;
+    }
+    let mut groups: std::collections::BTreeMap<i64, Vec<String>> =
+        std::collections::BTreeMap::new();
     for s in arr {
         let g = s["group"].as_i64().unwrap_or(0);
-        let col = s["sColour"].as_str().or_else(|| s["colour"].as_str()).unwrap_or("W");
+        let col = s["sColour"]
+            .as_str()
+            .or_else(|| s["colour"].as_str())
+            .unwrap_or("W");
         groups.entry(g).or_default().push(col.to_string());
     }
-    let formatted = groups.values().map(|cols| cols.join("-")).collect::<Vec<_>>().join(" ");
-    if formatted.is_empty() { None } else { Some(formatted) }
+    let formatted = groups
+        .values()
+        .map(|cols| cols.join("-"))
+        .collect::<Vec<_>>()
+        .join(" ");
+    if formatted.is_empty() {
+        None
+    } else {
+        Some(formatted)
+    }
 }
-

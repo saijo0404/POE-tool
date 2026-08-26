@@ -113,7 +113,11 @@ fn test_parse_the_immortal_will() {
     assert!(parsed.implicits[0].id.starts_with("implicit."));
     assert!(parsed.explicits.len() >= 5);
     for m in &parsed.explicits {
-        assert!(m.id.starts_with("explicit.") || m.id.starts_with("pseudo.") || m.id.starts_with("custom."));
+        assert!(
+            m.id.starts_with("explicit.")
+                || m.id.starts_with("pseudo.")
+                || m.id.starts_with("custom.")
+        );
     }
 }
 
@@ -281,8 +285,14 @@ Corrupted"#;
     assert!(parsed.implicits[0].id.starts_with("implicit."));
 
     assert_eq!(parsed.explicits.len(), 3);
-    assert_eq!(parsed.explicits[0].text, "Magic Utility Flask Effects cannot be removed");
-    assert_eq!(parsed.explicits[1].text, "Leftmost 4 Magic Utility Flasks constantly apply their Flask Effects to you");
+    assert_eq!(
+        parsed.explicits[0].text,
+        "Magic Utility Flask Effects cannot be removed"
+    );
+    assert_eq!(
+        parsed.explicits[1].text,
+        "Leftmost 4 Magic Utility Flasks constantly apply their Flask Effects to you"
+    );
 }
 
 #[test]
@@ -337,4 +347,3 @@ fn test_parse_poe_ninja_short_item_name() {
     let parsed_single = parse_item_text(text_single);
     assert_eq!(parsed_single.name, "Headhunter");
 }
-

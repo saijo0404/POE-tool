@@ -1,8 +1,10 @@
-use std::collections::HashMap;
 use super::DICTIONARY_STATE;
+use std::collections::HashMap;
 
 pub fn lookup_english_base_type(zh_base_type: &str) -> Option<String> {
-    if zh_base_type.is_empty() { return None; }
+    if zh_base_type.is_empty() {
+        return None;
+    }
     let clean = zh_base_type.trim();
     let state = DICTIONARY_STATE.read().ok()?;
     state.item_dict.get(clean).cloned()

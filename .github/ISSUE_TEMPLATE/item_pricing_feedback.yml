@@ -1,0 +1,69 @@
+name: "🏷️ Item Pricing / Mod Parsing / 詞綴與查價回饋"
+description: "繁中詞綴未識別、數值解析錯誤、或特定傳奇/地圖/珠寶查價條件不準確"
+title: "[Parsing/Pricing]: "
+labels: ["parser", "trade-api"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        本專案致力於提供精準的 PoE 繁體中文物品解析與查價。若您發現特定詞綴未正確匹配官方 ID，或數值計算有誤，請在此回報。
+
+  - type: dropdown
+    id: item-type
+    attributes:
+      label: "物品類型 (Item Type)"
+      options:
+        - "稀有裝備 (Rare Equipment)"
+        - "傳奇裝備 (Unique Equipment)"
+        - "地圖 / 聖甲蟲 / 碎片 (Maps, Scarabs & Fragments)"
+        - "珠寶 / 星團珠寶 (Jewels & Cluster Jewels)"
+        - "通貨 / 命運卡 / 契約 (Currency, Div Cards & Heist)"
+        - "藥劑 / 技能寶石 (Flasks & Skill Gems)"
+        - "其他 (Other)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: server
+    attributes:
+      label: "遊戲伺服器 (Server)"
+      options:
+        - "台服 / 繁體中文 (TW Garena)"
+        - "國際服 (Global / International)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: raw-text
+    attributes:
+      label: "遊戲內 Ctrl+C 原始複製文字 (Raw PoE Item Text)"
+      description: "請務必提供完整的遊戲內剪貼簿文本"
+      placeholder: |
+        稀 有 度: 傳奇
+        獵首
+        皮革腰帶
+        --------
+        需求: 等級 40
+        --------
+        +38 最大生命
+        增加 25% 物理傷害
+        擊殺稀有怪物時，獲得其詞綴 20 秒
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue-detail
+    attributes:
+      label: "解析錯誤細節 (What went wrong?)"
+      description: "請說明是哪條詞綴未被辨識、數值範圍有誤、或是過濾器生成錯誤"
+      placeholder: "例如：詞綴「擊殺稀有怪物時...」被判定為未知詞綴，無法在市集過濾。"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-filter
+    attributes:
+      label: "預期的官方市集過濾條件 (Expected Trade Filter)"
+      description: "如果知道官方 Trade API 的 ID 或正確條件，請提供"
+      placeholder: "trade filter ID: explicit.stat_3943360533"

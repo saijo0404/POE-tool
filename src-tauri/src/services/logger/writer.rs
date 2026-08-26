@@ -1,10 +1,12 @@
+use super::path_resolver::{
+    get_fallback_log_paths, get_primary_log_path, open_or_create_writable_log,
+};
+use chrono::Local;
+use lazy_static::lazy_static;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::sync::Mutex;
-use lazy_static::lazy_static;
-use chrono::Local;
-use super::path_resolver::{get_fallback_log_paths, get_primary_log_path, open_or_create_writable_log};
 
 lazy_static! {
     static ref LOG_FILE_PATH: Mutex<PathBuf> = Mutex::new(get_primary_log_path());
@@ -39,7 +41,10 @@ pub fn init_logger() {
         *writer_guard = active_writer;
     }
 
-    log_to_file(&format!("=== POE Tool 服務日誌系統已初始化 (檔案位置: {}) ===", chosen_path.display()));
+    log_to_file(&format!(
+        "=== POE Tool 服務日誌系統已初始化 (檔案位置: {}) ===",
+        chosen_path.display()
+    ));
 }
 
 pub fn get_current_log_path() -> PathBuf {
@@ -73,7 +78,8 @@ pub fn read_recent_logs(max_lines: Option<usize>) -> Result<String, String> {
     let path = get_current_log_path();
     let mut file = File::open(&path).map_err(|e| format!("無法開啟日誌檔案: {}", e))?;
     let mut content = String::new();
-    file.read_to_string(&mut content).map_err(|e| format!("無法讀取日誌內容: {}", e))?;
+    file.read_to_string(&mut content)
+        .map_err(|e| format!("無法讀取日誌內容: {}", e))?;
 
     if let Some(limit) = max_lines {
         let lines: Vec<&str> = content.lines().collect();

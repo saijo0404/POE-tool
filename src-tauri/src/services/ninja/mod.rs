@@ -1,6 +1,6 @@
 pub mod bulk_rates;
-pub mod official_exchange;
 pub mod ninja_api;
+pub mod official_exchange;
 pub mod price_fetcher;
 
 pub use bulk_rates::get_accurate_bulk_rates;

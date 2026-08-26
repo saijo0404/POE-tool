@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
+export type AppTabType = 'price' | 'wealth' | 'build' | 'acts' | 'atlas';
+
 interface NavbarProps {
-  activeTab: 'price' | 'wealth' | 'build';
-  setActiveTab: (tab: 'price' | 'wealth' | 'build') => void;
+  activeTab: AppTabType;
+  setActiveTab: (tab: AppTabType) => void;
   onOpenSettings: () => void;
   league?: string;
   divineRate?: number;
@@ -78,32 +80,50 @@ export const Navbar: React.FC<NavbarProps> = ({
         />
       </div>
 
-      <nav style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <button
           type="button"
           onClick={() => setActiveTab('price')}
           className={activeTab === 'price' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
         >
-          <Search size={16} /> 裝備即時查價
+          <Search size={15} /> 裝備即時查價
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('wealth')}
           className={activeTab === 'wealth' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
         >
-          <TrendingUp size={16} /> 每小時資產估算
+          <TrendingUp size={15} /> 每小時資產估算
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('build')}
           className={activeTab === 'build' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
         >
-          <Calculator size={16} /> Build 成本計算
+          <Calculator size={15} /> Build 成本計算
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('acts')}
+          className={activeTab === 'acts' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
+        >
+          <Map size={15} /> 拓荒攻略
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('atlas')}
+          className={activeTab === 'atlas' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
+        >
+          <Compass size={15} /> 輿圖天賦策略
         </button>
 
         <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
@@ -112,10 +132,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           type="button"
           onClick={onOpenSettings}
           className="poe-button-secondary"
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', borderRadius: '8px', fontSize: '0.9rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '6px', fontSize: '0.86rem' }}
           title="系統設定"
         >
-          <Settings size={16} /> 設定
+          <Settings size={15} /> 設定
         </button>
       </nav>
     </header>

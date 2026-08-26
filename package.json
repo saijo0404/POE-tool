@@ -25,7 +25,10 @@
     "tauri:build": "npm run build && tauri build",
     "tauri:build:win": "npm run build && tauri build --target x86_64-pc-windows-msvc --runner cargo-xwin --no-bundle",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "oxlint",
+    "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.1.1",

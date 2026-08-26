@@ -1,7 +1,9 @@
-use regex::Regex;
-use lazy_static::lazy_static;
 use crate::models::item::{ModType, ParsedItemMod};
-use crate::services::dictionary::{lookup_stat_by_text, lookup_stat_for_armour, lookup_stat_for_weapon};
+use crate::services::dictionary::{
+    lookup_stat_by_text, lookup_stat_for_armour, lookup_stat_for_weapon,
+};
+use lazy_static::lazy_static;
+use regex::Regex;
 
 lazy_static! {
     pub static ref ROLL_RANGE_RE: Regex = Regex::new(r"\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").unwrap();
@@ -9,7 +11,7 @@ lazy_static! {
     pub static ref VALUE_EXTRACT_RE: Regex = Regex::new(r"[-+]?\d+(?:\.\d+)?").unwrap();
     static ref TAGS_CLEAN_RE: Regex = Regex::new(r"(?i)\s*\{[^}]+\}\s*|\s*\((?:fractured|crafted|enchant|implicit|local|部分|已分裂|分裂|工藝|附魔|固定詞綴)\)\s*").unwrap();
     static ref POB_PLUS_RANGE_RE: Regex = Regex::new(r"^\+\s*\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").unwrap();
-    static ref POB_PERCENT_RANGE_RE: Regex = Regex::new(r"(?:^|\s)\(([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)\s*%").unwrap();
+    static ref POB_PERCENT_RANGE_RE: Regex = Regex::new(r"(?:^|\s)\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)\s*%").unwrap();
 }
 
 pub fn normalize_stat_id_for_mod_type(id: &str, mod_type: &ModType) -> String {
@@ -34,13 +36,31 @@ pub fn normalize_stat_id_for_mod_type(id: &str, mod_type: &ModType) -> String {
 
 pub fn detect_mod_type(line: &str, is_implicit_section: bool) -> ModType {
     let lower = line.to_lowercase();
-    if lower.contains("(fractured)") || lower.contains("{fractured}") || lower.contains("{ fractured }") || line.contains("已分裂") || line.contains("分裂") {
+    if lower.contains("(fractured)")
+        || lower.contains("{fractured}")
+        || lower.contains("{ fractured }")
+        || line.contains("已分裂")
+        || line.contains("分裂")
+    {
         ModType::Fractured
-    } else if lower.contains("(crafted)") || lower.contains("{crafted}") || lower.contains("{ crafted }") || line.contains("工藝") {
+    } else if lower.contains("(crafted)")
+        || lower.contains("{crafted}")
+        || lower.contains("{ crafted }")
+        || line.contains("工藝")
+    {
         ModType::Crafted
-    } else if lower.contains("(enchant)") || lower.contains("{enchant}") || lower.contains("{ enchant }") || line.contains("附魔") {
+    } else if lower.contains("(enchant)")
+        || lower.contains("{enchant}")
+        || lower.contains("{ enchant }")
+        || line.contains("附魔")
+    {
         ModType::Enchant
-    } else if lower.contains("(implicit)") || lower.contains("{implicit}") || lower.contains("{ implicit }") || line.contains("固定詞綴") || is_implicit_section {
+    } else if lower.contains("(implicit)")
+        || lower.contains("{implicit}")
+        || lower.contains("{ implicit }")
+        || line.contains("固定詞綴")
+        || is_implicit_section
+    {
         ModType::Implicit
     } else {
         ModType::Explicit
@@ -67,10 +87,14 @@ pub fn extract_roll_range(line: &str) -> (Option<f64>, Option<f64>) {
     }
 }
 
-pub fn clean_mod_line_and_extract_values(raw_line: &str) -> (String, Option<f64>, Option<f64>, Option<f64>) {
+pub fn clean_mod_line_and_extract_values(
+    raw_line: &str,
+) -> (String, Option<f64>, Option<f64>, Option<f64>) {
     let mut line = raw_line.trim().to_string();
 
-    let pob_range_ratio = POB_RANGE_TAG_RE.captures(&line).and_then(|c| c[1].parse::<f64>().ok());
+    let pob_range_ratio = POB_RANGE_TAG_RE
+        .captures(&line)
+        .and_then(|c| c[1].parse::<f64>().ok());
     let (range_min, range_max) = extract_roll_range(&line);
 
     let pob_val = if let (Some(min), Some(max)) = (range_min, range_max) {
@@ -89,25 +113,35 @@ pub fn clean_mod_line_and_extract_values(raw_line: &str) -> (String, Option<f64>
 
     if clean_line.starts_with("+ (") || clean_line.starts_with("+(") {
         if let Some(v) = pob_val {
-            clean_line = POB_PLUS_RANGE_RE.replace(&clean_line, format!("+{}", v)).to_string();
+            clean_line = POB_PLUS_RANGE_RE
+                .replace(&clean_line, format!("+{}", v))
+                .to_string();
         }
     } else if clean_line.starts_with('(') || clean_line.contains(" (") {
         if let Some(v) = pob_val {
-            clean_line = POB_PERCENT_RANGE_RE.replace(&clean_line, format!(" {}%", v)).to_string();
+            clean_line = POB_PERCENT_RANGE_RE
+                .replace(&clean_line, format!(" {}%", v))
+                .to_string();
         }
     }
 
     clean_line = ROLL_RANGE_RE.replace_all(&clean_line, "").to_string();
     let cleaned_text = clean_line.split_whitespace().collect::<Vec<_>>().join(" ");
 
-    let val = VALUE_EXTRACT_RE.find(&cleaned_text)
+    let val = VALUE_EXTRACT_RE
+        .find(&cleaned_text)
         .and_then(|m| m.as_str().parse::<f64>().ok())
         .or(pob_val);
 
     (cleaned_text, val, range_min, range_max)
 }
 
-pub fn parse_single_mod_line(line: &str, mod_type: ModType, is_armour: bool, is_weapon: bool) -> Option<ParsedItemMod> {
+pub fn parse_single_mod_line(
+    line: &str,
+    mod_type: ModType,
+    is_armour: bool,
+    is_weapon: bool,
+) -> Option<ParsedItemMod> {
     let clean = line.trim();
     if clean.is_empty() {
         return None;

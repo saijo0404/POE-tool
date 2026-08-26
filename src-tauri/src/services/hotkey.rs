@@ -38,7 +38,7 @@ pub fn is_poe_active() -> bool {
                 }
             }
         }
-        return false;
+        false
     }
 
     #[cfg(not(target_os = "windows"))]
@@ -56,10 +56,11 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
     #[cfg(target_os = "windows")]
     {
         use windows::core::HSTRING;
-        use windows::Win32::UI::WindowsAndMessaging::{FindWindowW, SetForegroundWindow};
         use windows::Win32::UI::Input::KeyboardAndMouse::{
-            SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, VK_CONTROL, VK_RETURN, VK_V
+            SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, VK_CONTROL, VK_RETURN,
+            VK_V,
         };
+        use windows::Win32::UI::WindowsAndMessaging::{FindWindowW, SetForegroundWindow};
 
         let titles = [
             "Path of Exile",
@@ -106,7 +107,10 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
 
                 // Enter down + up
                 let mut inputs = vec![
-                    make_key(VK_RETURN, windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0)),
+                    make_key(
+                        VK_RETURN,
+                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                    ),
                     make_key(VK_RETURN, KEYEVENTF_KEYUP),
                 ];
                 let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
@@ -114,8 +118,14 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
 
                 // Ctrl+V down + up
                 inputs = vec![
-                    make_key(VK_CONTROL, windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0)),
-                    make_key(VK_V, windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0)),
+                    make_key(
+                        VK_CONTROL,
+                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                    ),
+                    make_key(
+                        VK_V,
+                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                    ),
                     make_key(VK_V, KEYEVENTF_KEYUP),
                     make_key(VK_CONTROL, KEYEVENTF_KEYUP),
                 ];
@@ -124,7 +134,10 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
 
                 // Enter down + up
                 inputs = vec![
-                    make_key(VK_RETURN, windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0)),
+                    make_key(
+                        VK_RETURN,
+                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                    ),
                     make_key(VK_RETURN, KEYEVENTF_KEYUP),
                 ];
                 let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);

@@ -1,6 +1,6 @@
+use crate::services::hotkey::{is_poe_item_text, send_in_game_command};
 use serde::{Deserialize, Serialize};
 use tauri_plugin_clipboard_manager::ClipboardExt;
-use crate::services::hotkey::{is_poe_item_text, send_in_game_command};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -16,8 +16,8 @@ pub struct LatestClipboardResult {
     pub timestamp: u64,
 }
 
-use std::sync::Mutex;
 use lazy_static::lazy_static;
+use std::sync::Mutex;
 
 lazy_static! {
     static ref LAST_CLIPBOARD: Mutex<(String, u64)> = Mutex::new((String::new(), 0));
@@ -39,7 +39,10 @@ pub fn get_latest_clipboard(app: tauri::AppHandle) -> Result<LatestClipboardResu
     let is_poe = is_poe_item_text(&text);
 
     if !is_poe || text.trim().is_empty() {
-        return Ok(LatestClipboardResult { text: None, timestamp: 0 });
+        return Ok(LatestClipboardResult {
+            text: None,
+            timestamp: 0,
+        });
     }
 
     let mut lock = LAST_CLIPBOARD.lock().unwrap();
@@ -50,11 +53,20 @@ pub fn get_latest_clipboard(app: tauri::AppHandle) -> Result<LatestClipboardResu
             .as_millis() as u64;
         lock.0 = text.clone();
         lock.1 = now;
-        crate::app_log!("[Clipboard] 📋 New PoE item copied to clipboard! (length: {} chars)", text.len());
-        Ok(LatestClipboardResult { text: Some(text), timestamp: now })
+        crate::app_log!(
+            "[Clipboard] 📋 New PoE item copied to clipboard! (length: {} chars)",
+            text.len()
+        );
+        Ok(LatestClipboardResult {
+            text: Some(text),
+            timestamp: now,
+        })
     } else {
         // Text is identical to last read, return the SAME timestamp to prevent continuous re-pasting
-        Ok(LatestClipboardResult { text: Some(text), timestamp: lock.1 })
+        Ok(LatestClipboardResult {
+            text: Some(text),
+            timestamp: lock.1,
+        })
     }
 }
 

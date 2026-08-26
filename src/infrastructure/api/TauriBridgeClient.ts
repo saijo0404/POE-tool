@@ -104,6 +104,10 @@ export class TauriBridgeClient implements IPoeApiClient {
     return this.invoke<void>('open_external_url', { url });
   }
 
+  async openAtlasTreeWindow(url: string, title?: string): Promise<void> {
+    return this.invoke<void>('open_atlas_tree_window', { url, title });
+  }
+
   async getNinjaPrices(league?: string, refresh?: boolean): Promise<NinjaPricesResult> {
     return this.invoke<NinjaPricesResult>('get_ninja_prices', { league, refresh });
   }

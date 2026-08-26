@@ -1,6 +1,6 @@
+use lazy_static::lazy_static;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
-use lazy_static::lazy_static;
 use tokio::sync::Mutex;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,7 +46,7 @@ pub fn get_rate_limit_remaining_seconds() -> u64 {
     let now = now_millis();
     let expiry = RATE_LIMIT_EXPIRY_MS.load(Ordering::Relaxed);
     if expiry > now {
-        (expiry - now + 999) / 1000
+        (expiry - now).div_ceil(1000)
     } else {
         0
     }
@@ -67,17 +67,35 @@ pub async fn acquire_channel_slot(channel: RequestChannel, has_auth: bool) -> Re
     }
 
     let mutex: &Mutex<ChannelState> = match channel {
-        RequestChannel::Search => &*SEARCH_LOCK,
-        RequestChannel::Fetch => &*FETCH_LOCK,
-        RequestChannel::Stash => &*STASH_LOCK,
+        RequestChannel::Search => &SEARCH_LOCK,
+        RequestChannel::Fetch => &FETCH_LOCK,
+        RequestChannel::Stash => &STASH_LOCK,
     };
 
     let mut state = mutex.lock().await;
 
     let base_delay = match channel {
-        RequestChannel::Search => if has_auth { 1500 } else { 3500 },
-        RequestChannel::Fetch => if has_auth { 1000 } else { 2000 },
-        RequestChannel::Stash => if has_auth { 800 } else { 1500 },
+        RequestChannel::Search => {
+            if has_auth {
+                1500
+            } else {
+                3500
+            }
+        }
+        RequestChannel::Fetch => {
+            if has_auth {
+                1000
+            } else {
+                2000
+            }
+        }
+        RequestChannel::Stash => {
+            if has_auth {
+                800
+            } else {
+                1500
+            }
+        }
     };
 
     if state.throttle_delay_ms < base_delay {
@@ -94,12 +112,17 @@ pub async fn acquire_channel_slot(channel: RequestChannel, has_auth: bool) -> Re
     Ok(())
 }
 
-pub fn update_rate_limits_from_headers(channel: RequestChannel, headers: &reqwest::header::HeaderMap) {
-    let limit_hdr = headers.get("x-rate-limit-account")
+pub fn update_rate_limits_from_headers(
+    channel: RequestChannel,
+    headers: &reqwest::header::HeaderMap,
+) {
+    let limit_hdr = headers
+        .get("x-rate-limit-account")
         .or_else(|| headers.get("x-rate-limit-ip"))
         .or_else(|| headers.get("x-rate-limit-rules"));
 
-    let state_hdr = headers.get("x-rate-limit-account-state")
+    let state_hdr = headers
+        .get("x-rate-limit-account-state")
         .or_else(|| headers.get("x-rate-limit-ip-state"))
         .or_else(|| headers.get("x-rate-limit-rules-state"));
 
@@ -111,12 +134,24 @@ pub fn update_rate_limits_from_headers(channel: RequestChannel, headers: &reqwes
 }
 
 fn parse_and_apply_rate_limit(channel: RequestChannel, limit_str: &str, state_str: &str) {
-    let limits: Vec<Vec<u64>> = limit_str.split(',')
-        .map(|s| s.trim().split(':').filter_map(|n| n.parse::<u64>().ok()).collect())
+    let limits: Vec<Vec<u64>> = limit_str
+        .split(',')
+        .map(|s| {
+            s.trim()
+                .split(':')
+                .filter_map(|n| n.parse::<u64>().ok())
+                .collect()
+        })
         .collect();
 
-    let states: Vec<Vec<u64>> = state_str.split(',')
-        .map(|s| s.trim().split(':').filter_map(|n| n.parse::<u64>().ok()).collect())
+    let states: Vec<Vec<u64>> = state_str
+        .split(',')
+        .map(|s| {
+            s.trim()
+                .split(':')
+                .filter_map(|n| n.parse::<u64>().ok())
+                .collect()
+        })
         .collect();
 
     let mut max_wait_suggested = match channel {
@@ -126,7 +161,7 @@ fn parse_and_apply_rate_limit(channel: RequestChannel, limit_str: &str, state_st
     };
 
     for (l, s) in limits.iter().zip(states.iter()) {
-        if l.len() >= 2 && s.len() >= 1 {
+        if l.len() >= 2 && !s.is_empty() {
             let limit = l[0];
             let interval = l[1];
             let current = s[0];
@@ -145,9 +180,9 @@ fn parse_and_apply_rate_limit(channel: RequestChannel, limit_str: &str, state_st
     }
 
     let mutex: &Mutex<ChannelState> = match channel {
-        RequestChannel::Search => &*SEARCH_LOCK,
-        RequestChannel::Fetch => &*FETCH_LOCK,
-        RequestChannel::Stash => &*STASH_LOCK,
+        RequestChannel::Search => &SEARCH_LOCK,
+        RequestChannel::Fetch => &FETCH_LOCK,
+        RequestChannel::Stash => &STASH_LOCK,
     };
 
     if let Ok(mut state) = mutex.try_lock() {
@@ -166,19 +201,19 @@ mod tests {
         set_rate_limit_block(5);
         assert!(is_trade_rate_limited());
         let remaining = get_rate_limit_remaining_seconds();
-        assert!(remaining <= 5 && remaining >= 1);
+        assert!((1..=5).contains(&remaining));
     }
 
     #[test]
     fn test_parse_and_apply_rate_limit_headers() {
         let channel = RequestChannel::Search;
-        
+
         // Standard normal header
         parse_and_apply_rate_limit(channel, "15:10:60,30:300:1800", "5:10:0,10:300:0");
-        
+
         // High utilization (> 70%)
         parse_and_apply_rate_limit(channel, "10:10:60", "8:10:0");
-        
+
         // Saturated (near limit)
         parse_and_apply_rate_limit(channel, "10:10:60", "10:10:0");
 

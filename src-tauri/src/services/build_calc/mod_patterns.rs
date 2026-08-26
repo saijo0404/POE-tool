@@ -31,7 +31,9 @@ pub enum ModSource {
 }
 
 pub fn format_stat_id_with_source(id: &str, source: ModSource) -> String {
-    if id.starts_with("pseudo.") { return id.to_string(); }
+    if id.starts_with("pseudo.") {
+        return id.to_string();
+    }
     if let Some(pos) = id.find(".stat_") {
         let stat_suffix = &id[pos + 1..];
         match source {
@@ -53,7 +55,10 @@ pub fn format_stat_id_with_source(id: &str, source: ModSource) -> String {
 }
 
 pub fn extract_mod_numeric_value(text: &str) -> Option<f64> {
-    let clean = Regex::new(r"\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").ok()?.replace_all(text, "").to_string();
+    let clean = Regex::new(r"\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)")
+        .ok()?
+        .replace_all(text, "")
+        .to_string();
     let re = Regex::new(r"[-+]?\d+(?:\.\d+)?").ok()?;
     re.find(&clean).and_then(|m| m.as_str().parse::<f64>().ok())
 }

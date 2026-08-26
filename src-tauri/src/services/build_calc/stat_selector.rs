@@ -1,6 +1,6 @@
-use serde_json::Value;
-use crate::services::parser::{ROLL_RANGE_RE, VALUE_EXTRACT_RE};
 use super::mod_patterns::*;
+use crate::services::parser::{ROLL_RANGE_RE, VALUE_EXTRACT_RE};
+use serde_json::Value;
 
 pub fn select_candidate_stat_filters(
     slot: &str,
@@ -9,46 +9,112 @@ pub fn select_candidate_stat_filters(
     implicit_mods: &[String],
     crafted_mods: &[String],
     fractured_mods: &[String],
-    enchant_mods: &[String]
+    enchant_mods: &[String],
 ) -> Vec<Value> {
     let is_armour = is_armour_slot_or_type(slot, trans_type);
     let is_weapon = is_weapon_slot_or_type(slot, trans_type);
 
     let mut candidates = Vec::new();
-    collect_mod_candidates(&mut candidates, implicit_mods, ModSource::Implicit, is_armour, is_weapon);
-    collect_mod_candidates(&mut candidates, fractured_mods, ModSource::Fractured, is_armour, is_weapon);
-    collect_mod_candidates(&mut candidates, explicit_mods, ModSource::Explicit, is_armour, is_weapon);
-    collect_mod_candidates(&mut candidates, crafted_mods, ModSource::Crafted, is_armour, is_weapon);
-    collect_mod_candidates(&mut candidates, enchant_mods, ModSource::Enchant, is_armour, is_weapon);
+    collect_mod_candidates(
+        &mut candidates,
+        implicit_mods,
+        ModSource::Implicit,
+        is_armour,
+        is_weapon,
+    );
+    collect_mod_candidates(
+        &mut candidates,
+        fractured_mods,
+        ModSource::Fractured,
+        is_armour,
+        is_weapon,
+    );
+    collect_mod_candidates(
+        &mut candidates,
+        explicit_mods,
+        ModSource::Explicit,
+        is_armour,
+        is_weapon,
+    );
+    collect_mod_candidates(
+        &mut candidates,
+        crafted_mods,
+        ModSource::Crafted,
+        is_armour,
+        is_weapon,
+    );
+    collect_mod_candidates(
+        &mut candidates,
+        enchant_mods,
+        ModSource::Enchant,
+        is_armour,
+        is_weapon,
+    );
 
-    candidates.sort_by(|a, b| b.score.cmp(&a.score));
+    candidates.sort_by_key(|b| std::cmp::Reverse(b.score));
 
     let mut seen_ids = std::collections::HashSet::new();
-    let max_filters = if slot.contains("Body") || slot.contains("Weapon") { 4 } else { 3 };
+    let max_filters = if slot.contains("Body") || slot.contains("Weapon") {
+        4
+    } else {
+        3
+    };
     let mut stat_filters = Vec::new();
 
     for c in candidates {
         if seen_ids.insert(c.id.clone()) {
-            crate::app_log!("[BuildCalc] 🎯 精選詞綴篩選: {} -> ID: '{}', min: {:?}", c.log_text, c.id, c.min_val);
+            crate::app_log!(
+                "[BuildCalc] 🎯 精選詞綴篩選: {} -> ID: '{}', min: {:?}",
+                c.log_text,
+                c.id,
+                c.min_val
+            );
             let mut entry = serde_json::json!({ "id": c.id });
             if let Some(min_val) = c.min_val {
-                let reasonable_min = if min_val > 0.0 { (min_val * 0.85).floor() } else { min_val };
+                let reasonable_min = if min_val > 0.0 {
+                    (min_val * 0.85).floor()
+                } else {
+                    min_val
+                };
                 entry["value"] = serde_json::json!({ "min": reasonable_min });
             }
             stat_filters.push(entry);
-            if stat_filters.len() >= max_filters { break; }
+            if stat_filters.len() >= max_filters {
+                break;
+            }
         }
     }
     stat_filters
 }
 
 fn is_armour_slot_or_type(slot: &str, trans_type: &str) -> bool {
-    slot.contains("Body") || slot.contains("Helm") || slot.contains("Boots") || slot.contains("Gloves") || slot.contains("Offhand") || slot.contains("Shield")
-        || trans_type.contains("Regalia") || trans_type.contains("Plate") || trans_type.contains("Robe") || trans_type.contains("Crown") || trans_type.contains("Boots") || trans_type.contains("Gloves") || trans_type.contains("Shield") || trans_type.contains("Buckler")
+    slot.contains("Body")
+        || slot.contains("Helm")
+        || slot.contains("Boots")
+        || slot.contains("Gloves")
+        || slot.contains("Offhand")
+        || slot.contains("Shield")
+        || trans_type.contains("Regalia")
+        || trans_type.contains("Plate")
+        || trans_type.contains("Robe")
+        || trans_type.contains("Crown")
+        || trans_type.contains("Boots")
+        || trans_type.contains("Gloves")
+        || trans_type.contains("Shield")
+        || trans_type.contains("Buckler")
 }
 
 fn is_weapon_slot_or_type(slot: &str, trans_type: &str) -> bool {
-    slot.contains("Weapon") || trans_type.contains("Wand") || trans_type.contains("Bow") || trans_type.contains("Sword") || trans_type.contains("Axe") || trans_type.contains("Mace") || trans_type.contains("Sceptre") || trans_type.contains("Staff") || trans_type.contains("Dagger") || trans_type.contains("Claw")
+    slot.contains("Weapon")
+        || trans_type.contains("Wand")
+        || trans_type.contains("Bow")
+        || trans_type.contains("Sword")
+        || trans_type.contains("Axe")
+        || trans_type.contains("Mace")
+        || trans_type.contains("Sceptre")
+        || trans_type.contains("Staff")
+        || trans_type.contains("Dagger")
+        || trans_type.contains("Claw")
 }
 
 fn score_mod(text: &str, source: ModSource) -> i32 {
@@ -74,12 +140,19 @@ fn score_mod(text: &str, source: ModSource) -> i32 {
         || text.contains("increased Spell Damage")
         || text.contains("more Elemental Damage");
 
-    if is_gem_lvl { 1200 }
-    else if source == ModSource::Implicit || source == ModSource::Fractured { 1100 }
-    else if is_core { 900 }
-    else if source == ModSource::Crafted { 800 }
-    else if is_low_utility { 300 }
-    else { 600 }
+    if is_gem_lvl {
+        1200
+    } else if source == ModSource::Implicit || source == ModSource::Fractured {
+        1100
+    } else if is_core {
+        900
+    } else if source == ModSource::Crafted {
+        800
+    } else if is_low_utility {
+        300
+    } else {
+        600
+    }
 }
 
 fn collect_mod_candidates(
@@ -87,19 +160,26 @@ fn collect_mod_candidates(
     mods: &[String],
     source: ModSource,
     is_armour: bool,
-    is_weapon: bool
+    is_weapon: bool,
 ) {
     let strip_re = regex::Regex::new(r"(?i)\s*\{[^}]+\}\s*|\s*\((?:fractured|crafted|enchant|implicit|local|部分|已分裂|分裂|工藝|附魔|固定詞綴)\)\s*").unwrap();
     for raw in mods {
         for line in raw.lines() {
             let clean = line.trim();
-            if clean.is_empty() { continue; }
+            if clean.is_empty() {
+                continue;
+            }
 
             let mut range_min: Option<f64> = None;
             if let Some(cap) = ROLL_RANGE_RE.find(clean) {
                 let inside = &cap.as_str()[1..cap.as_str().len() - 1];
-                let nums: Vec<f64> = VALUE_EXTRACT_RE.find_iter(inside).filter_map(|m| m.as_str().parse::<f64>().ok()).collect();
-                if !nums.is_empty() { range_min = Some(nums[0]); }
+                let nums: Vec<f64> = VALUE_EXTRACT_RE
+                    .find_iter(inside)
+                    .filter_map(|m| m.as_str().parse::<f64>().ok())
+                    .collect();
+                if !nums.is_empty() {
+                    range_min = Some(nums[0]);
+                }
             }
 
             let cleaned = ROLL_RANGE_RE.replace_all(clean, "").to_string();
@@ -112,10 +192,13 @@ fn collect_mod_candidates(
                 crate::services::dictionary::lookup_stat_for_weapon(cleaned)
             } else {
                 crate::services::dictionary::lookup_stat_by_text(cleaned)
-            }.or_else(|| crate::services::dictionary::lookup_stat_by_text(cleaned));
+            }
+            .or_else(|| crate::services::dictionary::lookup_stat_by_text(cleaned));
 
             if let Some(entry) = stat_entry {
-                if entry.id.starts_with("custom.") || (!entry.id.contains("stat_") && !entry.id.starts_with("pseudo.")) {
+                if entry.id.starts_with("custom.")
+                    || (!entry.id.contains("stat_") && !entry.id.starts_with("pseudo."))
+                {
                     continue;
                 }
                 let formatted_id = format_stat_id_with_source(&entry.id, source);
@@ -126,10 +209,14 @@ fn collect_mod_candidates(
                     id: formatted_id,
                     min_val: effective_min,
                     score,
-                    log_text: format!("{:?} 詞綴: {} (ID: {})", source, cleaned, entry.id)
+                    log_text: format!("{:?} 詞綴: {} (ID: {})", source, cleaned, entry.id),
                 });
             } else {
-                crate::app_log!("[BuildCalc] ⚠️ 詞綴無字典對應: '{}' (原詞: '{}')", cleaned, raw);
+                crate::app_log!(
+                    "[BuildCalc] ⚠️ 詞綴無字典對應: '{}' (原詞: '{}')",
+                    cleaned,
+                    raw
+                );
             }
         }
     }

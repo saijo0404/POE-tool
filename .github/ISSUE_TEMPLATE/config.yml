@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions / 社群交流
+    url: https://github.com/yijun/POE_tool/discussions
+    about: 提問、交流配裝攻略、輿圖策略分享或日常討論，請至 Discussions 專區。
+  - name: 📖 PoE 官方繁中交易市集
+    url: https://web.poe.garena.tw/trade
+    about: 前往台灣流亡黯道官方交易市集網站確認即時行情。
+  - name: 🌐 PoE 國際服官方交易市集
+    url: https://www.pathofexile.com/trade
+    about: 前往國際服官方交易市集網站。

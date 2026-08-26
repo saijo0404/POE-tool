@@ -63,7 +63,9 @@ fn test_build_search_query_payload_rare_with_affixes() {
     // Stats should have 2 enabled filters
     let stats = query["stats"].as_array().expect("stats should be array");
     assert_eq!(stats.len(), 1);
-    let filters = stats[0]["filters"].as_array().expect("filters should be array");
+    let filters = stats[0]["filters"]
+        .as_array()
+        .expect("filters should be array");
     assert_eq!(filters.len(), 2);
     assert_eq!(filters[0]["id"], "explicit.stat_1050105434");
     assert_eq!(filters[0]["value"]["min"], 50.0);
@@ -71,9 +73,18 @@ fn test_build_search_query_payload_rare_with_affixes() {
     assert_eq!(filters[1]["value"]["min"], 5.0);
 
     // Filters: type rarity = rare, misc corrupted = false, ilvl min = 85
-    assert_eq!(query["filters"]["type_filters"]["filters"]["rarity"]["option"], "rare");
-    assert_eq!(query["filters"]["misc_filters"]["filters"]["corrupted"]["option"], "false");
-    assert_eq!(query["filters"]["misc_filters"]["filters"]["ilvl"]["min"], 85);
+    assert_eq!(
+        query["filters"]["type_filters"]["filters"]["rarity"]["option"],
+        "rare"
+    );
+    assert_eq!(
+        query["filters"]["misc_filters"]["filters"]["corrupted"]["option"],
+        "false"
+    );
+    assert_eq!(
+        query["filters"]["misc_filters"]["filters"]["ilvl"]["min"],
+        85
+    );
 }
 
 #[test]
@@ -103,7 +114,10 @@ fn test_build_search_query_payload_unique() {
     assert_eq!(query["name"], "Ventor's Gamble");
     assert_eq!(query["type"], "Gold Ring");
     assert_eq!(query["status"]["option"], "securable");
-    assert_eq!(query["filters"]["type_filters"]["filters"]["rarity"]["option"], "unique");
+    assert_eq!(
+        query["filters"]["type_filters"]["filters"]["rarity"]["option"],
+        "unique"
+    );
 }
 
 #[test]

@@ -1,3 +1,9 @@
+#![allow(
+    deprecated,
+    clippy::too_many_arguments,
+    clippy::permissions_set_readonly_false
+)]
+
 pub mod commands;
 pub mod models;
 pub mod services;
@@ -60,11 +66,9 @@ pub fn run() {
             show_main_window,
             hide_main_window,
             get_app_version,
-
             // Logger Commands
             commands::get_log_contents,
             commands::get_log_file_path,
-
             // Trade & Parser Commands
             commands::parse_item,
             commands::search_trade,
@@ -72,19 +76,17 @@ pub fn run() {
             commands::travel_to_hideout,
             commands::create_trade_search_url,
             commands::open_external_url,
-
+            commands::open_atlas_tree_window,
             // Stash & Wealth Commands
             commands::get_wealth_snapshots,
             commands::take_wealth_snapshot,
             commands::clear_wealth_snapshots,
             commands::get_stash_progress,
             commands::get_stash_tabs,
-
             // poe.ninja & Build Calculator Commands
             commands::get_ninja_prices,
             commands::calculate_build,
             commands::fetch_build_item_live_price,
-
             // Settings & Connection Commands
             commands::get_settings,
             commands::update_settings,
@@ -94,7 +96,6 @@ pub fn run() {
             commands::handle_auto_login_success,
             commands::logout_auth,
             commands::get_auth_status,
-
             // Hotkey & Clipboard Commands
             commands::read_clipboard,
             commands::get_latest_clipboard,
@@ -102,12 +103,17 @@ pub fn run() {
         ])
         .setup(|app| {
             // Build Tray Menu
-            let show_item = MenuItem::with_id(app, "show", "開啟查價工具 (Show)", true, None::<&str>)?;
-            let hide_item = MenuItem::with_id(app, "hide", "最小化至背景 (Hide)", true, None::<&str>)?;
-            let pin_item = MenuItem::with_id(app, "pin", "切換置頂 (Always on Top)", true, None::<&str>)?;
-            let quit_item = MenuItem::with_id(app, "quit", "結束應用程式 (Quit)", true, None::<&str>)?;
+            let show_item =
+                MenuItem::with_id(app, "show", "開啟查價工具 (Show)", true, None::<&str>)?;
+            let hide_item =
+                MenuItem::with_id(app, "hide", "最小化至背景 (Hide)", true, None::<&str>)?;
+            let pin_item =
+                MenuItem::with_id(app, "pin", "切換置頂 (Always on Top)", true, None::<&str>)?;
+            let quit_item =
+                MenuItem::with_id(app, "quit", "結束應用程式 (Quit)", true, None::<&str>)?;
 
-            let tray_menu = Menu::with_items(app, &[&show_item, &hide_item, &pin_item, &quit_item])?;
+            let tray_menu =
+                Menu::with_items(app, &[&show_item, &hide_item, &pin_item, &quit_item])?;
 
             if let Some(icon) = app.default_window_icon() {
                 let _tray = TrayIconBuilder::new()

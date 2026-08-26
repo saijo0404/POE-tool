@@ -1,0 +1,65 @@
+name: "💡 Feature Request / 功能建議"
+description: "為 POE_tool 提出新功能發想、架構改進或使用體驗優化建議"
+title: "[Feat]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感謝您為 POE_tool 提出新想法！請盡可能詳細說明您的需求背景與期望設計，以協助社群與維護者評估。
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "建議功能類別 (Feature Category)"
+      description: "請選擇此功能主要所屬的領域"
+      options:
+        - "即時查價與過濾器 (Price Checker & Filters)"
+        - "倉庫資產與歷史統計 (Wealth Tracker & Snapshots)"
+        - "輿圖策略與天賦模擬 (Atlas Strategy & Tree Planner)"
+        - "Build 造價與裝備比較 (Build Calculator)"
+        - "快捷鍵與遊戲內懸浮窗 (Hotkeys & In-Game Overlay)"
+        - "多語系與繁中詞庫支援 (Localization & Dictionary)"
+        - "效能、快取與架構改善 (Performance & Architecture)"
+        - "其他 (Other)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "需求背景與痛點 (Problem / User Story)"
+      description: "目前遇到了什麼問題，或是缺少了什麼功能導致使用不便？"
+      placeholder: "身為流亡黯道玩家，在刷圖產出大量甲蟲與地圖時，希望能一鍵統計整個倉庫頁面批次估價..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "建議方案與實作構想 (Proposed Solution)"
+      description: "您希望這個功能如何運作？是否有建議的介面流程或演算法？"
+      placeholder: "可以在倉庫分頁新增一個「批次估價」按鈕，呼叫 Ninja API 或官方批量交易 API 進行估價..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "考慮過的替代方案 (Alternatives Considered)"
+      description: "您是否考慮過其他暫時性方案或既有工具的實作方式？"
+      placeholder: "目前只能手動切換 Awakened PoE Trade 逐件查詢..."
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: "UI 草圖或參考範例 (UI Mockups / References)"
+      description: "若有介面草圖、流程圖或類似工具的截圖，請貼在此處"
+      placeholder: "可拖曳圖片至此處"
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: "貢獻意願 (Contribution)"
+      options:
+        - label: "我願意參與此功能的設計討論或提交 Pull Request (PR) 進行實作！"

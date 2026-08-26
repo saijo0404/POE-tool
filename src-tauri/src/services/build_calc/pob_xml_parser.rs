@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use regex::Regex;
-use crate::models::ninja::{NinjaBuildData, NinjaBuildFlask, NinjaBuildItem, NinjaBuildJewel};
 use super::pob_item_parser::{parse_pob_item_content, ParsedPobItemRaw};
+use crate::models::ninja::{NinjaBuildData, NinjaBuildFlask, NinjaBuildItem, NinjaBuildJewel};
+use regex::Regex;
+use std::collections::HashMap;
 
 pub fn parse_pob_xml(xml: &str, code: &str) -> Result<NinjaBuildData, String> {
     let (class_name, ascendancy, level, league) = extract_build_meta(xml);
@@ -18,7 +18,10 @@ pub fn parse_pob_xml(xml: &str, code: &str) -> Result<NinjaBuildData, String> {
         let item_id = &cap[1];
         let content = &cap[2];
         if let Some(parsed) = parse_pob_item_content(content) {
-            let slot = item_slots.get(item_id).cloned().unwrap_or_else(|| "Equipment".to_string());
+            let slot = item_slots
+                .get(item_id)
+                .cloned()
+                .unwrap_or_else(|| "Equipment".to_string());
             categorize_parsed_item(parsed, slot, &mut equipment, &mut flasks, &mut jewels);
         }
     }
@@ -26,8 +29,14 @@ pub fn parse_pob_xml(xml: &str, code: &str) -> Result<NinjaBuildData, String> {
     Ok(NinjaBuildData {
         account: "pobb.in".to_string(),
         character_name: code.to_string(),
-        league, level, class_name, ascendancy,
-        equipment, gems, flasks, jewels,
+        league,
+        level,
+        class_name,
+        ascendancy,
+        equipment,
+        gems,
+        flasks,
+        jewels,
     })
 }
 
@@ -37,10 +46,22 @@ fn extract_build_meta(xml: &str) -> (String, String, i64, String) {
     let level_re = Regex::new(r#"level="([^"]+)""#).unwrap();
     let league_re = Regex::new(r#"league="([^"]+)""#).unwrap();
 
-    let class_name = class_re.captures(xml).map(|c| c[1].to_string()).unwrap_or_else(|| "Unknown".to_string());
-    let ascendancy = ascend_re.captures(xml).map(|c| c[1].to_string()).unwrap_or_else(|| "None".to_string());
-    let level = level_re.captures(xml).and_then(|c| c[1].parse::<i64>().ok()).unwrap_or(90);
-    let league = league_re.captures(xml).map(|c| c[1].to_string()).unwrap_or_else(|| "Standard".to_string());
+    let class_name = class_re
+        .captures(xml)
+        .map(|c| c[1].to_string())
+        .unwrap_or_else(|| "Unknown".to_string());
+    let ascendancy = ascend_re
+        .captures(xml)
+        .map(|c| c[1].to_string())
+        .unwrap_or_else(|| "None".to_string());
+    let level = level_re
+        .captures(xml)
+        .and_then(|c| c[1].parse::<i64>().ok())
+        .unwrap_or(90);
+    let league = league_re
+        .captures(xml)
+        .map(|c| c[1].to_string())
+        .unwrap_or_else(|| "Standard".to_string());
 
     (class_name, ascendancy, level, league)
 }
@@ -58,18 +79,31 @@ fn extract_item_slot_map(xml: &str) -> HashMap<String, String> {
 }
 
 fn normalize_slot_name(raw: &str) -> String {
-    if raw.contains("Body Armour") { "BodyArmour".to_string() }
-    else if raw.contains("Helmet") { "Helm".to_string() }
-    else if raw.contains("Boots") { "Boots".to_string() }
-    else if raw.contains("Gloves") { "Gloves".to_string() }
-    else if raw.contains("Weapon 1") { "Weapon".to_string() }
-    else if raw.contains("Weapon 2") { "Weapon2".to_string() }
-    else if raw.contains("Ring 1") { "Ring".to_string() }
-    else if raw.contains("Ring 2") { "Ring2".to_string() }
-    else if raw.contains("Amulet") { "Amulet".to_string() }
-    else if raw.contains("Belt") { "Belt".to_string() }
-    else if raw.contains("Flask") { "Flask".to_string() }
-    else { raw.to_string() }
+    if raw.contains("Body Armour") {
+        "BodyArmour".to_string()
+    } else if raw.contains("Helmet") {
+        "Helm".to_string()
+    } else if raw.contains("Boots") {
+        "Boots".to_string()
+    } else if raw.contains("Gloves") {
+        "Gloves".to_string()
+    } else if raw.contains("Weapon 1") {
+        "Weapon".to_string()
+    } else if raw.contains("Weapon 2") {
+        "Weapon2".to_string()
+    } else if raw.contains("Ring 1") {
+        "Ring".to_string()
+    } else if raw.contains("Ring 2") {
+        "Ring2".to_string()
+    } else if raw.contains("Amulet") {
+        "Amulet".to_string()
+    } else if raw.contains("Belt") {
+        "Belt".to_string()
+    } else if raw.contains("Flask") {
+        "Flask".to_string()
+    } else {
+        raw.to_string()
+    }
 }
 
 fn categorize_parsed_item(
@@ -85,7 +119,10 @@ fn categorize_parsed_item(
             icon: "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvRmxhc2tzL2ZsYXNrMSIsInciOjEsImgiOjIsInNjYWxlIjoxfV0/6be457f5c5/flask1.png".to_string(),
             explicit_mods: p.explicit_mods, utility_mods: Vec::new(), enchant_mods: p.enchant_mods,
         });
-    } else if p.type_line.contains("Jewel") || p.name.contains("Jewel") || p.type_line.contains("Cluster") {
+    } else if p.type_line.contains("Jewel")
+        || p.name.contains("Jewel")
+        || p.type_line.contains("Cluster")
+    {
         jewels.push(NinjaBuildJewel {
             name: p.name, type_line: p.type_line, rarity: p.rarity,
             icon: "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL2Jhc2ljMSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/d0ff9e4726/basic1.png".to_string(),

@@ -1,0 +1,140 @@
+name: "🐛 Bug Report / 錯誤回報"
+description: "回報 POE_tool 的錯誤、崩潰、查價異常或功能異常"
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感謝您協助回報問題！在填寫前，請確認您使用的是最新版本的 POE_tool，並搜尋是否有重複的 Issue。
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "提交前檢查 (Pre-check)"
+      options:
+        - label: "我已在 Issues 中搜尋，確認沒有相同或類似的問題回報。"
+          required: true
+        - label: "我已嘗試更新到最新版本，且問題仍然存在。"
+          required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: "作業系統 (Operating System)"
+      description: "請選擇您使用的作業系統環境"
+      options:
+        - "Windows 11 (64-bit)"
+        - "Windows 10 (64-bit)"
+        - "Windows (Other)"
+        - "Linux / Wine / Proton"
+        - "macOS"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: "POE_tool 程式版本 (Version)"
+      description: "例如：v1.0.0 或 Git commit hash（可於設定頁或視窗標題查看）"
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: server
+    attributes:
+      label: "遊戲伺服器與版本 (Server & Game)"
+      description: "請選擇您遊玩的伺服器與遊戲版本"
+      options:
+        - "台服 / 繁中 (Garena / TW Server) - PoE 1"
+        - "國際服 (International / Global Server) - PoE 1"
+        - "PoE 2 (Early Access / Beta)"
+        - "其他 (Other)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: "發生問題的模組 (Affected Module)"
+      description: "請選擇發生異常的功能區塊"
+      options:
+        - "即時查價 (Price Checker)"
+        - "倉庫資產追蹤 (Wealth Tracker)"
+        - "輿圖策略規劃 (Atlas Strategy Planner)"
+        - "Build 造價計算 (Build Calculator)"
+        - "快捷鍵 / 剪貼簿監聽 (Hotkey / Clipboard Sync)"
+        - "浮動視窗 / 介面顯示 (Overlay / UI Display)"
+        - "網路連線 / 官方 API (Network / API Error)"
+        - "其他 (Other)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "問題描述 (Bug Description)"
+      description: "請詳細描述您遇到的問題與現象"
+      placeholder: "當我按下 Ctrl+D 進行查價時，視窗出現..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "重現步驟 (Reproduction Steps)"
+      description: "請提供可逐步重現此問題的操作步驟"
+      placeholder: |
+        1. 開啟 POE_tool
+        2. 進入遊戲中將游標移至特定裝備
+        3. 按下 Ctrl+C 複製物品資訊
+        4. 點擊查價按鈕，觀察到...
+    validations:
+      required: true
+
+  - type: textarea
+    id: item-text
+    attributes:
+      label: "PoE 物品原始文字 (Raw PoE Item Text)"
+      description: "若是查價、詞綴解析或資產統計相關問題，請貼上遊戲內按 Ctrl+C 複製的完整物品資訊"
+      placeholder: |
+        稀 有 度: 稀有
+        狂怒 旋風
+        刺殺皮甲
+        --------
+        閃避值: 1520 (augmented)
+        --------
+        需求: 等級 68, 197 敏捷
+        --------
+        插槽: G-G-G-G-G-G
+        --------
+        物品等級: 86
+        --------
+        +120 最大生命
+        +45% 冰冷抗性
+        +48% 閃電抗性
+      render: text
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "預期行為 (Expected Behavior)"
+      description: "您預期正常的運作行為為何？"
+      placeholder: "應該正確解析出 +120 最大生命 詞綴並列出市集前 10 筆最低報價。"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs-screenshots
+    attributes:
+      label: "日誌輸出或截圖 (Logs & Screenshots)"
+      description: "若有錯誤日誌（如 `poe-tool.log`）或畫面截圖，請貼在此處（可直接拖曳圖片上傳）"
+      placeholder: "請貼上相關 Log 或將截圖拖曳至此處"
+      render: shell
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "其他補充資訊 (Additional Context)"
+      description: "任何其他有助於排查問題的補充資訊（例如：第三方軟體干擾、特殊網路環境/代理等）"

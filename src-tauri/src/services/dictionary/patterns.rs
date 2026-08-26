@@ -10,7 +10,10 @@ lazy_static! {
 pub fn normalize_pattern(text: &str) -> String {
     let clean = TAG_PREFIX_RE.replace_all(text, "");
     let s = PATTERN_NORM_RE.replace_all(&clean, "#");
-    s.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase()
+    s.split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_lowercase()
 }
 
 pub fn entry_priority(id: &str) -> i32 {

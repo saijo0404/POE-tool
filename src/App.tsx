@@ -10,6 +10,8 @@ import { AppStateProvider } from './context/AppStateProvider';
 // Dynamic Lazy-Loaded Modules for Chunk Optimization
 const WealthTracker = lazy(() => import('./components/WealthTracker'));
 const BuildCalculator = lazy(() => import('./components/BuildCalculator'));
+const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
+const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 
 const LoadingFallback: React.FC = () => (
@@ -20,8 +22,8 @@ const LoadingFallback: React.FC = () => (
 );
 
 export const App: React.FC = () => {
-  const { settings, activeLeague, refreshSettings, refreshDivineRate } = useSettings();
-  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'build'>('price');
+  const { settings, activeLeague, divineRate, refreshSettings, refreshDivineRate } = useSettings();
+  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'build' | 'acts' | 'atlas'>('price');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [pastedText, setPastedText] = useState<string>('');
@@ -137,6 +139,10 @@ export const App: React.FC = () => {
                   <PriceChecker league={activeLeague} onShowToast={showToast} externalText={pastedText} />
                 ) : activeTab === 'build' ? (
                   <BuildCalculator league={activeLeague} onShowToast={showToast} />
+                ) : activeTab === 'acts' ? (
+                  <ActLevelingGuide onShowToast={showToast} />
+                ) : activeTab === 'atlas' ? (
+                  <AtlasStrategyHub league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
                 ) : (
                   <WealthTracker league={activeLeague} onShowToast={showToast} />
                 )}

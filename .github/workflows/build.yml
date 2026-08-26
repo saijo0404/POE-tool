@@ -1,0 +1,76 @@
+name: Build & Package (Windows)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    name: Build Tauri App (Windows x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "src-tauri -> target"
+
+      - name: Build Tauri Application
+        run: npx tauri build
+
+      - name: Organize Build Artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts
+          
+          # Copy standalone executable if present
+          if (Test-Path "src-tauri/target/release/poe-tool.exe") {
+            Copy-Item "src-tauri/target/release/poe-tool.exe" -Destination "artifacts/poe-tool.exe"
+          }
+          if (Test-Path "src-tauri/target/release/POE_tool.exe") {
+            Copy-Item "src-tauri/target/release/POE_tool.exe" -Destination "artifacts/POE_tool.exe"
+          }
+          
+          # Copy installer bundles (.msi, .exe, etc.) if generated
+          if (Test-Path "src-tauri/target/release/bundle") {
+            Copy-Item -Recurse "src-tauri/target/release/bundle/*" -Destination "artifacts/"
+          }
+          
+          # Create a portable zip package
+          Compress-Archive -Path "artifacts/*" -DestinationPath "artifacts/poe-tool-windows-x64-ci.zip" -Force
+          
+          # Generate SHA256 checksums
+          $files = @(Get-ChildItem -Path artifacts -File)
+          $checksums = foreach ($file in $files) {
+            $hash = (Get-FileHash -Algorithm SHA256 $file.FullName).Hash
+            "$hash  $($file.Name)"
+          }
+          $checksums | Out-File -FilePath "artifacts/SHA256SUMS.txt" -Encoding utf8
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: poe-tool-windows-x64-${{ github.sha }}
+          path: artifacts/
+          retention-days: 14

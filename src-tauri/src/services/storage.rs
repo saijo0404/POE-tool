@@ -1,6 +1,6 @@
+use serde::{de::DeserializeOwned, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
-use serde::{de::DeserializeOwned, Serialize};
 
 pub fn get_data_dir() -> PathBuf {
     // 1. Check data directory in executable's directory
@@ -91,11 +91,10 @@ pub fn write_json_atomic<T: Serialize>(file_path: &Path, data: &T) -> Result<(),
         }
     }
 
-    if let Err(_) = fs::rename(&tmp_path, file_path) {
+    if fs::rename(&tmp_path, file_path).is_err() {
         // Fallback direct write
         let _ = fs::write(file_path, &json_str);
         let _ = fs::remove_file(&tmp_path);
     }
     Ok(())
 }
-
