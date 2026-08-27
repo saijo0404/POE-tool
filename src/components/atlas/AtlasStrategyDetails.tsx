@@ -91,21 +91,19 @@ export const AtlasStrategyDetails: React.FC<AtlasStrategyDetailsProps> = ({
           >
             <CopyPlus size={14} />
           </button>
-          {strategy.isCustom && (
-            <button
-              type="button"
-              className="poe-button-secondary"
-              onClick={() => {
-                if (window.confirm(`確定要刪除自訂策略「${strategy.name}」嗎？`)) {
-                  onDeleteStrategy();
-                }
-              }}
-              title="刪除此策略"
-              style={{ color: '#f87171', padding: '6px 10px' }}
-            >
-              <Trash2 size={14} />
-            </button>
-          )}
+          <button
+            type="button"
+            className="poe-button-secondary"
+            onClick={() => {
+              if (window.confirm(`確定要刪除策略「${strategy.name}」嗎？`)) {
+                onDeleteStrategy();
+              }
+            }}
+            title="刪除此策略"
+            style={{ color: '#f87171', padding: '6px 10px' }}
+          >
+            <Trash2 size={14} />
+          </button>
         </div>
       </div>
 

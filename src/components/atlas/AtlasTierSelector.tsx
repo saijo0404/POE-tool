@@ -156,21 +156,22 @@ export const AtlasTierSelector: React.FC<AtlasTierSelectorProps> = ({
                   >
                     <Copy size={12} />
                   </button>
-                  {tiers.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation();
-                        if (window.confirm(`確定要刪除分級「${tier.name}」嗎？`)) {
-                          onDeleteTier(tier.id);
-                        }
-                      }}
-                      style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', padding: '2px' }}
-                      title="刪除此分級"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation();
+                      const msg = tiers.length === 1
+                        ? `這是最後一個分級，刪除後將一併移除此策略，確定要刪除嗎？`
+                        : `確定要刪除分級「${tier.name}」嗎？`;
+                      if (window.confirm(msg)) {
+                        onDeleteTier(tier.id);
+                      }
+                    }}
+                    style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', padding: '2px' }}
+                    title="刪除此分級"
+                  >
+                    <Trash2 size={12} />
+                  </button>
                 </div>
               )}
             </div>
