@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import type { AtlasNode } from '../../../domain/atlas/types';
 import { ATLAS_TREE_NODES_DATA, ATLAS_NODES_MAP } from '../../../domain/atlas/atlasTreeDataset';
 import { AtlasCanvasDefs } from './AtlasCanvasDefs';
@@ -44,6 +44,22 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
+  // Pre-calculate unique deduplicated undirected edges
+  const uniqueEdges = useMemo(() => {
+    const edgeMap = new Map<string, { id: string; source: AtlasNode; target: AtlasNode }>();
+    ATLAS_TREE_NODES_DATA.forEach(node => {
+      node.connections.forEach(tId => {
+        const targetNode = ATLAS_NODES_MAP[tId];
+        if (!targetNode) return;
+        const edgeKey = node.id < tId ? `${node.id}-${tId}` : `${tId}-${node.id}`;
+        if (!edgeMap.has(edgeKey)) {
+          edgeMap.set(edgeKey, { id: edgeKey, source: node, target: targetNode });
+        }
+      });
+    });
+    return Array.from(edgeMap.values());
+  }, []);
+
   const isMatching = (node: AtlasNode): boolean => {
     if (selectedCategory !== 'all' && node.category !== selectedCategory) return false;
     if (!searchQuery.trim()) return true;
@@ -73,35 +89,54 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
         <AtlasCanvasDefs />
 
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+          {/* Background Concentric Guides */}
           <circle cx="0" cy="-1100" r="900" fill="none" stroke="rgba(200, 170, 110, 0.04)" strokeWidth="1.5" strokeDasharray="6 6" />
           <circle cx="0" cy="-1100" r="600" fill="none" stroke="rgba(200, 170, 110, 0.06)" strokeWidth="1" />
           <circle cx="0" cy="-1100" r="300" fill="none" stroke="rgba(200, 170, 110, 0.08)" strokeWidth="1" strokeDasharray="4 4" />
 
-          {/* 1. Connections */}
-          {ATLAS_TREE_NODES_DATA.map(node =>
-            node.connections.map(targetId => {
-              const targetNode = ATLAS_NODES_MAP[targetId];
-              if (!targetNode || node.numId > targetNode.numId) return null;
-              const isLineAlloc = allocatedNodeIds.has(node.id) && allocatedNodeIds.has(targetNode.id);
-
+          {/* 1. Base Layer: Unallocated Lines */}
+          <g opacity={0.35}>
+            {uniqueEdges.map(edge => {
+              const isAlloc = allocatedNodeIds.has(edge.source.id) && allocatedNodeIds.has(edge.target.id);
+              if (isAlloc) return null; // Rendered in highlighted layer
               return (
                 <line
-                  key={`${node.id}-${targetNode.id}`}
-                  x1={node.x}
-                  y1={node.y}
-                  x2={targetNode.x}
-                  y2={targetNode.y}
-                  stroke={isLineAlloc ? '#f3d179' : 'rgba(255, 255, 255, 0.14)'}
-                  strokeWidth={isLineAlloc ? 3 : 1}
+                  key={edge.id}
+                  x1={edge.source.x}
+                  y1={edge.source.y}
+                  x2={edge.target.x}
+                  y2={edge.target.y}
+                  stroke="rgba(255, 255, 255, 0.16)"
+                  strokeWidth={1.2}
                   strokeLinecap="round"
-                  filter={isLineAlloc ? 'url(#glowGoldEffect)' : undefined}
-                  opacity={isLineAlloc ? 0.95 : 0.3}
                 />
               );
-            })
-          )}
+            })}
+          </g>
 
-          {/* 2. Nodes */}
+          {/* 2. Top Layer: Allocated Glowing Highlighted Lines */}
+          <g>
+            {uniqueEdges.map(edge => {
+              const isAlloc = allocatedNodeIds.has(edge.source.id) && allocatedNodeIds.has(edge.target.id);
+              if (!isAlloc) return null;
+              return (
+                <line
+                  key={`alloc-${edge.id}`}
+                  x1={edge.source.x}
+                  y1={edge.source.y}
+                  x2={edge.target.x}
+                  y2={edge.target.y}
+                  stroke="#fde047"
+                  strokeWidth={3.5}
+                  strokeLinecap="round"
+                  filter="url(#glowGoldEffect)"
+                  opacity={0.95}
+                />
+              );
+            })}
+          </g>
+
+          {/* 3. Nodes */}
           {ATLAS_TREE_NODES_DATA.map(node => {
             const isAlloc = allocatedNodeIds.has(node.id);
             const isMatch = isMatching(node);
@@ -121,7 +156,7 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
                 style={{ cursor: 'pointer' }}
               >
                 {(isAlloc || isHov) && (
-                  <circle cx="0" cy="0" r={radius + 4} fill="none" stroke={isKs ? '#f59e0b' : '#38bdf8'} strokeWidth="1.8" opacity={isHov ? 0.95 : 0.65} filter="url(#glowGoldEffect)" />
+                  <circle cx="0" cy="0" r={radius + 4} fill="none" stroke={isKs ? '#f59e0b' : '#38bdf8'} strokeWidth={1.8} opacity={isHov ? 0.95 : 0.65} filter="url(#glowGoldEffect)" />
                 )}
 
                 {isKs ? (
