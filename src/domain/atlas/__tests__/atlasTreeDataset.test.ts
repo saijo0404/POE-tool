@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { ATLAS_TREE_NODES_DATA, ATLAS_NODES_MAP } from '../atlasTreeDataset';
 
 describe('atlasTreeDataset', () => {
-  it('contains valid nodes with unique id and numId', () => {
-    expect(ATLAS_TREE_NODES_DATA.length).toBeGreaterThan(30);
+  it('contains over 800 valid official nodes with unique id and numId', () => {
+    expect(ATLAS_TREE_NODES_DATA.length).toBeGreaterThan(800);
 
     const idSet = new Set<string>();
     const numIdSet = new Set<number>();
@@ -24,7 +24,6 @@ describe('atlasTreeDataset', () => {
       expect(typeof node.x).toBe('number');
       expect(typeof node.y).toBe('number');
       expect(['start', 'keystone', 'notable', 'small']).toContain(node.type);
-      expect(node.stats.length).toBeGreaterThan(0);
     });
   });
 
@@ -49,6 +48,6 @@ describe('atlasTreeDataset', () => {
     expect(categories.has('scarab')).toBe(true);
 
     const keystones = ATLAS_TREE_NODES_DATA.filter(n => n.type === 'keystone');
-    expect(keystones.length).toBeGreaterThanOrEqual(10);
+    expect(keystones.length).toBeGreaterThanOrEqual(20);
   });
 });

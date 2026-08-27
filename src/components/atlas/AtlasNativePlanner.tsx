@@ -46,8 +46,8 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
     }
   }, [strategyId, tierId, initialAllocatedNodes]);
 
-  const [zoom, setZoom] = useState<number>(0.9);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 420, y: 270 });
+  const [zoom, setZoom] = useState<number>(0.28);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 380, y: 500 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [hoveredNode, setHoveredNode] = useState<AtlasNode | null>(null);
@@ -104,7 +104,7 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const factor = e.deltaY < 0 ? 1.12 : 0.88;
-    setZoom(prev => Math.min(Math.max(prev * factor, 0.4), 2.6));
+    setZoom(prev => Math.min(Math.max(prev * factor, 0.15), 2.5));
   };
 
   const renderContent = () => (
@@ -129,8 +129,8 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
         }}
         onSaveTree={handleSaveTree}
         onResetView={() => {
-          setZoom(0.9);
-          setPan({ x: 420, y: 270 });
+          setZoom(0.28);
+          setPan({ x: 380, y: 500 });
         }}
         onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
         onOpenImportExport={() => setIsImportExportOpen(true)}
@@ -143,7 +143,7 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
         onSelectCategory={setSelectedCategory}
       />
 
-      <div style={{ display: 'flex', height: isFullscreen ? 'calc(100vh - 190px)' : '540px', position: 'relative' }}>
+      <div style={{ display: 'flex', height: isFullscreen ? 'calc(100vh - 190px)' : '580px', position: 'relative' }}>
         <AtlasCanvas
           allocatedNodeIds={allocatedNodeIds}
           hoveredNode={hoveredNode}
