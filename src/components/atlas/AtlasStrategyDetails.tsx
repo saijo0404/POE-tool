@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { AtlasStrategy, AtlasStrategyTier } from '../../domain/atlas/types';
 import { ExternalLink, Copy, MapPin, Shield, BookOpen, Edit, CopyPlus, Trash2, Compass, ChevronDown, ChevronUp } from 'lucide-react';
+import { sanitizeAtlasTreeUrl } from '../../domain/atlas/atlasHelpers';
 import { poeApi } from '../../services/api';
 import { AtlasNativePlanner } from './AtlasNativePlanner';
 
@@ -24,7 +25,7 @@ export const AtlasStrategyDetails: React.FC<AtlasStrategyDetailsProps> = ({
   onShowToast
 }) => {
   const [isPlannerExpanded, setIsPlannerExpanded] = useState<boolean>(true);
-  const treeUrl = currentTier.atlasTreeUrl || 'https://poeplanner.com/atlas-tree';
+  const treeUrl = sanitizeAtlasTreeUrl(currentTier.atlasTreeUrl);
 
   const handleOpenAtlasTree = async () => {
     try {
