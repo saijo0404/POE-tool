@@ -209,9 +209,9 @@ export function sanitizeAtlasTreeUrl(url?: string): string {
 export function loadStrategiesFromStorage(): AtlasStrategy[] {
   try {
     const raw = localStorage.getItem(ATLAS_STORAGE_KEY);
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed.map((strat: AtlasStrategy) => ({
           ...strat,
           tiers: (strat.tiers || []).map(tier => ({
@@ -234,4 +234,5 @@ export function saveStrategiesToStorage(strategies: AtlasStrategy[]): void {
     // ignore
   }
 }
+
 

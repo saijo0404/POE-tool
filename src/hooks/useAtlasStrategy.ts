@@ -29,7 +29,7 @@ export function useAtlasStrategy({
   const [strategies, setStrategies] = useState<AtlasStrategy[]>(() => loadStrategiesFromStorage());
   const [selectedStrategyId, setSelectedStrategyId] = useState<string>(() => {
     const list = loadStrategiesFromStorage();
-    return list[0]?.id || 'preset_essence';
+    return list[0]?.id || '';
   });
   const [selectedTierId, setSelectedTierId] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<AtlasMechanicCategory>('all');
@@ -69,17 +69,18 @@ export function useAtlasStrategy({
   }, []);
 
   // Current active strategy
-  const currentStrategy = useMemo(() => {
-    return strategies.find(s => s.id === selectedStrategyId) || strategies[0] || ATLAS_PRESET_STRATEGIES[0];
+  const currentStrategy = useMemo<AtlasStrategy | null>(() => {
+    if (strategies.length === 0) return null;
+    return strategies.find(s => s.id === selectedStrategyId) || strategies[0] || null;
   }, [strategies, selectedStrategyId]);
 
   // Current active tier
-  const currentTier = useMemo(() => {
+  const currentTier = useMemo<AtlasStrategyTier | null>(() => {
     if (!currentStrategy || !currentStrategy.tiers || currentStrategy.tiers.length === 0) {
       return null;
     }
     const found = currentStrategy.tiers.find(t => t.id === selectedTierId);
-    return found || currentStrategy.tiers[0];
+    return found || currentStrategy.tiers[0] || null;
   }, [currentStrategy, selectedTierId]);
 
   // Filtered strategies list
@@ -175,77 +176,6 @@ export function useAtlasStrategy({
     }));
   }, [updateCurrentTier]);
 
-  // Tier Management
-  const addTier = useCallback((tierName: string) => {
-    if (!currentStrategy) return;
-    const newTierId = `tier_${Date.now()}`;
-    const newTier: AtlasStrategyTier = {
-      id: newTierId,
-      name: tierName.trim() || `自訂分級 ${currentStrategy.tiers.length + 1}`,
-      description: '自訂輿圖分級設定',
-      recommendedMaps: ['幽閉墓穴 (Dunes)'],
-      coreKeystones: ['專注單一 (Singular Focus)'],
-      scarabs: [],
-      extraItems: [
-        { id: `ex_${Date.now()}`, name: 'T16 幽閉墓穴 (Dunes)', category: 'map', count: 1, unitPriceChaos: 4 }
-      ],
-      estimatedRevenuePerMapChaos: 80,
-      mapsPerHour: 15
-    };
-    const updatedStrategy = {
-      ...currentStrategy,
-      tiers: [...currentStrategy.tiers, newTier],
-      updatedAt: Date.now()
-    };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    setSelectedTierId(newTierId);
-    onShowToast(`已建立新分級：【${newTier.name}】！`);
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
-  const duplicateTier = useCallback((tierId: string) => {
-    if (!currentStrategy) return;
-    const target = currentStrategy.tiers.find(t => t.id === tierId);
-    if (!target) return;
-    const newTierId = `tier_${Date.now()}`;
-    const cloned: AtlasStrategyTier = {
-      ...target,
-      id: newTierId,
-      name: `${target.name} (複製)`
-    };
-    const updatedStrategy = {
-      ...currentStrategy,
-      tiers: [...currentStrategy.tiers, cloned],
-      updatedAt: Date.now()
-    };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    setSelectedTierId(newTierId);
-    onShowToast(`已複製分級：【${cloned.name}】！`);
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
-  const deleteTier = useCallback((tierId: string) => {
-    if (!currentStrategy || currentStrategy.tiers.length <= 1) {
-      onShowToast('策略至少需要保留一個分級！');
-      return;
-    }
-    const updatedTiers = currentStrategy.tiers.filter(t => t.id !== tierId);
-    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    setSelectedTierId(updatedTiers[0].id);
-    onShowToast('已刪除分級');
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
-  const renameTier = useCallback((tierId: string, newName: string) => {
-    if (!currentStrategy || !newName.trim()) return;
-    const updatedTiers = currentStrategy.tiers.map(t => (t.id === tierId ? { ...t, name: newName.trim() } : t));
-    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    onShowToast('已更新分級名稱');
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
   // Strategy Management
   const createNewStrategy = useCallback(() => {
     const newId = `strat_custom_${Date.now()}`;
@@ -311,25 +241,100 @@ export function useAtlasStrategy({
   }, [strategies, updateStrategies, onShowToast]);
 
   const deleteStrategy = useCallback((strategyId: string) => {
-    if (strategies.length <= 1) {
-      onShowToast('至少需要保留一組策略！');
-      return;
-    }
+    const target = strategies.find(s => s.id === strategyId);
+    const targetName = target ? `【${target.name}】` : '';
     const next = strategies.filter(s => s.id !== strategyId);
     updateStrategies(next);
-    setSelectedStrategyId(next[0].id);
-    setSelectedTierId(next[0].tiers[0]?.id || '');
-    onShowToast('已刪除策略');
+    if (next.length > 0) {
+      setSelectedStrategyId(next[0].id);
+      setSelectedTierId(next[0].tiers[0]?.id || '');
+    } else {
+      setSelectedStrategyId('');
+      setSelectedTierId('');
+    }
+    onShowToast(`已刪除策略${targetName}`);
   }, [strategies, updateStrategies, onShowToast]);
 
   const resetToDefaults = useCallback(() => {
-    if (window.confirm('確定要將所有策略重置為系統預設值嗎？自訂的策略將被覆蓋。')) {
+    if (strategies.length === 0 || window.confirm('確定要載入系統預設策略嗎？自訂的策略將被覆蓋。')) {
       updateStrategies(ATLAS_PRESET_STRATEGIES);
       setSelectedStrategyId(ATLAS_PRESET_STRATEGIES[0].id);
       setSelectedTierId(ATLAS_PRESET_STRATEGIES[0].tiers[0].id);
-      onShowToast('🔄 已成功重置所有輿圖天賦策略為官方預設！');
+      onShowToast('🔄 已成功載入官方預設 7 大輿圖天賦策略！');
     }
-  }, [updateStrategies, onShowToast]);
+  }, [strategies.length, updateStrategies, onShowToast]);
+
+  // Tier Management
+  const addTier = useCallback((tierName: string) => {
+    if (!currentStrategy) return;
+    const newTierId = `tier_${Date.now()}`;
+    const newTier: AtlasStrategyTier = {
+      id: newTierId,
+      name: tierName.trim() || `自訂分級 ${currentStrategy.tiers.length + 1}`,
+      description: '自訂輿圖分級設定',
+      recommendedMaps: ['幽閉墓穴 (Dunes)'],
+      coreKeystones: ['專注單一 (Singular Focus)'],
+      scarabs: [],
+      extraItems: [
+        { id: `ex_${Date.now()}`, name: 'T16 幽閉墓穴 (Dunes)', category: 'map', count: 1, unitPriceChaos: 4 }
+      ],
+      estimatedRevenuePerMapChaos: 80,
+      mapsPerHour: 15
+    };
+    const updatedStrategy = {
+      ...currentStrategy,
+      tiers: [...currentStrategy.tiers, newTier],
+      updatedAt: Date.now()
+    };
+    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
+    updateStrategies(nextStrategies);
+    setSelectedTierId(newTierId);
+    onShowToast(`已建立新分級：【${newTier.name}】！`);
+  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
+
+  const duplicateTier = useCallback((tierId: string) => {
+    if (!currentStrategy) return;
+    const target = currentStrategy.tiers.find(t => t.id === tierId);
+    if (!target) return;
+    const newTierId = `tier_${Date.now()}`;
+    const cloned: AtlasStrategyTier = {
+      ...target,
+      id: newTierId,
+      name: `${target.name} (複製)`
+    };
+    const updatedStrategy = {
+      ...currentStrategy,
+      tiers: [...currentStrategy.tiers, cloned],
+      updatedAt: Date.now()
+    };
+    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
+    updateStrategies(nextStrategies);
+    setSelectedTierId(newTierId);
+    onShowToast(`已複製分級：【${cloned.name}】！`);
+  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
+
+  const deleteTier = useCallback((tierId: string) => {
+    if (!currentStrategy) return;
+    if (currentStrategy.tiers.length <= 1) {
+      deleteStrategy(currentStrategy.id);
+      return;
+    }
+    const updatedTiers = currentStrategy.tiers.filter(t => t.id !== tierId);
+    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
+    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
+    updateStrategies(nextStrategies);
+    setSelectedTierId(updatedTiers[0].id);
+    onShowToast('已刪除分級');
+  }, [currentStrategy, strategies, updateStrategies, deleteStrategy, onShowToast]);
+
+  const renameTier = useCallback((tierId: string, newName: string) => {
+    if (!currentStrategy || !newName.trim()) return;
+    const updatedTiers = currentStrategy.tiers.map(t => (t.id === tierId ? { ...t, name: newName.trim() } : t));
+    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
+    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
+    updateStrategies(nextStrategies);
+    onShowToast('已更新分級名稱');
+  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
 
   // Copy shopping list
   const copyShoppingList = useCallback(async () => {
@@ -388,6 +393,8 @@ export function useAtlasStrategy({
       const target = strategies.find(s => s.id === id);
       if (target && target.tiers.length > 0) {
         setSelectedTierId(target.tiers[0].id);
+      } else {
+        setSelectedTierId('');
       }
     },
     selectedTierId,

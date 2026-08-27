@@ -162,75 +162,92 @@ export const AtlasStrategySelector: React.FC<AtlasStrategySelectorProps> = ({
         overflowY: 'auto',
         paddingRight: '4px'
       }}>
-        {strategies.map(strat => {
-          const isSelected = strat.id === selectedStrategyId;
-          return (
-            <div
-              key={strat.id}
-              onClick={() => onSelectStrategy(strat.id)}
-              style={{
-                background: isSelected ? 'linear-gradient(145deg, #1b2434 0%, #101622 100%)' : 'var(--bg-card)',
-                border: isSelected ? '1.5px solid var(--border-gold-bright)' : '1px solid var(--border-subtle)',
-                borderRadius: '6px',
-                padding: '10px 12px',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                boxShadow: isSelected ? '0 0 12px rgba(243, 209, 121, 0.25)' : 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: '6px'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.88rem', color: isSelected ? 'var(--text-gold)' : '#e2e8f0', lineHeight: 1.3 }}>
-                  {strat.isCustom && <Sparkles size={12} color="#f59e0b" style={{ display: 'inline', marginRight: '4px' }} />}
-                  {strat.name}
-                </div>
-                <span style={{
-                  fontSize: '0.72rem',
-                  padding: '2px 6px',
-                  borderRadius: '4px',
-                  background: 'rgba(200, 170, 110, 0.15)',
-                  color: 'var(--text-gold)',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {strat.tiers.length} 個分級
-                </span>
-              </div>
-
-              <div style={{
-                fontSize: '0.76rem',
-                color: 'var(--text-muted)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                lineHeight: 1.35
-              }}>
-                {strat.description}
-              </div>
-
-              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
-                {strat.tags.slice(0, 3).map((tag, idx) => (
-                  <span
-                    key={idx}
-                    style={{
-                      fontSize: '0.7rem',
-                      color: 'var(--text-dim)',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      padding: '1px 5px',
-                      borderRadius: '3px'
-                    }}
-                  >
-                    #{tag}
+        {strategies.length === 0 ? (
+          <div style={{
+            gridColumn: '1 / -1',
+            padding: '24px 16px',
+            textAlign: 'center',
+            color: 'var(--text-muted)',
+            fontSize: '0.85rem',
+            background: 'rgba(0, 0, 0, 0.25)',
+            borderRadius: '6px',
+            border: '1px dashed rgba(200, 170, 110, 0.25)'
+          }}>
+            {searchQuery || filterCategory !== 'all'
+              ? '🔍 找不到符合條件的輿圖策略，請嘗試清除搜尋關鍵字或分類篩選。'
+              : '🌟 策略庫目前為空，請點擊上方「+ 新增自訂策略」或「重置預設」開始規劃！'}
+          </div>
+        ) : (
+          strategies.map(strat => {
+            const isSelected = strat.id === selectedStrategyId;
+            return (
+              <div
+                key={strat.id}
+                onClick={() => onSelectStrategy(strat.id)}
+                style={{
+                  background: isSelected ? 'linear-gradient(145deg, #1b2434 0%, #101622 100%)' : 'var(--bg-card)',
+                  border: isSelected ? '1.5px solid var(--border-gold-bright)' : '1px solid var(--border-subtle)',
+                  borderRadius: '6px',
+                  padding: '10px 12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  boxShadow: isSelected ? '0 0 12px rgba(243, 209, 121, 0.25)' : 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '6px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px' }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.88rem', color: isSelected ? 'var(--text-gold)' : '#e2e8f0', lineHeight: 1.3 }}>
+                    {strat.isCustom && <Sparkles size={12} color="#f59e0b" style={{ display: 'inline', marginRight: '4px' }} />}
+                    {strat.name}
+                  </div>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    background: 'rgba(200, 170, 110, 0.15)',
+                    color: 'var(--text-gold)',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {strat.tiers.length} 個分級
                   </span>
-                ))}
+                </div>
+
+                <div style={{
+                  fontSize: '0.76rem',
+                  color: 'var(--text-muted)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  lineHeight: 1.35
+                }}>
+                  {strat.description}
+                </div>
+
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
+                  {strat.tags.slice(0, 3).map((tag, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text-dim)',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        padding: '1px 5px',
+                        borderRadius: '3px'
+                      }}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );
