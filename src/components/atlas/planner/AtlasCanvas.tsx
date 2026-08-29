@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import type { AtlasNode } from '../../../domain/atlas/types';
 import { ATLAS_TREE_NODES_DATA, ATLAS_NODES_MAP } from '../../../domain/atlas/atlasTreeDataset';
 import { AtlasCanvasDefs } from './AtlasCanvasDefs';
@@ -23,6 +23,7 @@ interface AtlasCanvasProps {
   onNodeHover: (node: AtlasNode | null) => void;
   onZoomChange: (newZoom: number) => void;
   onResetView?: () => void;
+  onViewInit?: (view: { zoom: number; pan: { x: number; y: number } }) => void;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -63,9 +64,73 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
   onNodeDoubleClick,
   onNodeHover,
   onZoomChange,
-  onResetView
+  onResetView,
+  onViewInit
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const prevSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  // Calculate centered zoom and pan based on actual container width & height
+  const calculateCenter = (width: number, height: number) => {
+    const fitZoomX = (width * 0.92) / 2900;
+    const fitZoomY = (height * 0.92) / 2500;
+    const fitZoom = Math.min(fitZoomX, fitZoomY);
+    const targetZoom = Number(Math.min(Math.max(fitZoom, 0.12), 0.45).toFixed(2));
+    return {
+      zoom: targetZoom,
+      pan: {
+        x: Math.round(width / 2),
+        y: Math.round(height / 2 + 1150 * targetZoom)
+      }
+    };
+  };
+
+  // Auto-center whenever container size changes (initial load, fullscreen toggle, window resize)
+  useEffect(() => {
+    if (!containerRef.current || !onViewInit) return;
+
+    const handleResize = (width: number, height: number) => {
+      if (width <= 50 || height <= 50) return;
+      const dw = Math.abs(width - prevSizeRef.current.w);
+      const dh = Math.abs(height - prevSizeRef.current.h);
+      if (prevSizeRef.current.w === 0 || dw > 30 || dh > 30) {
+        prevSizeRef.current = { w: width, h: height };
+        const center = calculateCenter(width, height);
+        onViewInit(center);
+      }
+    };
+
+    const { clientWidth, clientHeight } = containerRef.current;
+    if (clientWidth > 50 && clientHeight > 50) {
+      handleResize(clientWidth, clientHeight);
+    }
+
+    const obs = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        handleResize(width, height);
+      }
+    });
+
+    obs.observe(containerRef.current);
+    return () => obs.disconnect();
+  }, [onViewInit]);
+
+  const handleManualReset = () => {
+    if (containerRef.current && onViewInit) {
+      const { clientWidth, clientHeight } = containerRef.current;
+      if (clientWidth > 50 && clientHeight > 50) {
+        const center = calculateCenter(clientWidth, clientHeight);
+        onViewInit(center);
+        return;
+      }
+    }
+    if (onResetView) {
+      onResetView();
+    }
+  };
+
   const currentNodes = useMemo(() => nodes || ATLAS_TREE_NODES_DATA, [nodes]);
   const currentNodesMap = useMemo(() => {
     const map = new Map<string, AtlasNode>();
@@ -110,12 +175,15 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
   };
 
   return (
-    <div style={{
-      flex: 1,
-      position: 'relative',
-      background: 'radial-gradient(ellipse at 50% 40%, #0d1424 0%, #060910 60%, #020306 100%)',
-      overflow: 'hidden'
-    }}>
+    <div
+      ref={containerRef}
+      style={{
+        flex: 1,
+        position: 'relative',
+        background: 'radial-gradient(ellipse at 50% 40%, #0d1424 0%, #060910 60%, #020306 100%)',
+        overflow: 'hidden'
+      }}
+    >
       <svg
         ref={svgRef}
         style={{ width: '100%', height: '100%', cursor: isDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
@@ -125,8 +193,8 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
         onMouseLeave={onMouseUp}
         onWheel={onWheel}
         onDoubleClick={e => {
-          if (e.target === svgRef.current && onResetView) {
-            onResetView();
+          if (e.target === svgRef.current) {
+            handleManualReset();
           }
         }}
       >
@@ -387,17 +455,15 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
         >
           <ZoomOut size={14} />
         </button>
-        {onResetView && (
-          <button
-            type="button"
-            className="poe-button-secondary"
-            onClick={onResetView}
-            style={{ padding: '4px', height: '26px', width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            title="視角重設至起點 (空白鍵 / R)"
-          >
-            <RotateCcw size={13} />
-          </button>
-        )}
+        <button
+          type="button"
+          className="poe-button-secondary"
+          onClick={handleManualReset}
+          style={{ padding: '4px', height: '26px', width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          title="視角重設至置中 (空白鍵 / R)"
+        >
+          <RotateCcw size={13} />
+        </button>
         <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textAlign: 'center', marginTop: '2px', fontWeight: 'bold' }}>
           {Math.round(zoom * 100)}%
         </div>

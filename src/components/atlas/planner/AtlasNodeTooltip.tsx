@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AtlasNode } from '../../../domain/atlas/types';
 import { Sparkles, Route, Info } from 'lucide-react';
+import { translateStatToZh } from '../../../domain/atlas/atlasTreeStats';
 
 interface AtlasNodeTooltipProps {
   node: AtlasNode | null;
@@ -89,13 +90,19 @@ export const AtlasNodeTooltip: React.FC<AtlasNodeTooltipProps> = ({
       )}
 
       {/* Stats List */}
-      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        {node.stats.map((st, idx) => (
-          <div key={idx} style={{ fontSize: '0.78rem', color: '#86efac', display: 'flex', alignItems: 'flex-start', gap: '5px', lineHeight: 1.35 }}>
-            <Sparkles size={12} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
-            <span>{st}</span>
-          </div>
-        ))}
+      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        {node.stats.map((st, idx) => {
+          const zh = translateStatToZh(st);
+          return (
+            <div key={idx} style={{ fontSize: '0.78rem', color: '#86efac', display: 'flex', alignItems: 'flex-start', gap: '5px', lineHeight: 1.35 }}>
+              <Sparkles size={12} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div>{zh}</div>
+                {zh !== st && <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontStyle: 'italic' }}>{st}</div>}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Action Hint / Cost Preview */}

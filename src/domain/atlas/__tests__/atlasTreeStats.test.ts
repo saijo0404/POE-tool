@@ -80,9 +80,25 @@ describe('atlasTreeStats', () => {
   });
 
   it('translates common atlas passives to Traditional Chinese', () => {
-    const en = '10% chance for Maps to contain an Essence';
-    const zh = translateStatToZh(en);
-    expect(zh).toContain('區域含有精髓機率 10%');
+    const en1 = '10% chance for Maps to contain an Essence';
+    expect(translateStatToZh(en1)).toContain('區域含有精髓機率 10%');
+
+    const en2 = '10% increased quantity of Lifeforce dropped by Harvest Monsters in your Maps';
+    expect(translateStatToZh(en2)).toContain('地圖中莊園怪物掉落的命能數量增加 10%');
+
+    const en3 = 'Strongboxes in your Maps have 6% chance to be an additional Diviner\'s Strongbox';
+    expect(translateStatToZh(en3)).toContain('地圖中的保險箱有 6% 機率');
+    expect(translateStatToZh(en3)).toContain('命運卡保險箱');
+
+    const en4 = 'Maps found in your Maps have 2% chance to be 1 tier higher';
+    expect(translateStatToZh(en4)).toContain('在地圖中找到的地圖有 2% 機率階級提升 1 階');
+
+    const en5 = 'Your Maps have +8% chance to contain a Legion Encounter';
+    expect(translateStatToZh(en5)).toContain('你的地圖有 +8% 機率包含 軍團 遭遇');
+
+    const en6 = '15% increased chance for [ContainsAbyss|Abysses] in your Maps to spawn';
+    expect(translateStatToZh(en6)).toContain('深淵');
   });
 });
+
 
