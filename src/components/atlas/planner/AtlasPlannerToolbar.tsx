@@ -8,13 +8,16 @@ import {
   Save,
   Trash2,
   UploadCloud,
-  Route
+  Route,
+  RefreshCw
 } from 'lucide-react';
 
 interface AtlasPlannerToolbarProps {
   pointsSpent: number;
   autoPathMode: boolean;
   isFullscreen: boolean;
+  isSyncing?: boolean;
+  lastSyncTime?: string | null;
   onToggleAutoPath: () => void;
   onResetToPreset: () => void;
   onClearAll: () => void;
@@ -22,19 +25,23 @@ interface AtlasPlannerToolbarProps {
   onResetView: () => void;
   onToggleFullscreen: () => void;
   onOpenImportExport: () => void;
+  onSyncTree?: () => void;
 }
 
 export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
   pointsSpent,
   autoPathMode,
   isFullscreen,
+  isSyncing = false,
+  lastSyncTime,
   onToggleAutoPath,
   onResetToPreset,
   onClearAll,
   onSaveTree,
   onResetView,
   onToggleFullscreen,
-  onOpenImportExport
+  onOpenImportExport,
+  onSyncTree
 }) => {
   return (
     <div style={{
@@ -47,7 +54,7 @@ export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
       background: '#0d121c',
       borderBottom: '1px solid rgba(200, 170, 110, 0.3)'
     }}>
-      {/* Title & Points Counter */}
+      {/* Title, Points Counter & League Version */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-gold)', fontWeight: 600, fontSize: '0.92rem' }}>
           <Compass size={18} />
@@ -65,10 +72,39 @@ export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
         }}>
           🟢 已配置：{pointsSpent} / 132 點 (剩餘 {Math.max(0, 132 - pointsSpent)} 點)
         </span>
+
+        <span style={{
+          fontSize: '0.74rem',
+          padding: '2px 8px',
+          borderRadius: '10px',
+          background: 'rgba(56, 189, 248, 0.15)',
+          border: '1px solid rgba(56, 189, 248, 0.3)',
+          color: '#7dd3fc',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px'
+        }} title={lastSyncTime ? `上次同步時間：${new Date(lastSyncTime).toLocaleString('zh-TW')}` : '官方 1:1 基準資料庫'}>
+          <span>✨ 官方 1:1 拓撲</span>
+        </span>
       </div>
 
       {/* Action Buttons */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+        {/* League Auto-Sync Button */}
+        {onSyncTree && (
+          <button
+            type="button"
+            className="poe-button-secondary"
+            onClick={onSyncTree}
+            disabled={isSyncing}
+            style={{ fontSize: '0.78rem', padding: '4px 10px', height: '28px', display: 'flex', alignItems: 'center', gap: '4px', color: '#7dd3fc' }}
+            title="自 GGG 官方即時同步最新聯盟天賦資料"
+          >
+            <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+            <span>{isSyncing ? '同步中...' : '同步最新聯盟'}</span>
+          </button>
+        )}
+
         {/* Smart Pathing Toggle */}
         <button
           type="button"
@@ -97,9 +133,9 @@ export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
           className="poe-button-secondary"
           onClick={onResetToPreset}
           style={{ fontSize: '0.78rem', padding: '4px 10px', height: '28px' }}
-          title="重設為當前策略預設天賦"
+          title="還原為當前分級已儲存的天賦配置"
         >
-          <RotateCw size={13} /> 預設配置
+          <RotateCw size={13} /> 還原已儲存
         </button>
 
         <button

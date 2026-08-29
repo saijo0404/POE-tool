@@ -14,14 +14,16 @@ const CATEGORIES = [
   { id: 'ambush', label: '📦 伏擊' },
   { id: 'harvest', label: '🌾 莊園' },
   { id: 'expedition', label: '💣 探險' },
-  { id: 'legion', label: '⚔️ 戰亂' },
+  { id: 'legion', label: '⚔️ 軍團' },
   { id: 'delirium', label: '🌫️ 譫妄' },
   { id: 'ritual', label: '🩸 祭祀' },
   { id: 'breach', label: '🌀 裂痕' },
   { id: 'beyond', label: '🌌 超越' },
+  { id: 'blight', label: '🍄 枯萎' },
   { id: 'scarab', label: '🐞 聖甲蟲' },
-  { id: 'boss', label: '👑 首領' },
-  { id: 'map', label: '🗺️ 地圖' }
+  { id: 'boss', label: '👑 首領/焚界' },
+  { id: 'map', label: '🗺️ 地圖' },
+  { id: 'bestiary', label: '🦁 獵魔' }
 ];
 
 export const AtlasCategoryFilter: React.FC<AtlasCategoryFilterProps> = ({
@@ -47,7 +49,7 @@ export const AtlasCategoryFilter: React.FC<AtlasCategoryFilterProps> = ({
         <input
           type="text"
           className="poe-input"
-          placeholder="搜尋天賦名稱或屬性關鍵字..."
+          placeholder="搜尋天賦名稱、英文或屬性關鍵字..."
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
           style={{ paddingLeft: '28px', paddingRight: searchQuery ? '26px' : '8px', fontSize: '0.78rem', height: '28px', width: '100%' }}
@@ -73,7 +75,7 @@ export const AtlasCategoryFilter: React.FC<AtlasCategoryFilterProps> = ({
       </div>
 
       {/* Category Pills */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', overflowX: 'auto', maxWidth: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', overflowX: 'auto', maxWidth: '100%', paddingBottom: '2px' }}>
         {CATEGORIES.map(cat => {
           const isSelected = selectedCategory === cat.id;
           return (

@@ -41,11 +41,16 @@ export const AtlasImportExportModal: React.FC<AtlasImportExportModalProps> = ({
     }
     const decoded = res.value;
     if (decoded.nodeIds.length === 0) {
-      setErrorMessage('未解析到任何有效的天賦節點');
+      if (decoded.numIds.length > 0) {
+        setErrorMessage(`⚠️ 此天賦代碼為舊版 PoE 賽季節點（解析出 ${decoded.numIds.length} 個舊版本 ID），與當前賽季不相容。請在 PoEPlanner 上載入並重新生成最新網址。`);
+      } else {
+        setErrorMessage('未解析到任何有效的天賦節點');
+      }
       return;
     }
     onImportSuccess(decoded.nodeIds);
-    onShowToast(`🎉 成功匯入 ${decoded.nodeIds.length} 個天賦節點！`);
+    const suffix = decoded.unmatchedNumIds.length > 0 ? ` (已略過 ${decoded.unmatchedNumIds.length} 個不相容舊節點)` : '';
+    onShowToast(`🎉 成功匯入 ${decoded.nodeIds.length} 個天賦節點！${suffix}`);
     onClose();
   };
 

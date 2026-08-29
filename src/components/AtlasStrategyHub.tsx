@@ -60,7 +60,8 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
     saveStrategyEdit,
     duplicateStrategy,
     deleteStrategy,
-    resetToDefaults,
+    deleteCategory,
+    clearAllStrategies,
     copyShoppingList,
     exportToJson,
     importFromJson
@@ -127,9 +128,11 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onNewStrategy={createNewStrategy}
+        onDeleteStrategy={deleteStrategy}
+        onDeleteCategory={deleteCategory}
+        onClearAllStrategies={clearAllStrategies}
         onExportJson={exportToJson}
         onImportJson={importFromJson}
-        onResetDefaults={resetToDefaults}
       />
 
       {/* Global Empty State Hero Card */}
@@ -164,7 +167,7 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
           </h2>
 
           <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '560px', margin: 0, lineHeight: 1.6 }}>
-            您的輿圖策略庫目前為空。您可以自由建立全新的自訂刷圖配置與分級規劃，或一鍵載入官方預設的 7 大主流刷圖天賦與聖甲蟲策略範本。
+            您的輿圖策略庫目前為空。您可以自由建立全新的自訂刷圖配置、聖甲蟲與輿圖分級規劃，或從上方匯入 JSON 策略備份檔。
           </p>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
@@ -175,14 +178,6 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
               style={{ padding: '10px 20px', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Compass size={17} /> + 新增自訂策略
-            </button>
-            <button
-              type="button"
-              className="poe-button-secondary"
-              onClick={resetToDefaults}
-              style={{ padding: '10px 18px', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              <RefreshCw size={15} /> 🔄 載入預設策略範本 (7 大主流策略)
             </button>
           </div>
         </div>
@@ -275,6 +270,7 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
           }}
           strategy={editingStrategy}
           onSave={saveStrategyEdit}
+          onDelete={deleteStrategy}
         />
       )}
     </div>

@@ -1,8 +1,15 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import type { AtlasNode } from '../../domain/atlas/types';
-import { PRESET_ALLOCATED_MAP, ATLAS_TREE_NODES_DATA } from '../../domain/atlas/atlasTreeDataset';
+import {
+  reloadAtlasTreeDataset
+} from '../../domain/atlas/atlasTreeDataset';
 import { calculatePathToTarget, pruneDisconnectedNodes } from '../../domain/atlas/atlasPathfinding';
 import { calculateAtlasTreeStats } from '../../domain/atlas/atlasTreeStats';
+import {
+  syncOfficialAtlasTree,
+  getAtlasTreeLastSyncTime,
+  loadCachedAtlasTreeData
+} from '../../domain/atlas/atlasOfficialSyncService';
 import { AtlasPlannerToolbar } from './planner/AtlasPlannerToolbar';
 import { AtlasCategoryFilter } from './planner/AtlasCategoryFilter';
 import { AtlasCanvas } from './planner/AtlasCanvas';
@@ -29,20 +36,22 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
   onSaveAllocatedNodes,
   onShowToast
 }) => {
+  const [treeNodes, setTreeNodes] = useState<AtlasNode[]>(() => loadCachedAtlasTreeData());
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(() => getAtlasTreeLastSyncTime());
+
   const [allocatedNodeIds, setAllocatedNodeIds] = useState<Set<string>>(() => {
     if (initialAllocatedNodes && initialAllocatedNodes.length > 0) {
       return new Set(initialAllocatedNodes);
     }
-    const defaultList = PRESET_ALLOCATED_MAP[tierId] || PRESET_ALLOCATED_MAP[strategyId] || PRESET_ALLOCATED_MAP.preset_essence;
-    return new Set(defaultList);
+    return new Set(['29045']);
   });
 
   useEffect(() => {
     if (initialAllocatedNodes && initialAllocatedNodes.length > 0) {
       setAllocatedNodeIds(new Set(initialAllocatedNodes));
     } else {
-      const defaultList = PRESET_ALLOCATED_MAP[tierId] || PRESET_ALLOCATED_MAP[strategyId] || PRESET_ALLOCATED_MAP.preset_essence;
-      setAllocatedNodeIds(new Set(defaultList));
+      setAllocatedNodeIds(new Set(['29045']));
     }
   }, [strategyId, tierId, initialAllocatedNodes]);
 
@@ -50,6 +59,9 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 380, y: 500 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [dragDistance, setDragDistance] = useState<number>(0);
+  const dragOriginRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
   const [hoveredNode, setHoveredNode] = useState<AtlasNode | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -57,20 +69,36 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isImportExportOpen, setIsImportExportOpen] = useState<boolean>(false);
 
-  const summaryData = useMemo(() => calculateAtlasTreeStats(allocatedNodeIds, ATLAS_TREE_NODES_DATA), [allocatedNodeIds]);
+  // Real-time hover path preview calculation
+  const hoveredPreviewPath = useMemo(() => {
+    if (!hoveredNode || allocatedNodeIds.has(hoveredNode.id) || !autoPathMode) {
+      return [];
+    }
+    return calculatePathToTarget(allocatedNodeIds, hoveredNode.id, treeNodes);
+  }, [hoveredNode, allocatedNodeIds, autoPathMode, treeNodes]);
+
+  const previewNodeIds = useMemo(() => new Set(hoveredPreviewPath), [hoveredPreviewPath]);
+
+  const summaryData = useMemo(
+    () => calculateAtlasTreeStats(allocatedNodeIds, treeNodes),
+    [allocatedNodeIds, treeNodes]
+  );
 
   const handleNodeClick = (node: AtlasNode, e: React.MouseEvent) => {
     e.stopPropagation();
+    // If the user moved more than 5px during mouse down, treat as canvas drag/pan rather than click
+    if (dragDistance > 5) return;
+
     setAllocatedNodeIds(prev => {
       const next = new Set(prev);
       if (next.has(node.id)) {
-        if (node.id !== 'start_origin') {
+        if (node.id !== 'start_origin' && node.id !== '29045') {
           next.delete(node.id);
-          return autoPathMode ? pruneDisconnectedNodes(next, ATLAS_TREE_NODES_DATA) : next;
+          return autoPathMode ? pruneDisconnectedNodes(next, treeNodes, '29045') : next;
         }
       } else {
         if (autoPathMode) {
-          const path = calculatePathToTarget(next, node.id, ATLAS_TREE_NODES_DATA);
+          const path = calculatePathToTarget(next, node.id, treeNodes);
           path.forEach(id => next.add(id));
         } else {
           next.add(node.id);
@@ -81,9 +109,9 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
   };
 
   const handleResetToPreset = () => {
-    const defaultList = PRESET_ALLOCATED_MAP[tierId] || PRESET_ALLOCATED_MAP[strategyId] || PRESET_ALLOCATED_MAP.preset_essence;
-    setAllocatedNodeIds(new Set(defaultList));
-    onShowToast(`已重設為【${strategyName} - ${tierName}】預設天賦！`);
+    const list = initialAllocatedNodes && initialAllocatedNodes.length > 0 ? initialAllocatedNodes : ['29045'];
+    setAllocatedNodeIds(new Set(list));
+    onShowToast(`已還原為【${strategyName} - ${tierName}】已儲存的天賦配置！`);
   };
 
   const handleSaveTree = () => {
@@ -91,20 +119,54 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
     onShowToast(`💾 已成功將天賦配置儲存至【${tierName}】！`);
   };
 
+  const handleSyncLeagueTree = async () => {
+    setIsSyncing(true);
+    onShowToast('🔄 正在連線 GGG 官方伺服器同步最新聯盟輿圖天賦...');
+    try {
+      const res = await syncOfficialAtlasTree();
+      if (res.success) {
+        const updated = loadCachedAtlasTreeData();
+        setTreeNodes(updated);
+        reloadAtlasTreeDataset(updated);
+        setLastSyncTime(getAtlasTreeLastSyncTime());
+        onShowToast(res.message);
+      } else {
+        onShowToast(res.message);
+      }
+    } catch {
+      onShowToast('同步失敗，已切換至離線打包資料。');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    dragOriginRef.current = { x: e.clientX, y: e.clientY };
+    setDragDistance(0);
     setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
+    const dist = Math.hypot(e.clientX - dragOriginRef.current.x, e.clientY - dragOriginRef.current.y);
+    setDragDistance(dist);
     setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const factor = e.deltaY < 0 ? 1.12 : 0.88;
     setZoom(prev => Math.min(Math.max(prev * factor, 0.15), 2.5));
+  };
+
+  const handleResetView = () => {
+    setZoom(0.28);
+    setPan({ x: 380, y: 500 });
   };
 
   const renderContent = () => (
@@ -121,19 +183,19 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
         pointsSpent={summaryData.pointsSpent}
         autoPathMode={autoPathMode}
         isFullscreen={isFullscreen}
+        isSyncing={isSyncing}
+        lastSyncTime={lastSyncTime}
         onToggleAutoPath={() => setAutoPathMode(!autoPathMode)}
         onResetToPreset={handleResetToPreset}
         onClearAll={() => {
-          setAllocatedNodeIds(new Set(['start_origin']));
+          setAllocatedNodeIds(new Set(['29045', 'start_origin']));
           onShowToast('已清空已配置天賦');
         }}
         onSaveTree={handleSaveTree}
-        onResetView={() => {
-          setZoom(0.28);
-          setPan({ x: 380, y: 500 });
-        }}
+        onResetView={handleResetView}
         onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
         onOpenImportExport={() => setIsImportExportOpen(true)}
+        onSyncTree={handleSyncLeagueTree}
       />
 
       <AtlasCategoryFilter
@@ -145,7 +207,9 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
 
       <div style={{ display: 'flex', height: isFullscreen ? 'calc(100vh - 190px)' : '580px', position: 'relative' }}>
         <AtlasCanvas
+          nodes={treeNodes}
           allocatedNodeIds={allocatedNodeIds}
+          previewNodeIds={previewNodeIds}
           hoveredNode={hoveredNode}
           searchQuery={searchQuery}
           selectedCategory={selectedCategory}
@@ -154,14 +218,21 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
           isDragging={isDragging}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
-          onMouseUp={() => setIsDragging(false)}
+          onMouseUp={handleMouseUp}
           onWheel={handleWheel}
           onNodeClick={handleNodeClick}
           onNodeHover={setHoveredNode}
           onZoomChange={setZoom}
+          onResetView={handleResetView}
         />
 
-        <AtlasNodeTooltip node={hoveredNode} autoPathMode={autoPathMode} />
+        <AtlasNodeTooltip
+          node={hoveredNode}
+          autoPathMode={autoPathMode}
+          isAllocated={allocatedNodeIds.has(hoveredNode?.id || '')}
+          previewCount={hoveredPreviewPath.length}
+        />
+
         <AtlasStatsSidebar summaryData={summaryData} onShowToast={onShowToast} />
       </div>
 
@@ -177,7 +248,18 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
 
   if (isFullscreen) {
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '16px' }}>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+        zIndex: 2000,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '16px'
+      }}>
         {renderContent()}
       </div>
     );

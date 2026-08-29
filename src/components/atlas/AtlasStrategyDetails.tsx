@@ -95,14 +95,14 @@ export const AtlasStrategyDetails: React.FC<AtlasStrategyDetailsProps> = ({
             type="button"
             className="poe-button-secondary"
             onClick={() => {
-              if (window.confirm(`確定要刪除策略「${strategy.name}」嗎？`)) {
+              if (window.confirm(`確定要刪除策略「${strategy.name}」嗎？（刪除後可隨時由上方載入預設範本）`)) {
                 onDeleteStrategy();
               }
             }}
             title="刪除此策略"
-            style={{ color: '#f87171', padding: '6px 10px' }}
+            style={{ color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}
           >
-            <Trash2 size={14} />
+            <Trash2 size={14} /> 刪除策略
           </button>
         </div>
       </div>

@@ -24,6 +24,30 @@ describe('atlasTreeEncoder', () => {
     }
   });
 
+  it('parses real-world PoEPlanner 3.25 BQAc atlas tree URL and extracts 100% matched nodes', () => {
+    const userUrl = 'https://poeplanner.com/atlas-tree/BQAcAACKAHc2-Ctl4i_JAEiy-sir3qKQFyx3RJWGtOOQwe6EKozsSgnKZh7PPFk1zPNbMPpwxtJIMmGUg1EovjQUWc4AioI6Ps5ayf2Ijky6C0-N6k_3DDTMtx19eizk94vhfZGmwf2oiDTaFLGdolLXK874Iki39p7YZ2CspHtgKl7Uj9aaK3HcIanO5brOnM3HeKG12GshUXeCp73HSVJdT26EBCsA-X_iYiTwgLPHPkbhEBkK-7HrX6VzxIUJu2Hx4g7GxH9iXt-i0MsXpR3FIYonkc7RKhdQxB9Mkg75TfKFo9pjkYnw_f21wa_l7MGTtmhbHo_lAzCIB9r6HWuvUzPG-ofZXKlDtWOGBlhDdrgJyelnuNnQKBQAH4sIAAAAAAAAAwMAAAAAAAAAAAA=';
+
+    const res = parseAtlasUrlOrBase64(userUrl);
+    expect(res.isOk()).toBe(true);
+    if (res.isOk()) {
+      const decoded = res.value;
+      expect(decoded.nodeIds.length).toBeGreaterThanOrEqual(130);
+      expect(decoded.nodeIds).toContain('29045'); // Origin node included
+    }
+  });
+
+  it('parses real-world PoEPlanner URL and extracts raw binary node ID tokens safely', () => {
+    const userUrl = 'https://poeplanner.com/atlas-tree/BQAaAACKAE_mh9TRoeu7TPUkl7L6sRV5d96ihymLLoa0LJKLTl2gCHr-xW2IwCoez6yrp-I8WSFgNczzW6R_xLC9V4C5YVOUg03DjEG1Zl6dfWXOWsn9176N6goLqLwqu_w3Rjq92uT3JrIKeyd1f15gv97-qgqxnVQfm3eggrCUWbTXKyTRDs-dkipe1I-HndDGDPTDeRsAUXeCp73H9DqOOVmGugBw45zHxJGCUTfjRNV_b89H8IC-DrPH56674tMOfbX7sa6qThvgDF9KyxelHV-6L6iRzhN9DvkZlMrqGIv9tcGvC3E6duXsPn1xCwPtj-UPbBQX2vozxsH7SBLVacJ2qUO1Y6BxZh8_CEBolFVvOH7rQhzQKBQAH4sIAAAAAAAAAwMAAAAAAAAAAAA=';
+
+    const res = parseAtlasUrlOrBase64(userUrl);
+    expect(res.isOk()).toBe(true);
+    if (res.isOk()) {
+      const decoded = res.value;
+      // Successfully extracts all 138 node tokens from binary stream
+      expect(decoded.numIds.length).toBeGreaterThanOrEqual(138);
+    }
+  });
+
   it('parses official PoE atlas tree URL', () => {
     const sampleNodes = [ATLAS_TREE_NODES_DATA[0].id, ATLAS_TREE_NODES_DATA[1].id];
     const b64 = encodeAtlasTreeBase64(sampleNodes);

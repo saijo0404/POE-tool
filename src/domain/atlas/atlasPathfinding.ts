@@ -1,6 +1,6 @@
 import type { AtlasNode } from './types';
 
-// Build bidirectional graph adjacency map
+// Build robust bidirectional graph adjacency map
 export function buildAdjacencyMap(nodes: AtlasNode[]): Map<string, string[]> {
   const map = new Map<string, string[]>();
   nodes.forEach(n => map.set(n.id, []));
@@ -21,7 +21,7 @@ export function buildAdjacencyMap(nodes: AtlasNode[]): Map<string, string[]> {
   return map;
 }
 
-// Find shortest path between two nodes using BFS
+// Find shortest path between two specific nodes using standard BFS
 export function findShortestPath(
   startId: string,
   targetId: string,
@@ -29,6 +29,8 @@ export function findShortestPath(
 ): string[] | null {
   if (startId === targetId) return [startId];
   const adj = buildAdjacencyMap(nodes);
+  if (!adj.has(startId) || !adj.has(targetId)) return null;
+
   const queue: string[] = [startId];
   const visited = new Set<string>([startId]);
   const parent = new Map<string, string>();
@@ -61,49 +63,122 @@ function reconstructPath(start: string, target: string, parent: Map<string, stri
   return path;
 }
 
-// Calculate the shortest path from any allocated node to target
+/**
+ * Calculate the optimal shortest path from any existing allocated node to target
+ * Uses Multi-Source BFS starting from all currently allocated nodes simultaneously.
+ * This guarantees the absolute minimum number of newly allocated nodes and continuous connection.
+ */
 export function calculatePathToTarget(
   allocatedIds: Set<string>,
   targetId: string,
-  nodes: AtlasNode[]
-): string[] {
-  if (allocatedIds.has(targetId)) return [];
-  const startList = allocatedIds.size > 0 ? Array.from(allocatedIds) : ['start_origin'];
-
-  let shortestPath: string[] | null = null;
-  for (const start of startList) {
-    const path = findShortestPath(start, targetId, nodes);
-    if (path && (!shortestPath || path.length < shortestPath.length)) {
-      shortestPath = path;
-    }
-  }
-  if (!shortestPath) return [targetId];
-  return shortestPath.filter(id => !allocatedIds.has(id));
-}
-
-// Check if all allocated nodes are reachable from origin
-export function validateTreeConnectivity(
-  allocatedIds: Set<string>,
   nodes: AtlasNode[],
   originId: string = 'start_origin'
-): boolean {
-  if (!allocatedIds.has(originId)) return false;
-  const connected = getReachableAllocatedNodes(allocatedIds, nodes, originId);
-  return connected.size === allocatedIds.size;
+): string[] {
+  if (allocatedIds.has(targetId)) return [];
+
+  const adj = buildAdjacencyMap(nodes);
+  if (!adj.has(targetId)) return [targetId];
+
+  // Determine starting source set
+  const validAllocated = Array.from(allocatedIds).filter(id => adj.has(id));
+  let sources: string[] = [];
+
+  if (validAllocated.length > 0) {
+    sources = validAllocated;
+  } else {
+    // If no nodes allocated yet, start from originId or start nodes
+    if (adj.has(originId)) {
+      sources = [originId];
+    } else {
+      const startNodes = nodes.filter(n => n.type === 'start');
+      sources = startNodes.length > 0 ? startNodes.map(n => n.id) : [nodes[0]?.id || targetId];
+    }
+  }
+
+  // Multi-Source BFS
+  const queue: string[] = [];
+  const visited = new Set<string>();
+  const parent = new Map<string, string>();
+
+  for (const src of sources) {
+    queue.push(src);
+    visited.add(src);
+  }
+
+  let reached = false;
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (current === targetId) {
+      reached = true;
+      break;
+    }
+    const neighbors = adj.get(current) || [];
+    for (const nb of neighbors) {
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        parent.set(nb, current);
+        queue.push(nb);
+      }
+    }
+  }
+
+  // If unreachable from current allocated set, try searching from originId
+  if (!reached) {
+    if (validAllocated.length > 0 && adj.has(originId) && !allocatedIds.has(originId)) {
+      const fallbackPath = findShortestPath(originId, targetId, nodes);
+      if (fallbackPath) {
+        return fallbackPath.filter(id => !allocatedIds.has(id));
+      }
+    }
+    return [targetId];
+  }
+
+  // Reconstruct path from targetId back to the nearest allocated node
+  const incrementalPath: string[] = [];
+  let curr: string | undefined = targetId;
+
+  while (curr !== undefined) {
+    if (allocatedIds.has(curr)) {
+      break;
+    }
+    incrementalPath.unshift(curr);
+    curr = parent.get(curr);
+  }
+
+  return incrementalPath;
 }
 
-// Get set of all nodes reachable from origin within allocated set
+/**
+ * Get all reachable allocated nodes starting from tree roots (start_origin or any start node)
+ */
 export function getReachableAllocatedNodes(
   allocatedIds: Set<string>,
   nodes: AtlasNode[],
   originId: string = 'start_origin'
 ): Set<string> {
   const reachable = new Set<string>();
-  if (!allocatedIds.has(originId)) return reachable;
+  if (allocatedIds.size === 0) return reachable;
 
   const adj = buildAdjacencyMap(nodes);
-  const queue: string[] = [originId];
-  reachable.add(originId);
+
+  // Identify roots present in allocatedIds
+  const roots: string[] = [];
+  if (allocatedIds.has(originId)) {
+    roots.push(originId);
+  }
+  nodes.forEach(n => {
+    if (n.type === 'start' && allocatedIds.has(n.id) && !roots.includes(n.id)) {
+      roots.push(n.id);
+    }
+  });
+
+  // If none of the formal roots are in allocatedIds, retain all allocated nodes so custom trees aren't lost
+  if (roots.length === 0) {
+    return new Set(allocatedIds);
+  }
+
+  const queue = [...roots];
+  roots.forEach(r => reachable.add(r));
 
   while (queue.length > 0) {
     const curr = queue.shift()!;
@@ -115,7 +190,19 @@ export function getReachableAllocatedNodes(
       }
     }
   }
+
   return reachable;
+}
+
+// Check if all allocated nodes are connected to roots
+export function validateTreeConnectivity(
+  allocatedIds: Set<string>,
+  nodes: AtlasNode[],
+  originId: string = 'start_origin'
+): boolean {
+  if (allocatedIds.size === 0) return true;
+  const reachable = getReachableAllocatedNodes(allocatedIds, nodes, originId);
+  return reachable.size === allocatedIds.size;
 }
 
 // Prune any orphan/disconnected nodes from the tree
