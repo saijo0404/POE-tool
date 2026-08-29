@@ -14,7 +14,52 @@ export type AtlasMechanicCategory =
   | 'bestiary'
   | 'ultimatum'
   | 'beyond'
+  | 'scarab'
+  | 'map'
+  | 'altar'
+  | 'blight'
+  | 'general'
   | 'custom';
+
+export type AtlasNodeType = 'keystone' | 'notable' | 'small' | 'start';
+
+export interface AtlasNode {
+  id: string;
+  numId: number;
+  name: string;
+  nameEn: string;
+  type: AtlasNodeType;
+  category: AtlasMechanicCategory;
+  description: string;
+  stats: string[];
+  x: number;
+  y: number;
+  connections: string[];
+  icon?: string;
+}
+
+export interface AtlasDecodedTree {
+  version: number;
+  nodeIds: string[];
+  numIds: number[];
+  unmatchedNumIds: number[];
+}
+
+export interface AggregatedStatItem {
+  text: string;
+  textEn: string;
+  count: number;
+  totalValue?: number;
+  isNumeric?: boolean;
+}
+
+export interface AtlasTreeStatsSummary {
+  pointsSpent: number;
+  activeKeystones: AtlasNode[];
+  statsList: string[];
+  aggregatedStats: AggregatedStatItem[];
+  categoryCounts: Record<string, number>;
+}
 
 export interface AtlasTierScarab {
   id: string;

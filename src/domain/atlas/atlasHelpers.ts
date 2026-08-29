@@ -6,7 +6,6 @@ import type {
   AtlasCalculationSummary,
   BatchItemRequirement
 } from './types';
-import { ATLAS_PRESET_STRATEGIES } from './atlasPresets';
 import { SCARAB_DATABASE } from './scarabDatabase';
 
 export const ATLAS_STORAGE_KEY = 'poe_atlas_custom_strategies_v1';
@@ -224,7 +223,7 @@ export function loadStrategiesFromStorage(): AtlasStrategy[] {
   } catch {
     // ignore
   }
-  return ATLAS_PRESET_STRATEGIES;
+  return [];
 }
 
 export function saveStrategiesToStorage(strategies: AtlasStrategy[]): void {

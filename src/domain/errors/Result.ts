@@ -70,3 +70,4 @@ export class Err<T, E = DomainError> {
 
 export const ok = <T, E = DomainError>(value: T): Result<T, E> => new Ok<T, E>(value);
 export const err = <T, E = DomainError>(error: E): Result<T, E> => new Err<T, E>(error);
+export const Result = { ok, err };

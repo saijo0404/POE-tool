@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import type { AtlasStrategy, AtlasMechanicCategory } from '../../domain/atlas/types';
-import { X, Save, Edit3, Shield, MapPin, Link2 } from 'lucide-react';
+import { X, Save, Edit3, Shield, MapPin, Link2, Trash2 } from 'lucide-react';
 
 interface AtlasEditStrategyModalProps {
   isOpen: boolean;
   onClose: () => void;
   strategy: AtlasStrategy | null;
   onSave: (strategy: AtlasStrategy) => void;
+  onDelete?: (strategyId: string) => void;
 }
 
 export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
   isOpen,
   onClose,
   strategy,
-  onSave
+  onSave,
+  onDelete
 }) => {
   const [formData, setFormData] = useState<AtlasStrategy | null>(null);
   const [mapsInput, setMapsInput] = useState<string>('');
@@ -254,22 +256,51 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
           </div>
 
           {/* Form Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '6px' }}>
-            <button
-              type="button"
-              className="poe-button-secondary"
-              onClick={onClose}
-              style={{ padding: '6px 16px', fontSize: '0.84rem' }}
-            >
-              取消
-            </button>
-            <button
-              type="submit"
-              className="poe-button"
-              style={{ padding: '6px 20px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              <Save size={15} /> 儲存策略設定
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px', gap: '8px' }}>
+            {onDelete ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`確定要刪除策略「${formData.name}」嗎？`)) {
+                    onDelete(formData.id);
+                    onClose();
+                  }
+                }}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  color: '#f87171',
+                  padding: '6px 14px',
+                  borderRadius: '4px',
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <Trash2 size={14} /> 刪除策略
+              </button>
+            ) : <div />}
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="poe-button-secondary"
+                onClick={onClose}
+                style={{ padding: '6px 16px', fontSize: '0.84rem' }}
+              >
+                取消
+              </button>
+              <button
+                type="submit"
+                className="poe-button"
+                style={{ padding: '6px 20px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Save size={15} /> 儲存策略設定
+              </button>
+            </div>
           </div>
         </form>
       </div>

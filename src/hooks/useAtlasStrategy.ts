@@ -6,7 +6,6 @@ import type {
   AtlasTierExtraItem,
   AtlasMechanicCategory
 } from '../domain/atlas/types';
-import { ATLAS_PRESET_STRATEGIES } from '../domain/atlas/atlasPresets';
 import {
   loadStrategiesFromStorage,
   saveStrategiesToStorage,
@@ -255,14 +254,35 @@ export function useAtlasStrategy({
     onShowToast(`已刪除策略${targetName}`);
   }, [strategies, updateStrategies, onShowToast]);
 
-  const resetToDefaults = useCallback(() => {
-    if (strategies.length === 0 || window.confirm('確定要載入系統預設策略嗎？自訂的策略將被覆蓋。')) {
-      updateStrategies(ATLAS_PRESET_STRATEGIES);
-      setSelectedStrategyId(ATLAS_PRESET_STRATEGIES[0].id);
-      setSelectedTierId(ATLAS_PRESET_STRATEGIES[0].tiers[0].id);
-      onShowToast('🔄 已成功載入官方預設 7 大輿圖天賦策略！');
+  const deleteCategory = useCallback((categoryId: AtlasMechanicCategory) => {
+    if (categoryId === 'all') return;
+    const targetStrats = strategies.filter(s => s.category === categoryId);
+    if (targetStrats.length === 0) return;
+    if (window.confirm(`確定要刪除「${categoryId}」分類下的所有 ${targetStrats.length} 個策略嗎？`)) {
+      const next = strategies.filter(s => s.category !== categoryId);
+      updateStrategies(next);
+      if (filterCategory === categoryId) {
+        setFilterCategory('all');
+      }
+      if (next.length > 0) {
+        setSelectedStrategyId(next[0].id);
+        setSelectedTierId(next[0].tiers[0]?.id || '');
+      } else {
+        setSelectedStrategyId('');
+        setSelectedTierId('');
+      }
+      onShowToast(`🗑️ 已刪除【${categoryId}】分類下的全部策略`);
     }
-  }, [strategies.length, updateStrategies, onShowToast]);
+  }, [strategies, filterCategory, updateStrategies, onShowToast]);
+
+  const clearAllStrategies = useCallback(() => {
+    if (window.confirm('確定要清空所有策略嗎？')) {
+      updateStrategies([]);
+      setSelectedStrategyId('');
+      setSelectedTierId('');
+      onShowToast('🗑️ 已清空所有輿圖策略');
+    }
+  }, [updateStrategies, onShowToast]);
 
   // Tier Management
   const addTier = useCallback((tierName: string) => {
@@ -430,7 +450,8 @@ export function useAtlasStrategy({
     saveStrategyEdit,
     duplicateStrategy,
     deleteStrategy,
-    resetToDefaults,
+    deleteCategory,
+    clearAllStrategies,
     copyShoppingList,
     exportToJson,
     importFromJson
