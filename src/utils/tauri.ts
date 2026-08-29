@@ -37,11 +37,11 @@ export async function hideMainWindow(): Promise<void> {
 }
 
 export async function getTauriAppVersion(): Promise<string> {
-  if (!isTauri()) return '1.0.0 (Web)';
+  if (!isTauri()) return '1.2.0 (Web)';
   try {
     const { invoke } = await import('@tauri-apps/api/core');
     return await invoke<string>('get_app_version');
   } catch {
-    return '1.0.0 (Desktop)';
+    return '1.2.0 (Desktop)';
   }
 }

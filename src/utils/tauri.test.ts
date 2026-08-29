@@ -31,9 +31,9 @@ describe('tauri utility functions', () => {
       await expect(hideMainWindow()).resolves.toBeUndefined();
     });
 
-    it('getTauriAppVersion returns 1.0.0 (Web)', async () => {
+    it('getTauriAppVersion returns 1.2.0 (Web)', async () => {
       const version = await getTauriAppVersion();
-      expect(version).toBe('1.0.0 (Web)');
+      expect(version).toBe('1.2.0 (Web)');
     });
   });
 
@@ -84,7 +84,7 @@ describe('tauri utility functions', () => {
       expect(version).toBe('2.5.0');
 
       const fallbackVersion = await getTauriAppVersion();
-      expect(fallbackVersion).toBe('1.0.0 (Desktop)');
+      expect(fallbackVersion).toBe('1.2.0 (Desktop)');
     });
   });
 });
