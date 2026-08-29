@@ -19,6 +19,7 @@ interface AtlasCanvasProps {
   onMouseUp: () => void;
   onWheel: (e: React.WheelEvent) => void;
   onNodeClick: (node: AtlasNode, e: React.MouseEvent) => void;
+  onNodeDoubleClick?: (node: AtlasNode, e: React.MouseEvent) => void;
   onNodeHover: (node: AtlasNode | null) => void;
   onZoomChange: (newZoom: number) => void;
   onResetView?: () => void;
@@ -59,6 +60,7 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
   onMouseUp,
   onWheel,
   onNodeClick,
+  onNodeDoubleClick,
   onNodeHover,
   onZoomChange,
   onResetView
@@ -122,6 +124,11 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
         onWheel={onWheel}
+        onDoubleClick={e => {
+          if (e.target === svgRef.current && onResetView) {
+            onResetView();
+          }
+        }}
       >
         <AtlasCanvasDefs />
 
@@ -238,6 +245,7 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
                 key={node.id}
                 transform={`translate(${node.x}, ${node.y})`}
                 onClick={e => onNodeClick(node, e)}
+                onDoubleClick={e => onNodeDoubleClick?.(node, e)}
                 onMouseEnter={() => onNodeHover(node)}
                 onMouseLeave={() => onNodeHover(null)}
                 style={{ cursor: 'pointer' }}
@@ -329,6 +337,23 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
         </g>
       </svg>
 
+      {/* Floating Shortcut Hint Bar */}
+      <div style={{
+        position: 'absolute',
+        bottom: '8px',
+        right: '12px',
+        background: 'rgba(10, 15, 26, 0.75)',
+        border: '1px solid rgba(200, 170, 110, 0.2)',
+        borderRadius: '6px',
+        padding: '3px 8px',
+        fontSize: '0.68rem',
+        color: 'var(--text-dim)',
+        backdropFilter: 'blur(4px)',
+        pointerEvents: 'none'
+      }}>
+        💡 空白鍵：重設視角 | Ctrl+Z：復原 | 雙擊節點：聚焦 | 滾輪：縮放
+      </div>
+
       {/* Floating Canvas Controls Overlay */}
       <div style={{
         position: 'absolute',
@@ -349,7 +374,7 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
           className="poe-button-secondary"
           onClick={() => onZoomChange(Math.min(zoom + 0.08, 2.5))}
           style={{ padding: '4px', height: '26px', width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          title="放大"
+          title="放大 (+)"
         >
           <ZoomIn size={14} />
         </button>
@@ -358,7 +383,7 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
           className="poe-button-secondary"
           onClick={() => onZoomChange(Math.max(zoom - 0.08, 0.15))}
           style={{ padding: '4px', height: '26px', width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          title="縮小"
+          title="縮小 (-)"
         >
           <ZoomOut size={14} />
         </button>
@@ -368,7 +393,7 @@ export const AtlasCanvas: React.FC<AtlasCanvasProps> = ({
             className="poe-button-secondary"
             onClick={onResetView}
             style={{ padding: '4px', height: '26px', width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            title="視角重設至起點"
+            title="視角重設至起點 (空白鍵 / R)"
           >
             <RotateCcw size={13} />
           </button>

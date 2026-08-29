@@ -97,8 +97,16 @@ describe('atlasOfficialSyncService', () => {
     }
   });
 
-  it('falls back safely to default dataset when cache is empty', () => {
+  it('falls back safely to default dataset when cache is empty and translates all keystones', () => {
     const data = loadCachedAtlasTreeData();
     expect(data.length).toBeGreaterThan(800);
+
+    const keystones = data.filter(n => n.type === 'keystone');
+    expect(keystones.length).toBe(27);
+    keystones.forEach(k => {
+      // Must contain Chinese name and English in brackets
+      expect(k.name).toMatch(/\([\w\s'.]+\)/);
+      expect(k.name).not.toBe(k.nameEn);
+    });
   });
 });

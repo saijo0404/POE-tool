@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import type { AtlasNode } from '../../domain/atlas/types';
 import {
   reloadAtlasTreeDataset
@@ -47,13 +47,42 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
     return new Set(['29045']);
   });
 
+  const [history, setHistory] = useState<string[][]>(() => [
+    initialAllocatedNodes && initialAllocatedNodes.length > 0 ? initialAllocatedNodes : ['29045']
+  ]);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
+
   useEffect(() => {
-    if (initialAllocatedNodes && initialAllocatedNodes.length > 0) {
-      setAllocatedNodeIds(new Set(initialAllocatedNodes));
-    } else {
-      setAllocatedNodeIds(new Set(['29045']));
-    }
+    const list = initialAllocatedNodes && initialAllocatedNodes.length > 0 ? initialAllocatedNodes : ['29045'];
+    setAllocatedNodeIds(new Set(list));
+    setHistory([list]);
+    setHistoryIndex(0);
   }, [strategyId, tierId, initialAllocatedNodes]);
+
+  const commitAllocatedChange = useCallback((nextSet: Set<string>) => {
+    const arr = Array.from(nextSet);
+    setHistory(prev => [...prev.slice(0, historyIndex + 1), arr]);
+    setHistoryIndex(prev => prev + 1);
+    setAllocatedNodeIds(nextSet);
+  }, [historyIndex]);
+
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      const prevIndex = historyIndex - 1;
+      setHistoryIndex(prevIndex);
+      setAllocatedNodeIds(new Set(history[prevIndex]));
+      onShowToast('↩️ 已復原上一步配置');
+    }
+  }, [history, historyIndex, onShowToast]);
+
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const nextIndex = historyIndex + 1;
+      setHistoryIndex(nextIndex);
+      setAllocatedNodeIds(new Set(history[nextIndex]));
+      onShowToast('↪️ 已重做下一步配置');
+    }
+  }, [history, historyIndex, onShowToast]);
 
   const [zoom, setZoom] = useState<number>(0.28);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 380, y: 500 });
@@ -89,28 +118,39 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
     // If the user moved more than 5px during mouse down, treat as canvas drag/pan rather than click
     if (dragDistance > 5) return;
 
-    setAllocatedNodeIds(prev => {
-      const next = new Set(prev);
-      if (next.has(node.id)) {
-        if (node.id !== 'start_origin' && node.id !== '29045') {
-          next.delete(node.id);
-          return autoPathMode ? pruneDisconnectedNodes(next, treeNodes, '29045') : next;
-        }
-      } else {
-        if (autoPathMode) {
-          const path = calculatePathToTarget(next, node.id, treeNodes);
-          path.forEach(id => next.add(id));
-        } else {
-          next.add(node.id);
-        }
+    const next = new Set(allocatedNodeIds);
+    if (next.has(node.id)) {
+      if (node.id !== 'start_origin' && node.id !== '29045') {
+        next.delete(node.id);
+        const resolved = autoPathMode ? pruneDisconnectedNodes(next, treeNodes, '29045') : next;
+        commitAllocatedChange(resolved);
       }
-      return next;
+    } else {
+      if (autoPathMode) {
+        const path = calculatePathToTarget(next, node.id, treeNodes);
+        path.forEach(id => next.add(id));
+      } else {
+        next.add(node.id);
+      }
+      commitAllocatedChange(next);
+    }
+  };
+
+  const handleNodeDoubleClick = (node: AtlasNode, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const targetZoom = Math.max(zoom, 0.45);
+    const canvasWidth = isFullscreen ? window.innerWidth : 780;
+    const canvasHeight = isFullscreen ? window.innerHeight - 200 : 580;
+    setZoom(targetZoom);
+    setPan({
+      x: canvasWidth / 2 - node.x * targetZoom,
+      y: canvasHeight / 2 - node.y * targetZoom
     });
   };
 
   const handleResetToPreset = () => {
     const list = initialAllocatedNodes && initialAllocatedNodes.length > 0 ? initialAllocatedNodes : ['29045'];
-    setAllocatedNodeIds(new Set(list));
+    commitAllocatedChange(new Set(list));
     onShowToast(`已還原為【${strategyName} - ${tierName}】已儲存的天賦配置！`);
   };
 
@@ -164,10 +204,47 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
     setZoom(prev => Math.min(Math.max(prev * factor, 0.15), 2.5));
   };
 
-  const handleResetView = () => {
+  const handleResetView = useCallback(() => {
     setZoom(0.28);
     setPan({ x: 380, y: 500 });
-  };
+  }, []);
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      if (isInput) return;
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handleRedo();
+        } else {
+          handleUndo();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        handleRedo();
+      } else if (e.code === 'Space' || e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        handleResetView();
+      } else if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        setZoom(prev => Math.min(prev * 1.12, 2.5));
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        setZoom(prev => Math.max(prev * 0.88, 0.15));
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        setIsFullscreen(prev => !prev);
+      } else if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleUndo, handleRedo, handleResetView, isFullscreen]);
 
   const renderContent = () => (
     <div style={{
@@ -185,10 +262,14 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
         isFullscreen={isFullscreen}
         isSyncing={isSyncing}
         lastSyncTime={lastSyncTime}
+        canUndo={historyIndex > 0}
+        canRedo={historyIndex < history.length - 1}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
         onToggleAutoPath={() => setAutoPathMode(!autoPathMode)}
         onResetToPreset={handleResetToPreset}
         onClearAll={() => {
-          setAllocatedNodeIds(new Set(['29045', 'start_origin']));
+          commitAllocatedChange(new Set(['29045', 'start_origin']));
           onShowToast('已清空已配置天賦');
         }}
         onSaveTree={handleSaveTree}
@@ -221,6 +302,7 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
           onMouseUp={handleMouseUp}
           onWheel={handleWheel}
           onNodeClick={handleNodeClick}
+          onNodeDoubleClick={handleNodeDoubleClick}
           onNodeHover={setHoveredNode}
           onZoomChange={setZoom}
           onResetView={handleResetView}
@@ -240,7 +322,7 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
         allocatedNodeIds={allocatedNodeIds}
         isOpen={isImportExportOpen}
         onClose={() => setIsImportExportOpen(false)}
-        onImportSuccess={imported => setAllocatedNodeIds(new Set(imported))}
+        onImportSuccess={imported => commitAllocatedChange(new Set(imported))}
         onShowToast={onShowToast}
       />
     </div>

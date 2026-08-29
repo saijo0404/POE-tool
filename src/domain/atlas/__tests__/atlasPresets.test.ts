@@ -12,24 +12,9 @@ describe('Atlas Presets & Tree URL Validation (Issue #2)', () => {
     localStorage.clear();
   });
 
-  it('all built-in preset strategies should have valid, non-mock poeplanner URLs', () => {
-    expect(ATLAS_PRESET_STRATEGIES.length).toBeGreaterThan(0);
-
-    for (const strategy of ATLAS_PRESET_STRATEGIES) {
-      expect(strategy.tiers.length).toBeGreaterThan(0);
-      for (const tier of strategy.tiers) {
-        expect(tier.atlasTreeUrl).toBeDefined();
-        // Should be a valid URL
-        expect(tier.atlasTreeUrl).toMatch(/^https?:\/\//);
-        // Must not contain mock/fake base64 tags like BAAFA... or Amb1, Harv1, etc.
-        expect(tier.atlasTreeUrl).not.toContain('BAAFA');
-        expect(tier.atlasTreeUrl).not.toContain('XYZ');
-        expect(tier.atlasTreeUrl).not.toContain('Amb1');
-        expect(tier.atlasTreeUrl).not.toContain('Harv1');
-        // Default clean url should be standard poeplanner atlas-tree URL
-        expect(tier.atlasTreeUrl).toBe('https://poeplanner.com/atlas-tree');
-      }
-    }
+  it('built-in preset strategies is clean and empty by default for user customization', () => {
+    expect(ATLAS_PRESET_STRATEGIES).toBeDefined();
+    expect(ATLAS_PRESET_STRATEGIES.length).toBe(0);
   });
 
   describe('sanitizeAtlasTreeUrl', () => {

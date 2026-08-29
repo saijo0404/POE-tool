@@ -278,7 +278,7 @@
   {
     "id": "1176",
     "numId": 1176,
-    "name": "Mighty Hunter",
+    "name": "強大獵手 (Mighty Hunter)",
     "nameEn": "Mighty Hunter",
     "type": "notable",
     "category": "bestiary",
@@ -447,7 +447,7 @@
   {
     "id": "1670",
     "numId": 1670,
-    "name": "Fortune's Favour",
+    "name": "命運眷顧 (Fortune's Favour)",
     "nameEn": "Fortune's Favour",
     "type": "notable",
     "category": "map",
@@ -504,7 +504,7 @@
   {
     "id": "1928",
     "numId": 1928,
-    "name": "Drawn to Power",
+    "name": "汲取力量 (Drawn to Power)",
     "nameEn": "Drawn to Power",
     "type": "notable",
     "category": "map",
@@ -523,7 +523,7 @@
   {
     "id": "2007",
     "numId": 2007,
-    "name": "Sulphite Infusion",
+    "name": "赤藍注入 (Sulphite Infusion)",
     "nameEn": "Sulphite Infusion",
     "type": "notable",
     "category": "map",
@@ -620,7 +620,7 @@
   {
     "id": "2276",
     "numId": 2276,
-    "name": "The Singular Eternity",
+    "name": "單一永恆 (The Singular Eternity)",
     "nameEn": "The Singular Eternity",
     "type": "notable",
     "category": "delirium",
@@ -659,7 +659,7 @@
   {
     "id": "2378",
     "numId": 2378,
-    "name": "Yield Upon Yield",
+    "name": "產量豐饒 (Yield Upon Yield)",
     "nameEn": "Yield Upon Yield",
     "type": "notable",
     "category": "map",
@@ -906,7 +906,7 @@
   {
     "id": "2989",
     "numId": 2989,
-    "name": "Sturdy Construction",
+    "name": "堅固構造 (Sturdy Construction)",
     "nameEn": "Sturdy Construction",
     "type": "notable",
     "category": "blight",
@@ -925,7 +925,7 @@
   {
     "id": "3198",
     "numId": 3198,
-    "name": "Harrowing Carapaces",
+    "name": "可怖甲殼 (Harrowing Carapaces)",
     "nameEn": "Harrowing Carapaces",
     "type": "notable",
     "category": "scarab",
@@ -1135,7 +1135,7 @@
   {
     "id": "4044",
     "numId": 4044,
-    "name": "Time Dilation",
+    "name": "時間膨脹 (Time Dilation)",
     "nameEn": "Time Dilation",
     "type": "notable",
     "category": "map",
@@ -1187,7 +1187,7 @@
   {
     "id": "4259",
     "numId": 4259,
-    "name": "Prove Yourself Worthy",
+    "name": "證明實力 (Prove Yourself Worthy)",
     "nameEn": "Prove Yourself Worthy",
     "type": "notable",
     "category": "map",
@@ -1206,7 +1206,7 @@
   {
     "id": "4272",
     "numId": 4272,
-    "name": "Fiendish Opulence",
+    "name": "邪靈富裕 (Fiendish Opulence)",
     "nameEn": "Fiendish Opulence",
     "type": "notable",
     "category": "beyond",
@@ -1305,7 +1305,7 @@
   {
     "id": "4619",
     "numId": 4619,
-    "name": "A Noble Quest",
+    "name": "崇高任務 (A Noble Quest)",
     "nameEn": "A Noble Quest",
     "type": "notable",
     "category": "expedition",
@@ -1323,7 +1323,7 @@
   {
     "id": "4650",
     "numId": 4650,
-    "name": "Emblematic",
+    "name": "象徵標誌 (Emblematic)",
     "nameEn": "Emblematic",
     "type": "notable",
     "category": "legion",
@@ -2712,7 +2712,7 @@
   {
     "id": "9882",
     "numId": 9882,
-    "name": "Gruelling Gauntlet",
+    "name": "艱難挑戰 (Gruelling Gauntlet)",
     "nameEn": "Gruelling Gauntlet",
     "type": "keystone",
     "category": "boss",
@@ -3577,7 +3577,7 @@
   {
     "id": "12551",
     "numId": 12551,
-    "name": "Dimensional Foothold",
+    "name": "次元立足點 (Dimensional Foothold)",
     "nameEn": "Dimensional Foothold",
     "type": "keystone",
     "category": "breach",
@@ -5652,7 +5652,7 @@
   {
     "id": "20960",
     "numId": 20960,
-    "name": "The Paths Not Taken",
+    "name": "未擇之路 (The Paths Not Taken)",
     "nameEn": "The Paths Not Taken",
     "type": "keystone",
     "category": "map",
@@ -5851,7 +5851,7 @@
   {
     "id": "21453",
     "numId": 21453,
-    "name": "Cassia's Pride",
+    "name": "卡西亞的自豪 (Cassia's Pride)",
     "nameEn": "Cassia's Pride",
     "type": "keystone",
     "category": "blight",
@@ -6016,7 +6016,7 @@
   {
     "id": "21908",
     "numId": 21908,
-    "name": "Enemy at the Gates",
+    "name": "大敵當前 (Enemy at the Gates)",
     "nameEn": "Enemy at the Gates",
     "type": "keystone",
     "category": "breach",
@@ -8949,7 +8949,7 @@
   {
     "id": "30545",
     "numId": 30545,
-    "name": "Synthesised Stability",
+    "name": "憶境穩定 (Synthesised Stability)",
     "nameEn": "Synthesised Stability",
     "type": "keystone",
     "category": "map",
@@ -9573,7 +9573,7 @@
   {
     "id": "33008",
     "numId": 33008,
-    "name": "Eldritch Gaze",
+    "name": "古靈凝視 (Eldritch Gaze)",
     "nameEn": "Eldritch Gaze",
     "type": "keystone",
     "category": "boss",
@@ -9899,7 +9899,7 @@
   {
     "id": "34384",
     "numId": 34384,
-    "name": "Destructive Play",
+    "name": "破壞性競賽 (Destructive Play)",
     "nameEn": "Destructive Play",
     "type": "keystone",
     "category": "boss",
@@ -10466,7 +10466,7 @@
   {
     "id": "36386",
     "numId": 36386,
-    "name": "Dance of Destruction",
+    "name": "毀滅之舞 (Dance of Destruction)",
     "nameEn": "Dance of Destruction",
     "type": "keystone",
     "category": "map",
@@ -12496,7 +12496,7 @@
   {
     "id": "43160",
     "numId": 43160,
-    "name": "Lucid Dreams",
+    "name": "清醒夢境 (Lucid Dreams)",
     "nameEn": "Lucid Dreams",
     "type": "keystone",
     "category": "map",
@@ -14022,7 +14022,7 @@
   {
     "id": "48004",
     "numId": 48004,
-    "name": "Timeless Conflict",
+    "name": "永恆之戰 (Timeless Conflict)",
     "nameEn": "Timeless Conflict",
     "type": "keystone",
     "category": "expedition",
@@ -14096,7 +14096,7 @@
   {
     "id": "48336",
     "numId": 48336,
-    "name": "Wrath of the Cosmos",
+    "name": "寰宇之怒 (Wrath of the Cosmos)",
     "nameEn": "Wrath of the Cosmos",
     "type": "keystone",
     "category": "boss",
@@ -15208,7 +15208,7 @@
   {
     "id": "52359",
     "numId": 52359,
-    "name": "Overloaded Circuits",
+    "name": "超載迴路 (Overloaded Circuits)",
     "nameEn": "Overloaded Circuits",
     "type": "keystone",
     "category": "map",
@@ -18698,7 +18698,7 @@
   {
     "id": "63753",
     "numId": 63753,
-    "name": "Thorough Exploration",
+    "name": "徹底探索 (Thorough Exploration)",
     "nameEn": "Thorough Exploration",
     "type": "keystone",
     "category": "boss",
@@ -18739,7 +18739,7 @@
   {
     "id": "63781",
     "numId": 63781,
-    "name": "Ruinous Wager",
+    "name": "毀滅賭注 (Ruinous Wager)",
     "nameEn": "Ruinous Wager",
     "type": "keystone",
     "category": "map",

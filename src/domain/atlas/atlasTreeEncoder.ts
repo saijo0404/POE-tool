@@ -174,7 +174,7 @@ export function parseAtlasUrlOrBase64(
   let rawPayload = trimmed;
   // If URL like https://poeplanner.com/atlas-tree/BQAc...
   if (trimmed.includes('atlas-tree/') || trimmed.includes('fullscreen-atlas-skill-tree/')) {
-    const match = trimmed.match(/(?:atlas-tree|fullscreen-atlas-skill-tree)\/([A-Za-z0-9_\-]+={0,2})/);
+    const match = trimmed.match(/(?:atlas-tree|fullscreen-atlas-skill-tree)\/([A-Za-z0-9_-]+={0,2})/);
     if (match && match[1]) {
       rawPayload = match[1];
     }

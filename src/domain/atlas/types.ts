@@ -45,10 +45,19 @@ export interface AtlasDecodedTree {
   unmatchedNumIds: number[];
 }
 
+export interface AggregatedStatItem {
+  text: string;
+  textEn: string;
+  count: number;
+  totalValue?: number;
+  isNumeric?: boolean;
+}
+
 export interface AtlasTreeStatsSummary {
   pointsSpent: number;
   activeKeystones: AtlasNode[];
   statsList: string[];
+  aggregatedStats: AggregatedStatItem[];
   categoryCounts: Record<string, number>;
 }
 

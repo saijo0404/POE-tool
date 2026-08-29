@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Compass,
   Maximize2,
@@ -9,7 +8,9 @@ import {
   Trash2,
   UploadCloud,
   Route,
-  RefreshCw
+  RefreshCw,
+  Undo2,
+  Redo2
 } from 'lucide-react';
 
 interface AtlasPlannerToolbarProps {
@@ -18,6 +19,10 @@ interface AtlasPlannerToolbarProps {
   isFullscreen: boolean;
   isSyncing?: boolean;
   lastSyncTime?: string | null;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
   onToggleAutoPath: () => void;
   onResetToPreset: () => void;
   onClearAll: () => void;
@@ -34,6 +39,10 @@ export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
   isFullscreen,
   isSyncing = false,
   lastSyncTime,
+  canUndo = false,
+  canRedo = false,
+  onUndo,
+  onRedo,
   onToggleAutoPath,
   onResetToPreset,
   onClearAll,
@@ -102,6 +111,53 @@ export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
           >
             <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
             <span>{isSyncing ? '同步中...' : '同步最新聯盟'}</span>
+          </button>
+        )}
+
+        {/* Undo and Redo Buttons */}
+        {onUndo && (
+          <button
+            type="button"
+            className="poe-button-secondary"
+            onClick={onUndo}
+            disabled={!canUndo}
+            style={{
+              fontSize: '0.78rem',
+              padding: '4px 8px',
+              height: '28px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              opacity: canUndo ? 1 : 0.45,
+              cursor: canUndo ? 'pointer' : 'not-allowed'
+            }}
+            title="復原上一步 (Ctrl+Z)"
+          >
+            <Undo2 size={13} />
+            <span>復原</span>
+          </button>
+        )}
+
+        {onRedo && (
+          <button
+            type="button"
+            className="poe-button-secondary"
+            onClick={onRedo}
+            disabled={!canRedo}
+            style={{
+              fontSize: '0.78rem',
+              padding: '4px 8px',
+              height: '28px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              opacity: canRedo ? 1 : 0.45,
+              cursor: canRedo ? 'pointer' : 'not-allowed'
+            }}
+            title="重做下一步 (Ctrl+Y)"
+          >
+            <Redo2 size={13} />
+            <span>重做</span>
           </button>
         )}
 

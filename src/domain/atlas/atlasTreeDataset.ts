@@ -1,5 +1,4 @@
 import type { AtlasNode } from './types';
-import { calculatePathToTarget } from './atlasPathfinding';
 import { loadCachedAtlasTreeData } from './atlasOfficialSyncService';
 
 // Re-export type for convenience
@@ -41,51 +40,3 @@ export function reloadAtlasTreeDataset(newNodes: AtlasNode[]): void {
   }, {});
 }
 
-// Helper to construct fully connected contiguous preset trees from single origin (node 29045)
-function createConnectedPreset(targetKeyNodes: string[]): string[] {
-  const tree = new Set<string>(['29045']);
-  targetKeyNodes.forEach(target => {
-    if (ATLAS_NODES_MAP[target]) {
-      const path = calculatePathToTarget(tree, target, ATLAS_TREE_NODES_DATA, '29045');
-      path.forEach(id => tree.add(id));
-    }
-  });
-  return Array.from(tree);
-}
-
-// Pre-defined node allocations for built-in strategies using contiguous official node paths
-export const PRESET_ALLOCATED_MAP: Record<string, string[]> = {
-  // Essence Preset (Left-branch Essence cluster)
-  preset_essence: createConnectedPreset(['63311', '28346', '24555', '60692', '929', '474']),
-  essence_tier_budget: createConnectedPreset(['63311', '28346', '24555']),
-  essence_tier_mid: createConnectedPreset(['63311', '28346', '24555', '60692']),
-  essence_tier_high: createConnectedPreset(['63311', '28346', '24555', '60692', '929', '474']),
-
-  // Ambush Preset (Strongbox clusters)
-  preset_ambush: createConnectedPreset(['63311', '28346', '24555', '605']),
-  ambush_tier_budget: createConnectedPreset(['63311', '28346']),
-  ambush_tier_mid: createConnectedPreset(['63311', '28346', '24555']),
-  ambush_tier_high: createConnectedPreset(['63311', '28346', '24555', '605']),
-
-  // Harvest Preset (Grove cluster)
-  preset_harvest: createConnectedPreset(['63311', '28346', '24555', '58854']),
-  harvest_tier_budget: createConnectedPreset(['63311', '28346', '24555']),
-  harvest_tier_mid: createConnectedPreset(['63311', '28346', '24555', '58854']),
-  harvest_tier_high: createConnectedPreset(['63311', '28346', '24555', '58854']),
-
-  // Expedition Preset (Right-branch Expedition cluster)
-  preset_expedition: createConnectedPreset(['44775', '22530', '29688', '35120']),
-  expedition_tier_budget: createConnectedPreset(['44775', '22530']),
-  expedition_tier_mid: createConnectedPreset(['44775', '22530', '29688']),
-  expedition_tier_high: createConnectedPreset(['44775', '22530', '29688', '35120']),
-
-  // Legion Preset (Right-branch Legion cluster)
-  preset_legion: createConnectedPreset(['44775', '43934', '34644', '51495']),
-  legion_tier_budget: createConnectedPreset(['44775', '43934']),
-  legion_tier_mid: createConnectedPreset(['44775', '43934', '34644']),
-  legion_tier_high: createConnectedPreset(['44775', '43934', '34644', '51495']),
-
-  // Delirium & Boss Presets
-  preset_delirium: createConnectedPreset(['63311', '44775', '28346', '43934', '266']),
-  preset_bossrush: createConnectedPreset(['63311', '44775', '28346', '43934', '788', '63460'])
-};
