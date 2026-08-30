@@ -1,0 +1,50 @@
+/**
+ * Exact stat line translations for unique passives, keystones, and special mechanics
+ */
+export const EXACT_STAT_TRANSLATIONS: Record<string, string> = {
+  // Keystones & Unique Passive Stats
+  'Grants 20 Atlas Passive Skill Points': '獲得 20 點輿圖天賦點數',
+  'Connects to Cryptic Gateway': '連接至神秘傳送門 (Cryptic Gateway)',
+  'Connects to Mortal Gateway': '連接至凡人傳送門 (Mortal Gateway)',
+  'Your Maps cannot drop Scarabs': '你的地圖無法掉落聖甲蟲',
+  'Your Maps cannot contain or spawn Scarabs': '你的地圖無法包含或生成聖甲蟲',
+  'Your Maps have no random Modifiers': '你的地圖沒有隨機詞綴',
+  'Modifiers on your Maps have no effect': '你的地圖詞綴失去效果',
+  'Your Maps cannot contain Masters': '你的地圖無法包含大師',
+  'Kirac Missions cannot be gained from Maps': '無法從地圖中獲得基拉克任務',
+  'Items found in your Maps cannot be Rarer than Magic': '在你的地圖中找到的物品稀有度無法高於魔法',
+  'Items found in your Maps have 200% increased Rarity': '在你的地圖中找到的物品稀有度增加 200%',
+  'Maps found in your Maps have 50% chance to be Special Base Maps': '在地圖中找到的地圖有 50% 機率為特殊基底地圖',
+  'Maps found in your Maps cannot drop as Favoured Maps': '在地圖中找到的地圖無法掉落為偏好地圖',
+  'Modifiers to chance for your Maps to contain Mechanics instead grant 2% increased Explicit Modifier magnitudes':
+    '地圖包含機制的機率加成改為提供 2% 地圖顯性詞綴效果增加',
+  'Modifiers to chance for your Maps to contain Extra Content instead grant 2% increased Explicit Modifier magnitudes':
+    '地圖包含額外內容的機率加成改為提供 2% 地圖顯性詞綴效果增加',
+  'Notable Atlas Passive Skills grant nothing': '輿圖關鍵天賦不提供任何效果',
+  'Small Atlas Passive Skills have 100% increased Effect': '輿圖小型天賦效果增加 100%',
+  'Varieties of Items contained in 1 Blight Chest in your Maps are Lucky': '地圖中 1 個枯萎寶箱包含的物品種類為幸運',
+  'Varieties of Items contained in 2 Blight Chests in your Maps are Lucky': '地圖中 2 個枯萎寶箱包含的物品種類為幸運',
+  'Varieties of Items contained in 3 Blight Chests in your Maps are Lucky': '地圖中 3 個枯萎寶箱包含的物品種類為幸運',
+  'Einhar deals 1000% more Damage to Unique Monsters in your Maps': '伊恩哈爾對你的地圖中傳奇怪物造成的傷害增加 1000% 更多',
+  'Einhar remains in your Maps after his Mission is Complete': '任務完成後伊恩哈爾仍會留在你的地圖中協助戰鬥',
+  'Shrines in your Maps are guarded by at least one Magic Pack': '你的地圖中的神殿至少由一組魔法怪物群守衛',
+  'Your Maps contain 1 additional Shrine': '你的地圖額外包含 1 個神殿',
+  'Your Maps contain 2 additional Shrines': '你的地圖額外包含 2 個神殿',
+  'Your Maps contain 1 additional Strongbox': '你的地圖額外包含 1 個保險箱',
+  'Your Maps contain 2 additional Strongboxes': '你的地圖額外包含 2 個保險箱',
+  'Your Maps contain 1 additional Essence': '你的地圖額外包含 1 個精髓',
+  'Your Maps contain 2 additional Essences': '你的地圖額外包含 2 個精髓',
+  'Your Maps contain 1 additional Tormented Spirit': '你的地圖額外包含 1 個罪魂',
+  'Your Maps contain 2 additional Tormented Spirits': '你的地圖額外包含 2 個罪魂',
+  'Your Maps contain 3 additional Tormented Spirits': '你的地圖額外包含 3 個罪魂',
+  'Your Maps contain 1 additional Breaches': '你的地圖額外包含 1 個裂痕',
+  'Your Maps contain 1 additional Breach': '你的地圖額外包含 1 個裂痕',
+  'Your Maps contain 2 additional Breaches': '你的地圖額外包含 2 個裂痕',
+  'Your Maps contain 1 additional Legion Encounter': '你的地圖額外包含 1 個軍團遭遇',
+  'Your Maps contain 1 additional Harvest Encounter': '你的地圖額外包含 1 個莊園收割遭遇',
+  'Your Maps contain 1 additional Expedition Encounter': '你的地圖額外包含 1 個探險遭遇',
+  'Your Maps contain 1 additional Abyss': '你的地圖額外包含 1 個深淵',
+  'Your Maps contain 2 additional Abysses': '你的地圖額外包含 2 個深淵',
+  'An additional Rare Monster is spawned from Abysses': '深淵額外生成 1 隻稀有怪物',
+  'Abyss Pits in Area are twice as likely to have Rewards': '區域內的深淵坑穴有雙倍機率提供獎勵'
+};

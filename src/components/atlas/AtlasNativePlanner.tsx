@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import type { AtlasNode } from '../../domain/atlas/types';
+import { MAX_ATLAS_POINTS, ATLAS_ORIGIN_ALIASES } from '../../domain/atlas/constants';
 import {
   reloadAtlasTreeDataset
 } from '../../domain/atlas/atlasTreeDataset';
@@ -120,18 +121,39 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
 
     const next = new Set(allocatedNodeIds);
     if (next.has(node.id)) {
-      if (node.id !== 'start_origin' && node.id !== '29045') {
+      if (!ATLAS_ORIGIN_ALIASES.includes(node.id)) {
         next.delete(node.id);
         const resolved = autoPathMode ? pruneDisconnectedNodes(next, treeNodes, '29045') : next;
         commitAllocatedChange(resolved);
       }
     } else {
+      let neededPoints = 0;
+      const nodesToAdd: string[] = [];
+
       if (autoPathMode) {
         const path = calculatePathToTarget(next, node.id, treeNodes);
-        path.forEach(id => next.add(id));
+        path.forEach(id => {
+          if (!next.has(id)) {
+            nodesToAdd.push(id);
+            if (!ATLAS_ORIGIN_ALIASES.includes(id)) {
+              neededPoints += 1;
+            }
+          }
+        });
       } else {
-        next.add(node.id);
+        nodesToAdd.push(node.id);
+        if (!ATLAS_ORIGIN_ALIASES.includes(node.id)) {
+          neededPoints += 1;
+        }
       }
+
+      if (summaryData.pointsSpent + neededPoints > MAX_ATLAS_POINTS) {
+        const remaining = Math.max(0, MAX_ATLAS_POINTS - summaryData.pointsSpent);
+        onShowToast(`⚠️ 點數不足！配置此路徑需 ${neededPoints} 點，目前僅剩餘 ${remaining} 點 (上限 ${MAX_ATLAS_POINTS} 點)`);
+        return;
+      }
+
+      nodesToAdd.forEach(id => next.add(id));
       commitAllocatedChange(next);
     }
   };
@@ -339,7 +361,8 @@ export const AtlasNativePlanner: React.FC<AtlasNativePlannerProps> = ({
           node={hoveredNode}
           autoPathMode={autoPathMode}
           isAllocated={allocatedNodeIds.has(hoveredNode?.id || '')}
-          previewCount={hoveredPreviewPath.length}
+          previewCount={hoveredPreviewPath.filter(id => !allocatedNodeIds.has(id) && !ATLAS_ORIGIN_ALIASES.includes(id)).length || 1}
+          remainingPoints={Math.max(0, MAX_ATLAS_POINTS - summaryData.pointsSpent)}
         />
 
         <AtlasStatsSidebar summaryData={summaryData} onShowToast={onShowToast} />
