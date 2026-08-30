@@ -1,14 +1,12 @@
 import type {
-  AtlasStrategy,
   AtlasStrategyTier,
   AtlasTierScarab,
   AtlasTierExtraItem,
   AtlasCalculationSummary,
   BatchItemRequirement
 } from './types';
-import { SCARAB_DATABASE } from './scarabDatabase';
-
-export const ATLAS_STORAGE_KEY = 'poe_atlas_custom_strategies_v1';
+import { SCARAB_DATABASE, POPULAR_EXTRA_ITEMS } from './scarabDatabase';
+export { generateShoppingListText } from './atlasShoppingList';
 
 export function resolveScarabPrice(
   scarab: AtlasTierScarab,
@@ -17,18 +15,24 @@ export function resolveScarabPrice(
   if (scarab.customPriceChaos !== undefined && scarab.customPriceChaos >= 0) {
     return scarab.customPriceChaos;
   }
-  // Try looking up from live ninjaRates
+  // Try looking up from live ninjaRates if nameEn is given
   if (scarab.nameEn && ninjaRates[scarab.nameEn] !== undefined) {
     return ninjaRates[scarab.nameEn];
   }
   if (scarab.name && ninjaRates[scarab.name] !== undefined) {
     return ninjaRates[scarab.name];
   }
-  // Fallback to database base price
+  // Look up in database to get standard English name or base price
   const dbEntry = SCARAB_DATABASE.find(
     s => s.name === scarab.name || (scarab.nameEn && s.nameEn === scarab.nameEn)
   );
-  return dbEntry?.basePriceChaos ?? 5;
+  if (dbEntry) {
+    if (dbEntry.nameEn && ninjaRates[dbEntry.nameEn] !== undefined) {
+      return ninjaRates[dbEntry.nameEn];
+    }
+    return dbEntry.basePriceChaos ?? 5;
+  }
+  return 5;
 }
 
 export function resolveExtraItemPrice(
@@ -42,13 +46,27 @@ export function resolveExtraItemPrice(
   if (item.unitPriceDivine !== undefined && item.unitPriceDivine > 0) {
     return Math.round(item.unitPriceDivine * divineRate * 100) / 100;
   }
+  // Check live ninjaRates directly
   if (item.nameEn && ninjaRates[item.nameEn] !== undefined) {
     return ninjaRates[item.nameEn];
   }
   if (item.name && ninjaRates[item.name] !== undefined) {
     return ninjaRates[item.name];
   }
-  return 0;
+  // Look up preset in POPULAR_EXTRA_ITEMS
+  const preset = POPULAR_EXTRA_ITEMS.find(
+    p => p.name === item.name ||
+      (item.nameEn && p.nameEn === item.nameEn) ||
+      item.name.includes(p.name.split(' (')[0]) ||
+      p.name.includes(item.name)
+  );
+  if (preset) {
+    if (preset.nameEn && ninjaRates[preset.nameEn] !== undefined) {
+      return ninjaRates[preset.nameEn];
+    }
+    return preset.defaultPriceChaos;
+  }
+  return item.unitPriceChaos ?? 0;
 }
 
 export function computeAtlasSummary(
@@ -59,31 +77,55 @@ export function computeAtlasSummary(
 ): AtlasCalculationSummary {
   const safeDivRate = divineRate > 0 ? divineRate : 150;
 
-  // 1. Scarabs cost
+  // 1. Scarabs cost & aggregation
   let scarabCostChaos = 0;
-  const batchScarabMap = new Map<string, { unitCount: number; unitPrice: number; name: string }>();
+  const batchScarabMap = new Map<string, {
+    name: string;
+    nameEn?: string;
+    unitCount: number;
+    unitPrice: number;
+    totalCost: number;
+  }>();
 
   tier.scarabs.forEach(scarab => {
     const price = resolveScarabPrice(scarab, ninjaRates);
-    const totalItemCost = (scarab.count || 0) * price;
+    const count = scarab.count || 0;
+    const totalItemCost = count * price;
     scarabCostChaos += totalItemCost;
 
+    const dbEntry = SCARAB_DATABASE.find(
+      s => s.name === scarab.name || (scarab.nameEn && s.nameEn === scarab.nameEn)
+    );
+    const nameEn = scarab.nameEn || dbEntry?.nameEn;
     const key = scarab.name;
     const existing = batchScarabMap.get(key);
     if (existing) {
-      existing.unitCount += scarab.count;
+      existing.unitCount += count;
+      existing.totalCost += totalItemCost;
+      existing.unitPrice = existing.unitCount > 0
+        ? Math.round((existing.totalCost / existing.unitCount) * 10) / 10
+        : price;
     } else {
       batchScarabMap.set(key, {
         name: scarab.name,
-        unitCount: scarab.count || 0,
-        unitPrice: price
+        nameEn,
+        unitCount: count,
+        unitPrice: price,
+        totalCost: totalItemCost
       });
     }
   });
 
-  // 2. Extra items cost
+  // 2. Extra items cost & aggregation
   let extraItemCostChaos = 0;
-  const batchExtraItems: BatchItemRequirement[] = [];
+  const batchExtraMap = new Map<string, {
+    name: string;
+    nameEn?: string;
+    category: BatchItemRequirement['category'];
+    unitCount: number;
+    unitPrice: number;
+    totalCost: number;
+  }>();
 
   tier.extraItems.forEach(item => {
     const price = resolveExtraItemPrice(item, ninjaRates, safeDivRate);
@@ -91,15 +133,31 @@ export function computeAtlasSummary(
     const totalItemCost = count * price;
     extraItemCostChaos += totalItemCost;
 
-    batchExtraItems.push({
-      name: item.name,
-      category: item.category,
-      unitCount: count,
-      totalCount: count * batchSize,
-      unitPriceChaos: price,
-      totalCostChaos: Math.round(totalItemCost * batchSize * 10) / 10,
-      totalCostDivine: Math.round(((totalItemCost * batchSize) / safeDivRate) * 100) / 100
-    });
+    const preset = POPULAR_EXTRA_ITEMS.find(
+      p => p.name === item.name ||
+        (item.nameEn && p.nameEn === item.nameEn) ||
+        item.name.includes(p.name.split(' (')[0]) ||
+        p.name.includes(item.name)
+    );
+    const nameEn = item.nameEn || preset?.nameEn;
+    const key = `${item.category}_${item.name}`;
+    const existing = batchExtraMap.get(key);
+    if (existing) {
+      existing.unitCount += count;
+      existing.totalCost += totalItemCost;
+      existing.unitPrice = existing.unitCount > 0
+        ? Math.round((existing.totalCost / existing.unitCount) * 10) / 10
+        : price;
+    } else {
+      batchExtraMap.set(key, {
+        name: item.name,
+        nameEn,
+        category: item.category,
+        unitCount: count,
+        unitPrice: price,
+        totalCost: totalItemCost
+      });
+    }
   });
 
   // Assemble batch items list
@@ -109,6 +167,7 @@ export function computeAtlasSummary(
     const totalChaos = Math.round(totalCount * s.unitPrice * 10) / 10;
     batchItems.push({
       name: s.name,
+      nameEn: s.nameEn,
       category: 'scarab',
       unitCount: s.unitCount,
       totalCount,
@@ -117,7 +176,21 @@ export function computeAtlasSummary(
       totalCostDivine: Math.round((totalChaos / safeDivRate) * 100) / 100
     });
   });
-  batchItems.push(...batchExtraItems);
+
+  batchExtraMap.forEach(item => {
+    const totalCount = item.unitCount * batchSize;
+    const totalChaos = Math.round(totalCount * item.unitPrice * 10) / 10;
+    batchItems.push({
+      name: item.name,
+      nameEn: item.nameEn,
+      category: item.category,
+      unitCount: item.unitCount,
+      totalCount,
+      unitPriceChaos: item.unitPrice,
+      totalCostChaos: totalChaos,
+      totalCostDivine: Math.round((totalChaos / safeDivRate) * 100) / 100
+    });
+  });
 
   const totalCostChaosPerMap = Math.round((scarabCostChaos + extraItemCostChaos) * 10) / 10;
   const totalCostDivinePerMap = Math.round((totalCostChaosPerMap / safeDivRate) * 100) / 100;
@@ -167,71 +240,11 @@ export function computeAtlasSummary(
     batchItems
   };
 }
-
-export function generateShoppingListText(
-  strategyName: string,
-  tierName: string,
-  summary: AtlasCalculationSummary
-): string {
-  const lines: string[] = [];
-  lines.push(`📋 【POE 1 刷圖備料清單】`);
-  lines.push(`策略：${strategyName} - 分級：${tierName}`);
-  lines.push(`批次目標：${summary.batchSize} 場地圖`);
-  lines.push(`預估總成本：${summary.batchTotalCostChaos} Chaos (~ ${summary.batchTotalCostDivine} Divine)`);
-  lines.push(`預估總利潤：${summary.batchTotalProfitChaos} Chaos (~ ${summary.batchTotalProfitDivine} Divine)`);
-  lines.push(`----------------------------------------`);
-  lines.push(`【所需物料採購總清單】`);
-
-  summary.batchItems.forEach(item => {
-    lines.push(`- ${item.name} x ${item.totalCount} (單價 ~${item.unitPriceChaos}c | 總計 ${item.totalCostChaos}c)`);
-  });
-
-  lines.push(`----------------------------------------`);
-  lines.push(`產出自 POE_tool 輿圖天賦策略規劃器`);
-  return lines.join('\n');
-}
-
-export const DEFAULT_ATLAS_TREE_URL = 'https://poeplanner.com/atlas-tree';
-
-export function sanitizeAtlasTreeUrl(url?: string): string {
-  if (!url || !url.trim()) {
-    return DEFAULT_ATLAS_TREE_URL;
-  }
-  const trimmed = url.trim();
-  // Sanitize legacy mock/corrupted BAAFA URLs
-  if (trimmed.includes('poeplanner.com/atlas-tree/BAAFA') || trimmed.includes('BAAFA')) {
-    return DEFAULT_ATLAS_TREE_URL;
-  }
-  return trimmed;
-}
-
-export function loadStrategiesFromStorage(): AtlasStrategy[] {
-  try {
-    const raw = localStorage.getItem(ATLAS_STORAGE_KEY);
-    if (raw !== null) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        return parsed.map((strat: AtlasStrategy) => ({
-          ...strat,
-          tiers: (strat.tiers || []).map(tier => ({
-            ...tier,
-            atlasTreeUrl: sanitizeAtlasTreeUrl(tier.atlasTreeUrl)
-          }))
-        }));
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return [];
-}
-
-export function saveStrategiesToStorage(strategies: AtlasStrategy[]): void {
-  try {
-    localStorage.setItem(ATLAS_STORAGE_KEY, JSON.stringify(strategies));
-  } catch {
-    // ignore
-  }
-}
-
+export {
+  ATLAS_STORAGE_KEY,
+  DEFAULT_ATLAS_TREE_URL,
+  sanitizeAtlasTreeUrl,
+  loadStrategiesFromStorage,
+  saveStrategiesToStorage
+} from './atlasStorage';
 

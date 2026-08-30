@@ -136,11 +136,18 @@ export const AtlasBatchPlanner: React.FC<AtlasBatchPlannerProps> = ({
                   className="poe-table-row"
                   style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
                 >
-                  <td style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.9rem' }}>
-                      {item.category === 'scarab' ? '🪲' : '📦'}
-                    </span>
-                    <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{item.name}</span>
+                  <td style={{ padding: '8px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '0.9rem' }}>
+                        {item.category === 'scarab' ? '🪲' : '📦'}
+                      </span>
+                      <div>
+                        <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{item.name}</div>
+                        {item.nameEn && !item.name.includes(item.nameEn) && (
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{item.nameEn}</div>
+                        )}
+                      </div>
+                    </div>
                   </td>
                   <td style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-muted)' }}>
                     x {item.unitCount}
