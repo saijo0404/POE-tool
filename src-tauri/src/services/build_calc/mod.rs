@@ -2,6 +2,7 @@ pub mod category_pricer;
 pub mod character_parser;
 pub mod cost_calculator;
 pub mod mod_patterns;
+pub mod ninja_profile;
 pub mod pob_decoder;
 pub mod pob_item_parser;
 pub mod pob_xml_parser;
