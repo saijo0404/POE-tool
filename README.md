@@ -7,7 +7,7 @@
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0%2B-646cff.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tests](https://img.shields.io/badge/Tests-134%20Passed-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-215%20Passed-success.svg)]()
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20Clean%20Code-purple.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
@@ -58,7 +58,19 @@
 - **流派造價報表複製**：
   一鍵產出完整 Markdown 格式的部位造價報表，方便社群分享與配置評估。
 
-### 4. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
+### 4. 🗺️ 輿圖天賦規劃器與刷圖成本精算 (Atlas Strategy & Planner)
+- **內建完整 860+ 節點輿圖天賦樹**：
+  100% 繁體中文對齊官方天賦樹拓撲，支援 138 點上限防呆、智能最短路徑尋路、屬性總結面板與官方/PoEPlanner Base64 天賦編解碼。
+- **自訂策略分級與聖甲蟲/工藝配置**：
+  支援自由建立/編輯多級策略（入門/進階/頂配），配置聖甲蟲與地圖工藝（單一互斥原則與自訂價格記憶）。
+- **即時物價連動與批次採購清單**：
+  連動 poe.ninja 即時物價與神聖石匯率，精算單場成本、淨利潤、ROI 與時薪估計，並提供一鍵複製批次備料採購清單與市集精確搜尋關鍵字。
+
+### 5. 📖 章節拓荒全指引 (Act Leveling Guide)
+- **Act 1 ~ Act 10 最佳主線路線**：完整任務流程、被動技能點、昇華試煉與天賦拓荒節奏。
+- **職業寶石獎勵過濾與迷你浮窗模式**：支援職業專屬寶石過濾與懸浮置頂半透明迷你模式。
+
+### 6. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
 - 前後端完全透過 **Tauri 2.0 記憶體 IPC** 直接通訊（延遲 < 0.05ms），不再需要本機 HTTP 開 port 或 Node.js 伺服器中介。
 - 記憶體佔用極低（僅約 35MB~60MB），啟動速度 < 0.2 秒。
 
