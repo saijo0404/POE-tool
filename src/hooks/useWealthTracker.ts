@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import type { WealthSnapshot, StashProgress } from '../types/poe';
+import type { WealthSnapshot, StashProgress, WealthFilterState } from '../types/poe';
 import { poeApi } from '../services/api';
 import { useAppState } from './useAppState';
 import { exportWealthHistoryCsv, copyDiscordWealthSummary } from '../utils/wealthExport';
 import { computeFilteredWealthData } from '../utils/wealthCalculator';
 
-export const DEFAULT_WEALTH_FILTER = {
+export const DEFAULT_WEALTH_FILTER: WealthFilterState = {
   minValueChaos: 0,
-  ignoredTabNames: [] as string[],
+  ignoredTabNames: [],
   selectedCategory: 'ALL'
 };
 
@@ -22,7 +22,8 @@ export function useWealthTracker({
   const [snapshots, setSnapshots] = useState<WealthSnapshot[]>(appState?.cachedSnapshots || []);
   const [snapshotting, setSnapshotting] = useState<boolean>(false);
   const [progress, setProgress] = useState<StashProgress | null>(null);
-  const progressTimerRef = useRef<any>(null);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
 
   const filterState = appState?.wealthFilterState || DEFAULT_WEALTH_FILTER;
   const setCachedSnapshots = appState?.setCachedSnapshots;

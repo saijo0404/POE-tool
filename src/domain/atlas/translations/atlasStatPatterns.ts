@@ -10,7 +10,7 @@ export function translatePhrase(str: string): string {
 
 export interface StatPatternRule {
   pattern: RegExp;
-  replace: (...args: any[]) => string;
+  replace: (substring: string, ...args: string[]) => string;
 }
 
 export const STAT_PATTERN_RULES: StatPatternRule[] = [

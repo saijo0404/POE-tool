@@ -59,8 +59,9 @@ export function useBuildCalculator({
       } else {
         onShowToast('Build 成本計算完成並已儲存快取！');
       }
-    } catch (err: any) {
-      setError(err?.message || '解析失敗，請確認輸入內容是否有效');
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : (typeof err === 'object' && err !== null && 'message' in err ? String((err as { message: unknown }).message) : '解析失敗，請確認輸入內容是否有效');
+      setError(errorMsg);
       onShowToast('造價計算失敗');
     } finally {
       setLoading(false);

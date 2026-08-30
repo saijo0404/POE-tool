@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import type { TradeSearchResult } from './types';
+import type { ParsedItem, ParsedItemMod } from '../item/types';
+import type { TradeSearchResult, TradeStatusOption } from './types';
+import type { AppStateContextType } from '../../context/AppStateContext';
 
 export function getSortConfig(sortMode: 'price_asc' | 'price_desc' | 'indexed_desc') {
   if (sortMode === 'price_desc') return { price: 'desc' as const };
@@ -16,10 +18,19 @@ export function mergeTradeResults(prev: TradeSearchResult | null, next: TradeSea
 }
 
 export function useSyncAppState(
-  appState: any, rawText: string, parsedItem: any, mods: any, tradeStatus: any,
-  sortBy: any, linksMin: any, corruptedFilter: any, itemLevelMin: any, tradeResults: any,
+  appState: AppStateContextType | null,
+  rawText: string,
+  parsedItem: ParsedItem | null,
+  mods: ParsedItemMod[],
+  tradeStatus: TradeStatusOption,
+  sortBy: 'price_asc' | 'price_desc' | 'indexed_desc',
+  linksMin: number | undefined,
+  corruptedFilter: boolean | undefined,
+  itemLevelMin: number | undefined,
+  tradeResults: TradeSearchResult | null,
   lastSyncedKeyRef: React.MutableRefObject<string>
 ) {
+
   useEffect(() => {
     if (appState?.updatePriceCheckerState && rawText) {
       const syncKey = `${rawText}:${tradeResults?.id || ''}`;

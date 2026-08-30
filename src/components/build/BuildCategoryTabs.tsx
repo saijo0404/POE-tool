@@ -1,15 +1,18 @@
 import React from 'react';
 import { Search, ArrowUpDown, X } from 'lucide-react';
 
+export type BuildSortOption = 'price_desc' | 'price_asc' | 'slot' | 'confidence';
+
 interface BuildCategoryTabsProps {
   activeCategory: string;
   setActiveCategory: (cat: string) => void;
   searchFilter: string;
   setSearchFilter: (val: string) => void;
-  sortBy: string;
-  setSortBy: (val: any) => void;
+  sortBy: BuildSortOption;
+  setSortBy: (val: BuildSortOption) => void;
   itemCounts: { all: number; equipment: number; gems: number; flasks: number; jewels: number };
 }
+
 
 export const BuildCategoryTabs: React.FC<BuildCategoryTabsProps> = ({
   activeCategory,
@@ -65,7 +68,7 @@ export const BuildCategoryTabs: React.FC<BuildCategoryTabsProps> = ({
           <select
             className="poe-input"
             value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
+            onChange={e => setSortBy(e.target.value as BuildSortOption)}
             style={{ padding: '4px 8px', fontSize: '0.8rem', background: '#121214', color: 'var(--text-bright)' }}
           >
             <option value="price_desc">造價由高至低</option>

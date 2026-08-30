@@ -30,17 +30,17 @@ export const App: React.FC = () => {
 
   const hotkey = settings.hotkey || 'ctrl+c+d';
 
-  const toastTimerRef = useRef<any>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback((msg: string) => {
     setToastMsg(msg);
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => {
+    const timer = setTimeout(() => {
       setToastMsg(null);
     }, 3500);
-    if (toastTimerRef.current && typeof toastTimerRef.current.unref === 'function') {
-      toastTimerRef.current.unref();
-    }
+    const timerNode = timer as unknown as { unref?: () => void };
+    timerNode.unref?.();
+    toastTimerRef.current = timer;
   }, []);
 
   const lastPastedTextRef = useRef<string>('');

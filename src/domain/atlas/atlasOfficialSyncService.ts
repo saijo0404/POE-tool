@@ -158,16 +158,45 @@ export function detectMechanicCategory(name: string, stats: string[], icon?: str
   return 'general';
 }
 
+export interface RawGggNodeGroup {
+  x: number;
+  y: number;
+  orbits?: number[];
+  nodes?: (string | number)[];
+}
+
+export interface RawGggNode {
+  skill?: number;
+  name?: string;
+  icon?: string;
+  isKeystone?: boolean;
+  isNotable?: boolean;
+  stats?: string[];
+  reminderText?: string[];
+  group?: number | string;
+  orbit?: number;
+  orbitIndex?: number;
+  out?: (string | number)[];
+  in?: (string | number)[];
+}
+
+export interface RawGggAtlasTreeData {
+  tree?: string;
+  groups: Record<string, RawGggNodeGroup>;
+  nodes: Record<string, RawGggNode>;
+}
+
 /**
  * Parses raw official GGG Atlas Tree JSON and transforms into 1:1 AtlasNode[]
  */
-export function parseOfficialGggData(rawGggJson: any, scaleFactor: number = 0.22): AtlasNode[] {
-  if (!rawGggJson || !rawGggJson.groups || !rawGggJson.nodes) {
+export function parseOfficialGggData(rawGggJson: RawGggAtlasTreeData | unknown, scaleFactor: number = 0.22): AtlasNode[] {
+  if (!rawGggJson || typeof rawGggJson !== 'object' || !('groups' in rawGggJson) || !('nodes' in rawGggJson)) {
     throw new Error('無效的 GGG 官方輿圖天賦 JSON 格式');
   }
 
-  const groups = rawGggJson.groups;
-  const nodesDict = rawGggJson.nodes;
+  const gggData = rawGggJson as RawGggAtlasTreeData;
+  const groups = gggData.groups;
+  const nodesDict = gggData.nodes;
   const parsedNodes: AtlasNode[] = [];
 
   // Process all official nodes
@@ -219,8 +248,8 @@ export function parseOfficialGggData(rawGggJson: any, scaleFactor: number = 0.22
 
     // Build bidirectional connections
     const connectionsSet = new Set<string>();
-    (rawNode.out || []).forEach((tId: any) => connectionsSet.add(String(tId)));
-    (rawNode.in || []).forEach((sId: any) => connectionsSet.add(String(sId)));
+    (rawNode.out || []).forEach((tId: string | number) => connectionsSet.add(String(tId)));
+    (rawNode.in || []).forEach((sId: string | number) => connectionsSet.add(String(sId)));
 
     parsedNodes.push({
       id: String(nodeIdStr),
@@ -272,11 +301,12 @@ export async function syncOfficialAtlasTree(): Promise<{ success: boolean; nodeC
       nodeCount: parsed.length,
       message: `✨ 已成功自 GGG 官方同步最新聯盟輿圖天賦樹 (${parsed.length} 個節點)！`
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
     return {
       success: false,
       nodeCount: defaultOfficialNodes.length,
-      message: `同步失敗 (${error.message})，已自動切換為本地離線打包資料。`
+      message: `同步失敗 (${errorMsg})，已自動切換為本地離線打包資料。`
     };
   }
 }

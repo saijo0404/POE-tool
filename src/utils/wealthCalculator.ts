@@ -1,6 +1,10 @@
-import type { WealthSnapshot } from '../types/poe';
+import type { WealthSnapshot, WealthFilterState, FilteredWealthData } from '../types/poe';
 
-export function computeFilteredWealthData(latestSnapshot: WealthSnapshot | null, filterState: any) {
+export function computeFilteredWealthData(
+  latestSnapshot: WealthSnapshot | null,
+  filterState: WealthFilterState
+): FilteredWealthData {
+
   if (!latestSnapshot) {
     return { totalChaos: 0, totalDivine: 0, tabSummaries: [], topItems: [], allItems: [] };
   }

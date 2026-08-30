@@ -49,8 +49,9 @@ export function useSettingsModal({
       } else {
         onShowToast(res.message || '已在預設瀏覽器中開啟官方登入網址！');
       }
-    } catch (err: any) {
-      setLoginError(err.message || '無法開啟瀏覽器');
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : (typeof err === 'object' && err !== null && 'message' in err ? String((err as { message: unknown }).message) : '無法開啟瀏覽器');
+      setLoginError(errorMsg);
     } finally {
       setLoggingIn(false);
     }
