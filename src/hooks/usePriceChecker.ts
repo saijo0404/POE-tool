@@ -173,12 +173,6 @@ export function usePriceChecker({
     toggleMod: filters.setModEnabled,
     updateModMinValue: filters.setModMinValue,
     updateModMaxValue: filters.setModMaxValue,
-    handleReadClipboard: async () => {
-      try {
-        const res = await poeApi.readClipboard();
-        if (res && res.text) setRawText(res.text);
-      } catch {}
-    },
     handleSelectRecentSearch: (item: RecentSearchItem) => setRawText(item.rawText),
     handleClearRecentSearches: clearRecentSearches,
     handleAddCustomMod: (mod: { text: string; englishText?: string; value?: number; minValue?: number; maxValue?: number }) => {

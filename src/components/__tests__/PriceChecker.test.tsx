@@ -13,13 +13,14 @@ describe('PriceChecker Component', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders input area and clipboard paste button', async () => {
+  it('renders input area and sample item button', async () => {
     await act(async () => {
       render(<PriceChecker {...defaultProps} />);
     });
 
     expect(screen.getByPlaceholderText(/在遊戲中對著裝備按 Ctrl\+C，然後貼上至此處/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/讀取剪貼簿/i)[0]).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /範例裝備/i })).toBeInTheDocument();
+    expect(screen.queryByText(/讀取剪貼簿/i)).toBeNull();
   });
 
   it('handles externalText prop and updates item text', async () => {

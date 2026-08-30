@@ -1,10 +1,9 @@
 import React from 'react';
-import { Clipboard, RefreshCw, Sparkles, Search } from 'lucide-react';
+import { Clipboard, Sparkles, Search } from 'lucide-react';
 
 interface ItemInputPanelProps {
   rawText: string;
   onChangeRawText: (text: string) => void;
-  onReadClipboard: () => void;
   onInsertSample: () => void;
   onSearchTrade?: () => void;
   searching?: boolean;
@@ -13,7 +12,6 @@ interface ItemInputPanelProps {
 export const ItemInputPanel: React.FC<ItemInputPanelProps> = ({
   rawText,
   onChangeRawText,
-  onReadClipboard,
   onInsertSample,
   onSearchTrade,
   searching = false
@@ -32,13 +30,6 @@ export const ItemInputPanel: React.FC<ItemInputPanelProps> = ({
             style={{ fontSize: '0.8rem', padding: '4px 10px' }}
           >
             <Sparkles size={14} /> 範例裝備
-          </button>
-          <button
-            onClick={onReadClipboard}
-            className="poe-btn"
-            style={{ fontSize: '0.8rem', padding: '4px 12px' }}
-          >
-            <RefreshCw size={14} /> 讀取剪貼簿
           </button>
           {onSearchTrade && (
             <button
