@@ -88,7 +88,6 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
       <ItemInputPanel
         rawText={rawText}
         onChangeRawText={setRawText}
-        onReadClipboard={() => {}}
         onInsertSample={() => setRawText(MOCK_SAMPLE_ZH_ITEM)}
         onSearchTrade={handleSearchTrade}
         searching={searching}
