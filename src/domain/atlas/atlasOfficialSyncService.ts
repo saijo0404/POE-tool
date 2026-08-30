@@ -1,5 +1,7 @@
 import type { AtlasNode, AtlasNodeType, AtlasMechanicCategory } from './types';
 import defaultOfficialNodes from './data/officialAtlasTree.json';
+import type { IStoragePort } from '../../application/ports/IStoragePort';
+import { defaultStorage } from '../../infrastructure/storage/LocalStorageAdapter';
 
 export const GGG_ATLASTREE_EXPORT_URL = 'https://raw.githubusercontent.com/grindinggear/atlastree-export/master/data.json';
 export const ATLAS_CACHE_KEY = 'poe_official_atlas_tree_cache_v325';
@@ -273,7 +275,9 @@ export function parseOfficialGggData(rawGggJson: RawGggAtlasTreeData | unknown, 
 /**
  * Fetch and auto-update latest Atlas Tree from GGG official GitHub repository
  */
-export async function syncOfficialAtlasTree(): Promise<{ success: boolean; nodeCount: number; message: string }> {
+export async function syncOfficialAtlasTree(
+  storage: IStoragePort = defaultStorage
+): Promise<{ success: boolean; nodeCount: number; message: string }> {
   try {
     const response = await fetch(GGG_ATLASTREE_EXPORT_URL, {
       method: 'GET',
@@ -292,9 +296,8 @@ export async function syncOfficialAtlasTree(): Promise<{ success: boolean; nodeC
       throw new Error(`解析節點數異常 (${parsed.length} 個節點)`);
     }
 
-    const serialized = JSON.stringify(parsed);
-    localStorage.setItem(ATLAS_CACHE_KEY, serialized);
-    localStorage.setItem(ATLAS_SYNC_TIMESTAMP_KEY, new Date().toISOString());
+    storage.setItem(ATLAS_CACHE_KEY, parsed);
+    storage.setItem(ATLAS_SYNC_TIMESTAMP_KEY, new Date().toISOString());
 
     return {
       success: true,
@@ -314,25 +317,14 @@ export async function syncOfficialAtlasTree(): Promise<{ success: boolean; nodeC
 /**
  * Load Atlas Tree nodes with cache-first strategy
  */
-export function loadCachedAtlasTreeData(): AtlasNode[] {
-  try {
-    const cached = localStorage.getItem(ATLAS_CACHE_KEY);
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 500) {
-        return parsed;
-      }
-    }
-  } catch {
-    // ignore
+export function loadCachedAtlasTreeData(storage: IStoragePort = defaultStorage): AtlasNode[] {
+  const cached = storage.getItem<AtlasNode[] | null>(ATLAS_CACHE_KEY, null);
+  if (Array.isArray(cached) && cached.length > 500) {
+    return cached;
   }
   return defaultOfficialNodes as AtlasNode[];
 }
 
-export function getAtlasTreeLastSyncTime(): string | null {
-  try {
-    return localStorage.getItem(ATLAS_SYNC_TIMESTAMP_KEY);
-  } catch {
-    return null;
-  }
+export function getAtlasTreeLastSyncTime(storage: IStoragePort = defaultStorage): string | null {
+  return storage.getItem<string | null>(ATLAS_SYNC_TIMESTAMP_KEY, null);
 }
