@@ -122,8 +122,7 @@ describe('Atlas Strategy Helpers', () => {
       id: 'e_craft',
       name: '地圖工藝：精髓 (Essence)',
       category: 'craft',
-      count: 1,
-      unitPriceChaos: 0
+      count: 1
     };
     expect(resolveExtraItemPrice(craftItem, {})).toBe(8);
 
@@ -132,11 +131,19 @@ describe('Atlas Strategy Helpers', () => {
       name: '瓦爾寶珠 (Vaal Orb)',
       nameEn: 'Vaal Orb',
       category: 'currency',
-      count: 1,
-      unitPriceChaos: 0
+      count: 1
     };
     expect(resolveExtraItemPrice(vaalItem, { 'Vaal Orb': 1.8 })).toBe(1.8);
     expect(resolveExtraItemPrice(vaalItem, {})).toBe(1);
+
+    const freeCraftItem: AtlasTierExtraItem = {
+      id: 'e_free_craft',
+      name: '地圖工藝：伏擊 (Ambush)',
+      category: 'craft',
+      count: 1,
+      unitPriceChaos: 0
+    };
+    expect(resolveExtraItemPrice(freeCraftItem, {})).toBe(0);
   });
 
   it('should resolve clean item trade metadata and official search URL', () => {

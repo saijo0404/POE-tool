@@ -86,7 +86,7 @@ export interface AtlasTierExtraItem {
   nameEn?: string;
   category: ExtraItemCategory;
   count: number;
-  unitPriceChaos: number;
+  unitPriceChaos?: number;
   unitPriceDivine?: number;
 }
 

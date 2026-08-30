@@ -52,11 +52,11 @@ export function resolveExtraItemPrice(
   ninjaRates: Record<string, number> = {},
   divineRate: number = 150
 ): number {
-  if (item.unitPriceChaos !== undefined && item.unitPriceChaos > 0) {
-    return item.unitPriceChaos;
-  }
   if (item.unitPriceDivine !== undefined && item.unitPriceDivine > 0) {
     return Math.round(item.unitPriceDivine * divineRate * 100) / 100;
+  }
+  if (item.unitPriceChaos !== undefined && item.unitPriceChaos >= 0) {
+    return item.unitPriceChaos;
   }
   // Check live ninjaRates directly
   if (item.nameEn && ninjaRates[item.nameEn] !== undefined) {

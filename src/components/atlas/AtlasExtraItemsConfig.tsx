@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { AtlasTierExtraItem } from '../../domain/atlas/types';
 import { POPULAR_EXTRA_ITEMS } from '../../domain/atlas/scarabDatabase';
 import { resolveExtraItemPrice, isCraftItem } from '../../domain/atlas/atlasHelpers';
+import { loadCraftOverrides, saveCraftOverride } from '../../domain/atlas/atlasCraftOverrides';
 import { AtlasExtraItemPresets } from './AtlasExtraItemPresets';
 import { AtlasExtraItemCustomForm } from './AtlasExtraItemCustomForm';
 import { AtlasExtraItemRow } from './AtlasExtraItemRow';
@@ -25,6 +26,7 @@ export const AtlasExtraItemsConfig: React.FC<AtlasExtraItemsConfigProps> = ({
   divineRate
 }) => {
   const [isCustomFormOpen, setIsCustomFormOpen] = useState<boolean>(false);
+  const [craftOverrides, setCraftOverrides] = useState(() => loadCraftOverrides());
 
   const activeCraft = extraItems.find(i => isCraftItem(i));
 
@@ -34,16 +36,42 @@ export const AtlasExtraItemsConfig: React.FC<AtlasExtraItemsConfigProps> = ({
   );
 
   const handleAddPreset = (preset: typeof POPULAR_EXTRA_ITEMS[0]) => {
-    const livePrice = (preset.nameEn && ninjaRates[preset.nameEn]) || preset.defaultPriceChaos;
+    const override = craftOverrides[preset.nameEn || preset.name] || craftOverrides[preset.name];
+    const livePrice = override?.unitPriceChaos !== undefined
+      ? override.unitPriceChaos
+      : ((preset.nameEn && ninjaRates[preset.nameEn]) || preset.defaultPriceChaos);
+    const itemName = override?.customName || preset.name;
+
     const newItem: AtlasTierExtraItem = {
       id: `ex_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      name: preset.name,
+      name: itemName,
       nameEn: preset.nameEn,
       category: preset.category,
       count: 1,
       unitPriceChaos: livePrice
     };
     onAddExtraItem(newItem);
+  };
+
+  const handleUpdateItem = (id: string, updates: Partial<AtlasTierExtraItem>) => {
+    onUpdateExtraItem(id, updates);
+    const target = extraItems.find(i => i.id === id);
+    if (target) {
+      const preset = POPULAR_EXTRA_ITEMS.find(
+        p => p.name === target.name ||
+          (target.nameEn && p.nameEn === target.nameEn) ||
+          target.name.includes(p.name.split(' (')[0]) ||
+          (p.nameEn && target.name.includes(p.nameEn))
+      );
+      const key = preset?.nameEn || preset?.name || target.nameEn || target.name;
+      if (updates.unitPriceChaos !== undefined || updates.name !== undefined) {
+        const overrideData: { unitPriceChaos?: number; customName?: string } = {};
+        if (updates.unitPriceChaos !== undefined) overrideData.unitPriceChaos = updates.unitPriceChaos;
+        if (updates.name !== undefined) overrideData.customName = updates.name;
+        const next = saveCraftOverride(key, overrideData);
+        setCraftOverrides(next);
+      }
+    }
   };
 
   const handleToggleRemoveCraft = () => {
@@ -88,6 +116,8 @@ export const AtlasExtraItemsConfig: React.FC<AtlasExtraItemsConfigProps> = ({
       {/* Quick Add Presets Pills with Craft Highlight & Toggle */}
       <AtlasExtraItemPresets
         activeCraftName={activeCraft?.name}
+        craftOverrides={craftOverrides}
+        ninjaRates={ninjaRates}
         onSelectPreset={handleAddPreset}
         onToggleRemoveCraft={handleToggleRemoveCraft}
       />
@@ -109,7 +139,7 @@ export const AtlasExtraItemsConfig: React.FC<AtlasExtraItemsConfigProps> = ({
               item={item}
               ninjaRates={ninjaRates}
               divineRate={divineRate}
-              onUpdate={onUpdateExtraItem}
+              onUpdate={handleUpdateItem}
               onRemove={onRemoveExtraItem}
             />
           ))}
