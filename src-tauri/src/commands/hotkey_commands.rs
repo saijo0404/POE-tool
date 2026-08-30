@@ -71,6 +71,6 @@ pub fn get_latest_clipboard(app: tauri::AppHandle) -> Result<LatestClipboardResu
 }
 
 #[tauri::command]
-pub fn trigger_in_game_command(command: String) -> Result<bool, String> {
-    send_in_game_command(&command)
+pub fn trigger_in_game_command(app: tauri::AppHandle, command: String) -> Result<bool, String> {
+    send_in_game_command(Some(&app), &command)
 }

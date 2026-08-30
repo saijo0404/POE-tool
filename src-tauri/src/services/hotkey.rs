@@ -1,3 +1,5 @@
+use tauri_plugin_clipboard_manager::ClipboardExt;
+
 pub fn is_poe_item_text(text: &str) -> bool {
     let clean = text.trim();
     if clean.len() < 10 {
@@ -47,7 +49,7 @@ pub fn is_poe_active() -> bool {
     }
 }
 
-pub fn send_in_game_command(command: &str) -> Result<bool, String> {
+pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Result<bool, String> {
     let sanitized = command.trim();
     if !sanitized.starts_with('/') {
         return Ok(false);
@@ -88,6 +90,16 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
         }
 
         if !target_hwnd.0.is_null() {
+            // 1. 讀取並暫存使用者原本的剪貼簿內容以利後續還原
+            let prev_clipboard = if let Some(app_handle) = app {
+                let prev = app_handle.clipboard().read_text().ok();
+                // 2. 將目標遊戲指令寫入系統剪貼簿
+                let _ = app_handle.clipboard().write_text(sanitized.to_string());
+                prev
+            } else {
+                None
+            };
+
             unsafe {
                 let _ = SetForegroundWindow(target_hwnd);
                 std::thread::sleep(std::time::Duration::from_millis(40));
@@ -105,7 +117,7 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
                     },
                 };
 
-                // Enter down + up
+                // Enter down + up (開啟聊天室)
                 let mut inputs = vec![
                     make_key(
                         VK_RETURN,
@@ -116,7 +128,7 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
                 let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
                 std::thread::sleep(std::time::Duration::from_millis(25));
 
-                // Ctrl+V down + up
+                // Ctrl+V down + up (貼上指令)
                 inputs = vec![
                     make_key(
                         VK_CONTROL,
@@ -132,7 +144,7 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
                 let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
                 std::thread::sleep(std::time::Duration::from_millis(25));
 
-                // Enter down + up
+                // Enter down + up (發送指令)
                 inputs = vec![
                     make_key(
                         VK_RETURN,
@@ -142,10 +154,50 @@ pub fn send_in_game_command(command: &str) -> Result<bool, String> {
                 ];
                 let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
 
+                // 3. 等待遊戲端聊天輸入緩衝完成後，自動將原剪貼簿內容寫回
+                if let (Some(app_handle), Some(prev_text)) = (app, prev_clipboard) {
+                    std::thread::sleep(std::time::Duration::from_millis(60));
+                    let _ = app_handle.clipboard().write_text(prev_text);
+                }
+
                 return Ok(true);
             }
         }
     }
 
+    // 若未找到遊戲視窗（或非 Windows 平台），將指令寫入剪貼簿供使用者手動貼上
+    if let Some(app_handle) = app {
+        let _ = app_handle.clipboard().write_text(sanitized.to_string());
+    }
+
     Ok(false)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_poe_item_text() {
+        assert!(!is_poe_item_text(""));
+        assert!(!is_poe_item_text("short"));
+        assert!(is_poe_item_text(
+            "Rarity: Rare\nItem Class: Rings\n--------"
+        ));
+        assert!(is_poe_item_text("稀有度: 稀有\n物品種類: 戒指\n--------"));
+        assert!(!is_poe_item_text("/hideout PlayerName"));
+    }
+
+    #[test]
+    fn test_send_in_game_command_validation() {
+        // Command must start with '/'
+        assert_eq!(send_in_game_command(None, "invalid_cmd"), Ok(false));
+        assert_eq!(send_in_game_command(None, "   "), Ok(false));
+        // Valid format returns Ok(false) in non-windows / test environment when game is not found
+        assert_eq!(send_in_game_command(None, "/hideout"), Ok(false));
+        assert_eq!(
+            send_in_game_command(None, "  /hideout PlayerName  "),
+            Ok(false)
+        );
+    }
 }
