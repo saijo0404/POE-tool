@@ -1,15 +1,20 @@
 import React from 'react';
 import { POPULAR_EXTRA_ITEMS } from '../../domain/atlas/scarabDatabase';
+import type { CraftCustomOverride } from '../../domain/atlas/atlasCraftOverrides';
 import { Sparkles, Check } from 'lucide-react';
 
 interface AtlasExtraItemPresetsProps {
   activeCraftName?: string;
+  craftOverrides?: Record<string, CraftCustomOverride>;
+  ninjaRates?: Record<string, number>;
   onSelectPreset: (preset: typeof POPULAR_EXTRA_ITEMS[0]) => void;
   onToggleRemoveCraft?: () => void;
 }
 
 export const AtlasExtraItemPresets: React.FC<AtlasExtraItemPresetsProps> = ({
   activeCraftName,
+  craftOverrides = {},
+  ninjaRates = {},
   onSelectPreset,
   onToggleRemoveCraft
 }) => {
@@ -28,11 +33,20 @@ export const AtlasExtraItemPresets: React.FC<AtlasExtraItemPresetsProps> = ({
       </span>
       {POPULAR_EXTRA_ITEMS.slice(0, 9).map((preset, idx) => {
         const isCraft = preset.category === 'craft';
+        const override = craftOverrides[preset.nameEn || preset.name] || craftOverrides[preset.name];
         const isCurrentCraftActive = Boolean(
           isCraft &&
           activeCraftName &&
-          (preset.name === activeCraftName || activeCraftName.includes(preset.name.split(' (')[0]))
+          (preset.name === activeCraftName ||
+            activeCraftName.includes(preset.name.split(' (')[0]) ||
+            (override?.customName && activeCraftName.includes(override.customName)))
         );
+
+        const price = override?.unitPriceChaos !== undefined
+          ? override.unitPriceChaos
+          : ((preset.nameEn && ninjaRates[preset.nameEn]) || preset.defaultPriceChaos);
+
+        const displayName = override?.customName || preset.name.split(' (')[0];
 
         return (
           <button
@@ -53,7 +67,7 @@ export const AtlasExtraItemPresets: React.FC<AtlasExtraItemPresetsProps> = ({
           >
             {isCurrentCraftActive && <Check size={11} style={{ marginRight: '2px', display: 'inline' }} />}
             {isCurrentCraftActive ? '' : '+ '}
-            {preset.name.split(' (')[0]} ({preset.defaultPriceChaos}c)
+            {displayName} ({price}c)
           </button>
         );
       })}

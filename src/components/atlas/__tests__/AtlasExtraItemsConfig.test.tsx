@@ -134,4 +134,58 @@ describe('AtlasExtraItemsConfig Component (Issue #12)', () => {
 
     expect(onUpdate).toHaveBeenCalledWith('craft_ambush', { name: '伏擊 (6分產出)' });
   });
+
+  it('remembers custom craft price when re-selecting preset after price modification (Issue #16)', () => {
+    localStorage.clear();
+    const onAdd = vi.fn();
+    const onUpdate = vi.fn();
+
+    const { rerender } = render(
+      <AtlasExtraItemsConfig
+        {...defaultProps}
+        extraItems={[craftAmbush]}
+        onAddExtraItem={onAdd}
+        onUpdateExtraItem={onUpdate}
+      />
+    );
+
+    // Modify ambush craft price to 10
+    const priceInput = screen.getByRole('spinbutton');
+    fireEvent.change(priceInput, { target: { value: '10' } });
+    expect(onUpdate).toHaveBeenCalledWith('craft_ambush', { unitPriceChaos: 10 });
+
+    // Preset pill should now reflect 10c
+    expect(screen.getByRole('button', { name: /地圖工藝：伏擊 \(10c\)/i })).toBeInTheDocument();
+
+    // Rerender with essence craft (simulate user switching to essence)
+    const craftEssence: AtlasTierExtraItem = {
+      id: 'craft_essence',
+      name: '地圖工藝：精髓 (Essence)',
+      nameEn: 'Essence Craft',
+      category: 'craft',
+      count: 1,
+      unitPriceChaos: 8
+    };
+
+    rerender(
+      <AtlasExtraItemsConfig
+        {...defaultProps}
+        extraItems={[craftEssence]}
+        onAddExtraItem={onAdd}
+        onUpdateExtraItem={onUpdate}
+      />
+    );
+
+    // Click ambush preset to switch back
+    const ambushPill = screen.getByRole('button', { name: /\+ 地圖工藝：伏擊 \(10c\)/i });
+    fireEvent.click(ambushPill);
+
+    // Should add ambush with the preserved 10c price!
+    expect(onAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        nameEn: 'Ambush Craft',
+        unitPriceChaos: 10
+      })
+    );
+  });
 });
