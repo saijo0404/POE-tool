@@ -12,7 +12,10 @@ import {
   computeAtlasSummary,
   generateShoppingListText,
   generateTradeKeywordsText,
-  generatePoeItemFormatListText
+  generatePoeItemFormatListText,
+  addOrReplaceExtraItem,
+  isCraftItem,
+  sanitizeExtraItems
 } from '../domain/atlas/atlasHelpers';
 import { poeApi } from '../services/api';
 
@@ -155,11 +158,26 @@ export function useAtlasStrategy({
 
   // Extra Items Management
   const addExtraItem = useCallback((item: AtlasTierExtraItem) => {
-    updateCurrentTier(tier => ({
-      ...tier,
-      extraItems: [...tier.extraItems, item]
-    }));
-    onShowToast(`已新增額外項目【${item.name}】！`);
+    let isReplaced = false;
+    let replacedName: string | undefined;
+
+    updateCurrentTier(tier => {
+      const result = addOrReplaceExtraItem(tier.extraItems, item);
+      isReplaced = result.isReplaced;
+      replacedName = result.replacedCraftName;
+      return {
+        ...tier,
+        extraItems: result.items
+      };
+    });
+
+    if (isReplaced && replacedName) {
+      onShowToast(`已將地圖工藝替換為【${item.name}】！`);
+    } else if (item.category === 'craft') {
+      onShowToast(`已選取地圖工藝【${item.name}】！`);
+    } else {
+      onShowToast(`已新增額外項目【${item.name}】！`);
+    }
   }, [updateCurrentTier, onShowToast]);
 
   const removeExtraItem = useCallback((itemId: string) => {
@@ -173,7 +191,14 @@ export function useAtlasStrategy({
   const updateExtraItem = useCallback((itemId: string, updates: Partial<AtlasTierExtraItem>) => {
     updateCurrentTier(tier => ({
       ...tier,
-      extraItems: tier.extraItems.map(i => (i.id === itemId ? { ...i, ...updates } : i))
+      extraItems: tier.extraItems.map(i => {
+        if (i.id !== itemId) return i;
+        const updated = { ...i, ...updates };
+        if (isCraftItem(updated)) {
+          updated.count = 1;
+        }
+        return updated;
+      })
     }));
   }, [updateCurrentTier]);
 
@@ -409,10 +434,17 @@ export function useAtlasStrategy({
     try {
       const parsed = JSON.parse(jsonStr);
       if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].tiers) {
-        updateStrategies(parsed);
-        setSelectedStrategyId(parsed[0].id);
-        setSelectedTierId(parsed[0].tiers[0]?.id || '');
-        onShowToast(`🎉 成功匯入 ${parsed.length} 組輿圖策略！`);
+        const sanitized = parsed.map((strat: AtlasStrategy) => ({
+          ...strat,
+          tiers: (strat.tiers || []).map(tier => ({
+            ...tier,
+            extraItems: sanitizeExtraItems(tier.extraItems)
+          }))
+        }));
+        updateStrategies(sanitized);
+        setSelectedStrategyId(sanitized[0].id);
+        setSelectedTierId(sanitized[0].tiers[0]?.id || '');
+        onShowToast(`🎉 成功匯入 ${sanitized.length} 組輿圖策略！`);
         return true;
       }
       throw new Error('格式不正確');

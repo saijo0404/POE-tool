@@ -69,5 +69,40 @@ describe('Atlas Presets & Tree URL Validation (Issue #2)', () => {
       expect(loaded.length).toBe(1);
       expect(loaded[0].tiers[0].atlasTreeUrl).toBe('https://poeplanner.com/atlas-tree');
     });
+
+    it('should sanitize legacy multiple crafts and craft count > 1 when loading from localStorage', () => {
+      const legacyStrategyWithCrafts: AtlasStrategy = {
+        id: 'strat_crafts',
+        name: '多工藝舊策略',
+        category: 'ambush',
+        description: '測試舊版多工藝資料清洗',
+        tags: ['伏擊'],
+        tiers: [
+          {
+            id: 'tier_1',
+            name: '分級一',
+            recommendedMaps: [],
+            coreKeystones: [],
+            scarabs: [],
+            extraItems: [
+              { id: 'c1', name: '地圖工藝：伏擊', category: 'craft', count: 3, unitPriceChaos: 7 },
+              { id: 'c2', name: '地圖工藝：精髓', category: 'craft', count: 2, unitPriceChaos: 8 },
+              { id: 'm1', name: 'T16 地圖', category: 'map', count: 1, unitPriceChaos: 4 }
+            ]
+          }
+        ]
+      };
+
+      saveStrategiesToStorage([legacyStrategyWithCrafts]);
+      const loaded = loadStrategiesFromStorage();
+
+      expect(loaded.length).toBe(1);
+      const tier = loaded[0].tiers[0];
+      expect(tier.extraItems.length).toBe(2);
+      expect(tier.extraItems[0].name).toBe('地圖工藝：伏擊');
+      expect(tier.extraItems[0].count).toBe(1);
+      expect(tier.extraItems[1].name).toBe('T16 地圖');
+      expect(tier.extraItems[1].count).toBe(1);
+    });
   });
 });

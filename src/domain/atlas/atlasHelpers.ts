@@ -13,6 +13,12 @@ export {
   formatItemAsPoeClipboard,
   resolveItemTradeMeta
 } from './atlasShoppingList';
+export {
+  isCraftItem,
+  clampExtraItemCount,
+  addOrReplaceExtraItem,
+  sanitizeExtraItems
+} from './atlasCraftRules';
 
 export function resolveScarabPrice(
   scarab: AtlasTierScarab,
