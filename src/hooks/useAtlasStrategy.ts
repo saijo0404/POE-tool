@@ -72,6 +72,17 @@ export function useAtlasStrategy({
     saveStrategiesToStorage(newStrategies);
   }, []);
 
+  // Fallback to 'all' if active filterCategory no longer exists in any strategy
+  useEffect(() => {
+    if (filterCategory !== 'all') {
+      const exists = strategies.some(s => s.category === filterCategory);
+      if (!exists) {
+        setFilterCategory('all');
+      }
+    }
+  }, [strategies, filterCategory]);
+
+
   // Current active strategy
   const currentStrategy = useMemo<AtlasStrategy | null>(() => {
     if (strategies.length === 0) return null;
