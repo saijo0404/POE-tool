@@ -1,4 +1,10 @@
-export { MAX_ATLAS_POINTS, ATLAS_ORIGIN_NODE_ID } from './constants';
+export {
+  MAX_ATLAS_POINTS,
+  ATLAS_ORIGIN_NODE_ID,
+  ATLAS_CATEGORIES_METADATA,
+  getCategoryMetadata
+} from './constants';
+export type { CategoryMetadata, AtlasCategoryKey } from './constants';
 
 export type AtlasMechanicCategory =
   | 'all'

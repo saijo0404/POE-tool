@@ -130,6 +130,10 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onNewStrategy={createNewStrategy}
+        onEditStrategy={(strat) => {
+          setEditingStrategy(strat);
+          setIsEditModalOpen(true);
+        }}
         onDeleteStrategy={deleteStrategy}
         onDeleteCategory={deleteCategory}
         onClearAllStrategies={clearAllStrategies}

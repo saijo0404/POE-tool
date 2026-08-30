@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { AtlasStrategy, AtlasMechanicCategory } from '../../domain/atlas/types';
+import { ATLAS_CATEGORIES_METADATA } from '../../domain/atlas/types';
 import { parseAtlasUrlOrBase64 } from '../../domain/atlas/atlasTreeEncoder';
 import { X, Save, Edit3, Shield, MapPin, Link2, Trash2 } from 'lucide-react';
 
@@ -10,6 +11,22 @@ interface AtlasEditStrategyModalProps {
   onSave: (strategy: AtlasStrategy) => void;
   onDelete?: (strategyId: string) => void;
 }
+
+const POPULAR_TAGS = [
+  '速刷',
+  '高利潤',
+  '低成本',
+  'T17',
+  '8詞綴',
+  '命運卡',
+  '精髓',
+  '甲蟲收益',
+  '休閒',
+  '炸墳',
+  '軍團',
+  '莊園',
+  '通牒'
+];
 
 export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
   isOpen,
@@ -33,29 +50,49 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
     }
   }, [strategy]);
 
+  const categoryOptions = useMemo(() => {
+    return Object.values(ATLAS_CATEGORIES_METADATA)
+      .filter(meta => meta.id !== 'all')
+      .map(meta => ({
+        value: meta.id as AtlasMechanicCategory,
+        label: `${meta.icon} ${meta.label} (${meta.labelEn})`
+      }));
+  }, []);
+
+  const handleToggleTag = (tag: string) => {
+    const currentTags = tagsInput
+      .split(/[,，]/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    const nextTags = currentTags.includes(tag)
+      ? currentTags.filter(t => t !== tag)
+      : [...currentTags, tag];
+    setTagsInput(nextTags.join(', '));
+  };
+
   if (!isOpen || !formData) return null;
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
-    // Parse maps, keystones, and tags
+    // Parse maps, keystones, and tags with support for English & Chinese commas
     const recommendedMaps = mapsInput
-      .split(',')
+      .split(/[,，]/)
       .map(s => s.trim())
       .filter(Boolean);
 
     const coreKeystones = keystonesInput
-      .split(',')
+      .split(/[,，]/)
       .map(s => s.trim())
       .filter(Boolean);
 
     const tags = tagsInput
-      .split(',')
+      .split(/[,，]/)
       .map(s => s.trim())
       .filter(Boolean);
 
-    // Apply to tiers if needed, and sync allocatedNodes if valid atlasTreeUrl is provided
+    // Apply to tiers and sync allocatedNodes if valid atlasTreeUrl is provided
     const updatedTiers = formData.tiers.map((t, idx) => {
       let allocatedNodes = t.allocatedNodes;
       if (idx === 0 && t.atlasTreeUrl && t.atlasTreeUrl.trim()) {
@@ -67,14 +104,14 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
       return {
         ...t,
         allocatedNodes,
-        recommendedMaps: recommendedMaps.length > 0 ? recommendedMaps : t.recommendedMaps,
-        coreKeystones: coreKeystones.length > 0 ? coreKeystones : t.coreKeystones
+        recommendedMaps,
+        coreKeystones
       };
     });
 
     const updatedStrategy: AtlasStrategy = {
       ...formData,
-      tags: tags.length > 0 ? tags : ['自訂策略'],
+      tags,
       tiers: updatedTiers,
       updatedAt: Date.now()
     };
@@ -141,7 +178,7 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
             />
           </div>
 
-          {/* Mechanic Category */}
+          {/* Mechanic Category & Tags */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
               <label style={{ fontSize: '0.82rem', color: 'var(--text-gold)', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
@@ -153,19 +190,11 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
                 onChange={e => setFormData({ ...formData, category: e.target.value as AtlasMechanicCategory })}
                 style={{ width: '100%', height: '34px', fontSize: '0.86rem', padding: '0 8px' }}
               >
-                <option value="essence">精髓 (Essence)</option>
-                <option value="ambush">伏擊開箱 (Ambush)</option>
-                <option value="harvest">莊園收割 (Harvest)</option>
-                <option value="expedition">探險炸墳 (Expedition)</option>
-                <option value="legion">戰亂軍團 (Legion)</option>
-                <option value="breach">破滅裂痕 (Breach)</option>
-                <option value="delirium">瞻妄之霧 (Delirium)</option>
-                <option value="boss">輿圖王速刷 (Boss Rush)</option>
-                <option value="torment">苦痛流亡者 (Torment)</option>
-                <option value="ritual">儀式祭壇 (Ritual)</option>
-                <option value="bestiary">野獸獵魔 (Bestiary)</option>
-                <option value="ultimatum">通牒 (Ultimatum)</option>
-                <option value="custom">自訂策略 (Custom)</option>
+                {categoryOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -181,6 +210,40 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
                 placeholder="例如: 速刷, 高利潤, 命運卡"
                 style={{ width: '100%', height: '34px', fontSize: '0.86rem' }}
               />
+            </div>
+          </div>
+
+          {/* Quick Tag Pills */}
+          <div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginBottom: '3px' }}>
+              常用標籤快速增減：
+            </div>
+            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+              {POPULAR_TAGS.map(tag => {
+                const active = tagsInput
+                  .split(/[,，]/)
+                  .map(s => s.trim())
+                  .includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => handleToggleTag(tag)}
+                    style={{
+                      background: active ? 'rgba(243, 209, 121, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                      border: active ? '1px solid var(--border-gold-bright)' : '1px solid rgba(255, 255, 255, 0.1)',
+                      color: active ? 'var(--text-gold)' : '#94a3b8',
+                      borderRadius: '3px',
+                      padding: '2px 6px',
+                      fontSize: '0.72rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {active ? `✓ ${tag}` : `+ ${tag}`}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -239,7 +302,7 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
               value={formData.tiers[0]?.atlasTreeUrl || ''}
               onChange={e => {
                 const url = e.target.value;
-                const newTiers = formData.tiers.map((t, idx) => idx === 0 ? { ...t, atlasTreeUrl: url } : t);
+                const newTiers = formData.tiers.map((t, idx) => (idx === 0 ? { ...t, atlasTreeUrl: url } : t));
                 setFormData({ ...formData, tiers: newTiers });
               }}
               placeholder="https://poeplanner.com/atlas-tree/... 或 官方天賦網址 或 Base64"
@@ -260,7 +323,7 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
               value={formData.tiers[0]?.mechanicNotes || ''}
               onChange={e => {
                 const notes = e.target.value;
-                const newTiers = formData.tiers.map((t, idx) => idx === 0 ? { ...t, mechanicNotes: notes } : t);
+                const newTiers = formData.tiers.map((t, idx) => (idx === 0 ? { ...t, mechanicNotes: notes } : t));
                 setFormData({ ...formData, tiers: newTiers });
               }}
               rows={2}

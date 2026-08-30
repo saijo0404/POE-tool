@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import type { AtlasStrategy, AtlasMechanicCategory } from '../../domain/atlas/types';
-import { Search, Plus, Download, Upload, Sparkles, Trash2, X } from 'lucide-react';
+import { getCategoryMetadata } from '../../domain/atlas/types';
+import { Search, Plus, Download, Upload, Sparkles, Trash2, X, Edit3 } from 'lucide-react';
 
 interface AtlasStrategySelectorProps {
   strategies: AtlasStrategy[];
@@ -11,28 +12,13 @@ interface AtlasStrategySelectorProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onNewStrategy: () => void;
+  onEditStrategy?: (strategy: AtlasStrategy) => void;
   onDeleteStrategy?: (id: string) => void;
   onDeleteCategory?: (cat: AtlasMechanicCategory) => void;
   onClearAllStrategies?: () => void;
   onExportJson: () => void;
   onImportJson: (json: string) => void;
 }
-
-const CATEGORIES_METADATA: Record<string, { label: string; icon: string }> = {
-  all: { label: '全部機制', icon: '🌐' },
-  essence: { label: '精髓', icon: '💎' },
-  ambush: { label: '伏擊開箱', icon: '📦' },
-  harvest: { label: '莊園收割', icon: '🌾' },
-  expedition: { label: '探險炸墳', icon: '💣' },
-  legion: { label: '戰亂軍團', icon: '⚔️' },
-  delirium: { label: '瞻妄之霧', icon: '🌫️' },
-  boss: { label: '輿圖王速刷', icon: '👑' },
-  breach: { label: '破滅裂痕', icon: '🌀' },
-  torment: { label: '苦痛流亡者', icon: '👻' },
-  ritual: { label: '儀式祭壇', icon: '🩸' },
-  bestiary: { label: '野獸獵魔', icon: '🦁' },
-  custom: { label: '我的自訂策略', icon: '⭐' }
-};
 
 export const AtlasStrategySelector: React.FC<AtlasStrategySelectorProps> = ({
   strategies,
@@ -43,6 +29,7 @@ export const AtlasStrategySelector: React.FC<AtlasStrategySelectorProps> = ({
   searchQuery,
   onSearchChange,
   onNewStrategy,
+  onEditStrategy,
   onDeleteStrategy,
   onDeleteCategory,
   onClearAllStrategies,
@@ -83,7 +70,7 @@ export const AtlasStrategySelector: React.FC<AtlasStrategySelectorProps> = ({
 
     distinctCategories.forEach(catId => {
       if (catId === 'all') return;
-      const meta = CATEGORIES_METADATA[catId] || { label: catId, icon: '🏷️' };
+      const meta = getCategoryMetadata(catId);
       list.push({
         id: catId as AtlasMechanicCategory,
         label: meta.label,
@@ -291,6 +278,31 @@ export const AtlasStrategySelector: React.FC<AtlasStrategySelectorProps> = ({
                     }}>
                       {strat.tiers.length} 分級
                     </span>
+                    {onEditStrategy && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEditStrategy(strat);
+                        }}
+                        title={`編輯策略「${strat.name}」`}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#94a3b8',
+                          cursor: 'pointer',
+                          padding: '2px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          borderRadius: '3px',
+                          transition: 'color 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-gold, #f3d179)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
+                      >
+                        <Edit3 size={13} />
+                      </button>
+                    )}
                     {onDeleteStrategy && (
                       <button
                         type="button"
@@ -309,7 +321,8 @@ export const AtlasStrategySelector: React.FC<AtlasStrategySelectorProps> = ({
                           padding: '2px',
                           display: 'flex',
                           alignItems: 'center',
-                          borderRadius: '3px'
+                          borderRadius: '3px',
+                          transition: 'color 0.15s ease'
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
                         onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
