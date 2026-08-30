@@ -12,6 +12,7 @@ import {
   Undo2,
   Redo2
 } from 'lucide-react';
+import { MAX_ATLAS_POINTS } from '../../../domain/atlas/constants';
 
 interface AtlasPlannerToolbarProps {
   pointsSpent: number;
@@ -74,12 +75,12 @@ export const AtlasPlannerToolbar: React.FC<AtlasPlannerToolbarProps> = ({
           fontSize: '0.8rem',
           padding: '3px 10px',
           borderRadius: '12px',
-          background: 'rgba(34, 197, 94, 0.15)',
-          border: '1px solid rgba(34, 197, 94, 0.35)',
-          color: '#86efac',
+          background: pointsSpent >= MAX_ATLAS_POINTS ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+          border: pointsSpent >= MAX_ATLAS_POINTS ? '1px solid rgba(239, 68, 68, 0.35)' : '1px solid rgba(34, 197, 94, 0.35)',
+          color: pointsSpent >= MAX_ATLAS_POINTS ? '#fca5a5' : '#86efac',
           fontWeight: 'bold'
         }}>
-          🟢 已配置：{pointsSpent} / 132 點 (剩餘 {Math.max(0, 132 - pointsSpent)} 點)
+          {pointsSpent >= MAX_ATLAS_POINTS ? '🔴' : '🟢'} 已配置：{pointsSpent} / {MAX_ATLAS_POINTS} 點 (剩餘 {Math.max(0, MAX_ATLAS_POINTS - pointsSpent)} 點)
         </span>
 
         <span style={{

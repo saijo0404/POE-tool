@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { AtlasTreeStatsSummary } from '../../../domain/atlas/types';
+import { MAX_ATLAS_POINTS } from '../../../domain/atlas/constants';
 import { Shield, CheckCircle2, Copy, Languages } from 'lucide-react';
 
 interface AtlasStatsSidebarProps {
@@ -22,8 +23,8 @@ export const AtlasStatsSidebar: React.FC<AtlasStatsSidebarProps> = ({
     const lines: string[] = [isZh ? '📋 【PoE 1 輿圖天賦配置摘要】' : '📋 【PoE 1 Atlas Passive Tree Summary】'];
     lines.push(
       isZh
-        ? `已配置點數：${summaryData.pointsSpent} / 132 點`
-        : `Allocated Points: ${summaryData.pointsSpent} / 132`
+        ? `已配置點數：${summaryData.pointsSpent} / ${MAX_ATLAS_POINTS} 點`
+        : `Allocated Points: ${summaryData.pointsSpent} / ${MAX_ATLAS_POINTS}`
     );
 
     if (summaryData.activeKeystones.length > 0) {

@@ -8,6 +8,7 @@ interface AtlasNodeTooltipProps {
   autoPathMode: boolean;
   isAllocated?: boolean;
   previewCount?: number;
+  remainingPoints?: number;
 }
 
 const CATEGORY_NAMES: Record<string, string> = {
@@ -34,7 +35,8 @@ export const AtlasNodeTooltip: React.FC<AtlasNodeTooltipProps> = ({
   node,
   autoPathMode,
   isAllocated = false,
-  previewCount = 1
+  previewCount = 1,
+  remainingPoints = 138
 }) => {
   if (!node) return null;
 
@@ -42,6 +44,7 @@ export const AtlasNodeTooltip: React.FC<AtlasNodeTooltipProps> = ({
   const isStart = node.type === 'start';
   const isNotable = node.type === 'notable';
   const categoryLabel = CATEGORY_NAMES[node.category] || node.category;
+  const isOverflow = !isAllocated && previewCount > remainingPoints;
 
   return (
     <div style={{
@@ -50,7 +53,7 @@ export const AtlasNodeTooltip: React.FC<AtlasNodeTooltipProps> = ({
       left: '16px',
       maxWidth: '380px',
       background: 'rgba(13, 19, 33, 0.95)',
-      border: isAllocated ? '1.5px solid #fde047' : isKeystone ? '1.5px solid #f59e0b' : '1.5px solid var(--border-gold)',
+      border: isAllocated ? '1.5px solid #fde047' : isOverflow ? '1.5px solid #ef4444' : isKeystone ? '1.5px solid #f59e0b' : '1.5px solid var(--border-gold)',
       borderRadius: '8px',
       padding: '12px 14px',
       boxShadow: '0 10px 32px rgba(0, 0, 0, 0.95)',
@@ -114,13 +117,18 @@ export const AtlasNodeTooltip: React.FC<AtlasNodeTooltipProps> = ({
         display: 'flex',
         alignItems: 'center',
         gap: '4px',
-        color: isAllocated ? '#fca5a5' : '#38bdf8',
+        color: isAllocated ? '#fca5a5' : isOverflow ? '#f87171' : '#38bdf8',
         fontWeight: 500
       }}>
         {isAllocated ? (
           <>
             <Info size={12} color="#f87171" />
             <span>點擊以取消配置此節點 {autoPathMode ? '(將自動修剪斷開之分支)' : ''}</span>
+          </>
+        ) : isOverflow ? (
+          <>
+            <Info size={12} color="#f87171" />
+            <span>⚠️ 點數不足！配置需 {previewCount} 點，但目前僅剩餘 {remainingPoints} 點</span>
           </>
         ) : (
           <>
