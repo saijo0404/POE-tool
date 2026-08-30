@@ -1,23 +1,7 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import type {
-  AtlasStrategy,
-  AtlasStrategyTier,
-  AtlasTierScarab,
-  AtlasTierExtraItem,
-  AtlasMechanicCategory
-} from '../domain/atlas/types';
-import {
-  loadStrategiesFromStorage,
-  saveStrategiesToStorage,
-  computeAtlasSummary,
-  generateShoppingListText,
-  generateTradeKeywordsText,
-  generatePoeItemFormatListText,
-  addOrReplaceExtraItem,
-  isCraftItem,
-  sanitizeExtraItems
-} from '../domain/atlas/atlasHelpers';
-import { poeApi } from '../services/api';
+import { useAtlasState } from './atlas/useAtlasState';
+import { useAtlasNinjaRates } from './atlas/useAtlasNinjaRates';
+import { useAtlasCalculation } from './atlas/useAtlasCalculation';
+import { useAtlasStrategyActions } from './atlas/useAtlasStrategyActions';
 
 interface UseAtlasStrategyProps {
   league: string;
@@ -30,501 +14,84 @@ export function useAtlasStrategy({
   divineRate,
   onShowToast
 }: UseAtlasStrategyProps) {
-  const [strategies, setStrategies] = useState<AtlasStrategy[]>(() => loadStrategiesFromStorage());
-  const [selectedStrategyId, setSelectedStrategyId] = useState<string>(() => {
-    const list = loadStrategiesFromStorage();
-    return list[0]?.id || '';
+  // 1. State Management
+  const state = useAtlasState();
+
+  // 2. Ninja Rates Fetching
+  const rates = useAtlasNinjaRates(league);
+
+  // 3. Calculation Memoization
+  const calc = useAtlasCalculation({
+    strategies: state.strategies,
+    currentTier: state.currentTier,
+    filterCategory: state.filterCategory,
+    searchQuery: state.searchQuery,
+    ninjaRates: rates.ninjaRates,
+    divineRate,
+    batchSize: state.batchSize
   });
-  const [selectedTierId, setSelectedTierId] = useState<string>('');
-  const [filterCategory, setFilterCategory] = useState<AtlasMechanicCategory>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [batchSize, setBatchSize] = useState<number>(20);
-  const [ninjaRates, setNinjaRates] = useState<Record<string, number>>({});
-  const [isRatesLoading, setIsRatesLoading] = useState<boolean>(false);
-  const [editingStrategy, setEditingStrategy] = useState<AtlasStrategy | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
-  // Fetch poe.ninja rates for scarabs and currency
-  useEffect(() => {
-    let isMounted = true;
-    const fetchRates = async () => {
-      try {
-        setIsRatesLoading(true);
-        const res = await poeApi.getNinjaPrices(league);
-        if (isMounted && res && res.rates) {
-          setNinjaRates(res.rates);
-        }
-      } catch {
-        // silent fallback to default db rates
-      } finally {
-        if (isMounted) setIsRatesLoading(false);
-      }
-    };
-    fetchRates();
-    return () => {
-      isMounted = false;
-    };
-  }, [league]);
-
-  // Persist strategies on change
-  const updateStrategies = useCallback((newStrategies: AtlasStrategy[]) => {
-    setStrategies(newStrategies);
-    saveStrategiesToStorage(newStrategies);
-  }, []);
-
-  // Fallback to 'all' if active filterCategory no longer exists in any strategy
-  useEffect(() => {
-    if (filterCategory !== 'all') {
-      const exists = strategies.some(s => s.category === filterCategory);
-      if (!exists) {
-        setFilterCategory('all');
-      }
-    }
-  }, [strategies, filterCategory]);
-
-
-  // Current active strategy
-  const currentStrategy = useMemo<AtlasStrategy | null>(() => {
-    if (strategies.length === 0) return null;
-    return strategies.find(s => s.id === selectedStrategyId) || strategies[0] || null;
-  }, [strategies, selectedStrategyId]);
-
-  // Current active tier
-  const currentTier = useMemo<AtlasStrategyTier | null>(() => {
-    if (!currentStrategy || !currentStrategy.tiers || currentStrategy.tiers.length === 0) {
-      return null;
-    }
-    const found = currentStrategy.tiers.find(t => t.id === selectedTierId);
-    return found || currentStrategy.tiers[0] || null;
-  }, [currentStrategy, selectedTierId]);
-
-  // Filtered strategies list
-  const filteredStrategies = useMemo(() => {
-    return strategies.filter(strat => {
-      const matchCategory = filterCategory === 'all' || strat.category === filterCategory;
-      if (!matchCategory) return false;
-      if (!searchQuery.trim()) return true;
-
-      const q = searchQuery.toLowerCase().trim();
-      const matchName = strat.name.toLowerCase().includes(q);
-      const matchDesc = strat.description.toLowerCase().includes(q);
-      const matchTags = strat.tags.some(t => t.toLowerCase().includes(q));
-      const matchTiers = strat.tiers.some(t =>
-        t.name.toLowerCase().includes(q) ||
-        t.recommendedMaps.some(m => m.toLowerCase().includes(q)) ||
-        t.coreKeystones.some(k => k.toLowerCase().includes(q))
-      );
-      return matchName || matchDesc || matchTags || matchTiers;
-    });
-  }, [strategies, filterCategory, searchQuery]);
-
-  // Summary calculation for current tier
-  const calculationSummary = useMemo(() => {
-    if (!currentTier) return null;
-    return computeAtlasSummary(currentTier, ninjaRates, divineRate, batchSize);
-  }, [currentTier, ninjaRates, divineRate, batchSize]);
-
-  // Tier updates
-  const updateCurrentTier = useCallback((updater: (prev: AtlasStrategyTier) => AtlasStrategyTier) => {
-    if (!currentStrategy || !currentTier) return;
-    const updatedTier = updater(currentTier);
-    const updatedTiers = currentStrategy.tiers.map(t => (t.id === currentTier.id ? updatedTier : t));
-    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-  }, [currentStrategy, currentTier, strategies, updateStrategies]);
-
-  // Scarabs Management
-  const addScarab = useCallback((scarab: AtlasTierScarab) => {
-    updateCurrentTier(tier => {
-      const existing = tier.scarabs.find(s => s.name === scarab.name);
-      if (existing) {
-        return {
-          ...tier,
-          scarabs: tier.scarabs.map(s => s.name === scarab.name ? { ...s, count: Math.min(s.count + 1, 4) } : s)
-        };
-      }
-      return {
-        ...tier,
-        scarabs: [...tier.scarabs, scarab]
-      };
-    });
-    onShowToast(`已將【${scarab.name}】加入聖甲蟲配置！`);
-  }, [updateCurrentTier, onShowToast]);
-
-  const removeScarab = useCallback((scarabId: string) => {
-    updateCurrentTier(tier => ({
-      ...tier,
-      scarabs: tier.scarabs.filter(s => s.id !== scarabId)
-    }));
-    onShowToast('已移除聖甲蟲');
-  }, [updateCurrentTier, onShowToast]);
-
-  const updateScarab = useCallback((scarabId: string, updates: Partial<AtlasTierScarab>) => {
-    updateCurrentTier(tier => ({
-      ...tier,
-      scarabs: tier.scarabs.map(s => (s.id === scarabId ? { ...s, ...updates } : s))
-    }));
-  }, [updateCurrentTier]);
-
-  // Extra Items Management
-  const addExtraItem = useCallback((item: AtlasTierExtraItem) => {
-    let isReplaced = false;
-    let replacedName: string | undefined;
-
-    updateCurrentTier(tier => {
-      const result = addOrReplaceExtraItem(tier.extraItems, item);
-      isReplaced = result.isReplaced;
-      replacedName = result.replacedCraftName;
-      return {
-        ...tier,
-        extraItems: result.items
-      };
-    });
-
-    if (isReplaced && replacedName) {
-      onShowToast(`已將地圖工藝替換為【${item.name}】！`);
-    } else if (item.category === 'craft') {
-      onShowToast(`已選取地圖工藝【${item.name}】！`);
-    } else {
-      onShowToast(`已新增額外項目【${item.name}】！`);
-    }
-  }, [updateCurrentTier, onShowToast]);
-
-  const removeExtraItem = useCallback((itemId: string) => {
-    updateCurrentTier(tier => ({
-      ...tier,
-      extraItems: tier.extraItems.filter(i => i.id !== itemId)
-    }));
-    onShowToast('已移除額外項目');
-  }, [updateCurrentTier, onShowToast]);
-
-  const updateExtraItem = useCallback((itemId: string, updates: Partial<AtlasTierExtraItem>) => {
-    updateCurrentTier(tier => ({
-      ...tier,
-      extraItems: tier.extraItems.map(i => {
-        if (i.id !== itemId) return i;
-        const updated = { ...i, ...updates };
-        if (isCraftItem(updated)) {
-          updated.count = 1;
-        }
-        return updated;
-      })
-    }));
-  }, [updateCurrentTier]);
-
-  // Strategy Management
-  const createNewStrategy = useCallback(() => {
-    const newId = `strat_custom_${Date.now()}`;
-    const newStrategy: AtlasStrategy = {
-      id: newId,
-      name: '全新自訂輿圖策略',
-      category: 'custom',
-      description: '自訂輿圖刷圖天賦與聖甲蟲搭配方案',
-      tags: ['自訂', '自製配置'],
-      isCustom: true,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      tiers: [
-        {
-          id: `tier_${Date.now()}_1`,
-          name: '入門低配 (Budget)',
-          description: '低成本起手配置',
-          recommendedMaps: ['T16 地圖'],
-          coreKeystones: ['專注單一 (Singular Focus)'],
-          scarabs: [],
-          extraItems: [
-            { id: `ex_${Date.now()}_1`, name: 'T16 地圖 (Tier 16 Map)', nameEn: 'Tier 16 Map', category: 'map', count: 1, unitPriceChaos: 4 }
-          ],
-          estimatedRevenuePerMapChaos: 60,
-          mapsPerHour: 15
-        }
-      ]
-    };
-    const nextStrategies = [newStrategy, ...strategies];
-    updateStrategies(nextStrategies);
-    setSelectedStrategyId(newId);
-    setSelectedTierId(newStrategy.tiers[0].id);
-    setEditingStrategy(newStrategy);
-    setIsEditModalOpen(true);
-    onShowToast('已建立新策略，可直接編輯策略詳細資訊！');
-  }, [strategies, updateStrategies, onShowToast]);
-
-  const saveStrategyEdit = useCallback((strategy: AtlasStrategy) => {
-    const next = strategies.map(s => (s.id === strategy.id ? { ...strategy, updatedAt: Date.now() } : s));
-    updateStrategies(next);
-    setIsEditModalOpen(false);
-    setEditingStrategy(null);
-    onShowToast(`已儲存策略【${strategy.name}】！`);
-  }, [strategies, updateStrategies, onShowToast]);
-
-  const duplicateStrategy = useCallback((strategyId: string) => {
-    const target = strategies.find(s => s.id === strategyId);
-    if (!target) return;
-    const newId = `strat_copy_${Date.now()}`;
-    const cloned: AtlasStrategy = {
-      ...target,
-      id: newId,
-      name: `${target.name} (複製)`,
-      isCustom: true,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-    const next = [cloned, ...strategies];
-    updateStrategies(next);
-    setSelectedStrategyId(newId);
-    setSelectedTierId(cloned.tiers[0]?.id || '');
-    onShowToast(`已複製策略【${cloned.name}】！`);
-  }, [strategies, updateStrategies, onShowToast]);
-
-  const deleteStrategy = useCallback((strategyId: string) => {
-    const target = strategies.find(s => s.id === strategyId);
-    const targetName = target ? `【${target.name}】` : '';
-    const next = strategies.filter(s => s.id !== strategyId);
-    updateStrategies(next);
-    if (next.length > 0) {
-      setSelectedStrategyId(next[0].id);
-      setSelectedTierId(next[0].tiers[0]?.id || '');
-    } else {
-      setSelectedStrategyId('');
-      setSelectedTierId('');
-    }
-    onShowToast(`已刪除策略${targetName}`);
-  }, [strategies, updateStrategies, onShowToast]);
-
-  const deleteCategory = useCallback((categoryId: AtlasMechanicCategory) => {
-    if (categoryId === 'all') return;
-    const targetStrats = strategies.filter(s => s.category === categoryId);
-    if (targetStrats.length === 0) return;
-    if (window.confirm(`確定要刪除「${categoryId}」分類下的所有 ${targetStrats.length} 個策略嗎？`)) {
-      const next = strategies.filter(s => s.category !== categoryId);
-      updateStrategies(next);
-      if (filterCategory === categoryId) {
-        setFilterCategory('all');
-      }
-      if (next.length > 0) {
-        setSelectedStrategyId(next[0].id);
-        setSelectedTierId(next[0].tiers[0]?.id || '');
-      } else {
-        setSelectedStrategyId('');
-        setSelectedTierId('');
-      }
-      onShowToast(`🗑️ 已刪除【${categoryId}】分類下的全部策略`);
-    }
-  }, [strategies, filterCategory, updateStrategies, onShowToast]);
-
-  const clearAllStrategies = useCallback(() => {
-    if (window.confirm('確定要清空所有策略嗎？')) {
-      updateStrategies([]);
-      setSelectedStrategyId('');
-      setSelectedTierId('');
-      onShowToast('🗑️ 已清空所有輿圖策略');
-    }
-  }, [updateStrategies, onShowToast]);
-
-  // Tier Management
-  const addTier = useCallback((tierName: string) => {
-    if (!currentStrategy) return;
-    const newTierId = `tier_${Date.now()}`;
-    const newTier: AtlasStrategyTier = {
-      id: newTierId,
-      name: tierName.trim() || `自訂分級 ${currentStrategy.tiers.length + 1}`,
-      description: '自訂輿圖分級設定',
-      recommendedMaps: ['T16 地圖'],
-      coreKeystones: ['專注單一 (Singular Focus)'],
-      scarabs: [],
-      extraItems: [
-        { id: `ex_${Date.now()}`, name: 'T16 地圖 (Tier 16 Map)', nameEn: 'Tier 16 Map', category: 'map', count: 1, unitPriceChaos: 4 }
-      ],
-      estimatedRevenuePerMapChaos: 80,
-      mapsPerHour: 15
-    };
-    const updatedStrategy = {
-      ...currentStrategy,
-      tiers: [...currentStrategy.tiers, newTier],
-      updatedAt: Date.now()
-    };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    setSelectedTierId(newTierId);
-    onShowToast(`已建立新分級：【${newTier.name}】！`);
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
-  const duplicateTier = useCallback((tierId: string) => {
-    if (!currentStrategy) return;
-    const target = currentStrategy.tiers.find(t => t.id === tierId);
-    if (!target) return;
-    const newTierId = `tier_${Date.now()}`;
-    const cloned: AtlasStrategyTier = {
-      ...target,
-      id: newTierId,
-      name: `${target.name} (複製)`
-    };
-    const updatedStrategy = {
-      ...currentStrategy,
-      tiers: [...currentStrategy.tiers, cloned],
-      updatedAt: Date.now()
-    };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    setSelectedTierId(newTierId);
-    onShowToast(`已複製分級：【${cloned.name}】！`);
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
-  const deleteTier = useCallback((tierId: string) => {
-    if (!currentStrategy) return;
-    if (currentStrategy.tiers.length <= 1) {
-      deleteStrategy(currentStrategy.id);
-      return;
-    }
-    const updatedTiers = currentStrategy.tiers.filter(t => t.id !== tierId);
-    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    setSelectedTierId(updatedTiers[0].id);
-    onShowToast('已刪除分級');
-  }, [currentStrategy, strategies, updateStrategies, deleteStrategy, onShowToast]);
-
-  const renameTier = useCallback((tierId: string, newName: string) => {
-    if (!currentStrategy || !newName.trim()) return;
-    const updatedTiers = currentStrategy.tiers.map(t => (t.id === tierId ? { ...t, name: newName.trim() } : t));
-    const updatedStrategy = { ...currentStrategy, tiers: updatedTiers, updatedAt: Date.now() };
-    const nextStrategies = strategies.map(s => (s.id === currentStrategy.id ? updatedStrategy : s));
-    updateStrategies(nextStrategies);
-    onShowToast('已更新分級名稱');
-  }, [currentStrategy, strategies, updateStrategies, onShowToast]);
-
-  // Copy shopping list
-  const copyShoppingList = useCallback(async () => {
-    if (!currentStrategy || !currentTier || !calculationSummary) return;
-    const text = generateShoppingListText(currentStrategy.name, currentTier.name, calculationSummary);
-    try {
-      await navigator.clipboard.writeText(text);
-      onShowToast(`📋 已複製 ${calculationSummary.batchSize} 場地圖採購清單至剪貼簿！`);
-    } catch {
-      onShowToast('複製失敗，請手動選取');
-    }
-  }, [currentStrategy, currentTier, calculationSummary, onShowToast]);
-
-  // Copy trade keywords
-  const copyTradeKeywords = useCallback(async () => {
-    if (!calculationSummary) return;
-    const text = generateTradeKeywordsText(calculationSummary);
-    try {
-      await navigator.clipboard.writeText(text);
-      onShowToast(`🔍 已複製 ${calculationSummary.batchSize} 場地圖市集搜尋關鍵字！`);
-    } catch {
-      onShowToast('複製失敗，請手動選取');
-    }
-  }, [calculationSummary, onShowToast]);
-
-  // Copy PoE item clipboard format (for 裝備查詢 / PriceChecker)
-  const copyPoeItemFormat = useCallback(async () => {
-    if (!calculationSummary) return;
-    const text = generatePoeItemFormatListText(calculationSummary, 'zh');
-    try {
-      await navigator.clipboard.writeText(text);
-      onShowToast(`📋 已複製 ${calculationSummary.batchSize} 場地圖裝備查詢格式至剪貼簿！`);
-    } catch {
-      onShowToast('複製失敗，請手動選取');
-    }
-  }, [calculationSummary, onShowToast]);
-
-  // Export JSON
-  const exportToJson = useCallback(() => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(strategies, null, 2));
-    const dlAnchor = document.createElement('a');
-    dlAnchor.setAttribute('href', dataStr);
-    dlAnchor.setAttribute('download', `poe_atlas_strategies_${Date.now()}.json`);
-    dlAnchor.click();
-    onShowToast('📥 策略 JSON 備份檔已開始下載！');
-  }, [strategies, onShowToast]);
-
-  // Import JSON
-  const importFromJson = useCallback((jsonStr: string) => {
-    try {
-      const parsed = JSON.parse(jsonStr);
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].tiers) {
-        const sanitized = parsed.map((strat: AtlasStrategy) => ({
-          ...strat,
-          tiers: (strat.tiers || []).map(tier => ({
-            ...tier,
-            extraItems: sanitizeExtraItems(tier.extraItems)
-          }))
-        }));
-        updateStrategies(sanitized);
-        setSelectedStrategyId(sanitized[0].id);
-        setSelectedTierId(sanitized[0].tiers[0]?.id || '');
-        onShowToast(`🎉 成功匯入 ${sanitized.length} 組輿圖策略！`);
-        return true;
-      }
-      throw new Error('格式不正確');
-    } catch {
-      onShowToast('❌ 匯入失敗：無效的 JSON 策略資料格式');
-      return false;
-    }
-  }, [updateStrategies, onShowToast]);
-
-  const updateAllocatedNodes = useCallback((nodes: string[]) => {
-    updateCurrentTier(tier => ({
-      ...tier,
-      allocatedNodes: nodes
-    }));
-  }, [updateCurrentTier]);
+  // 4. Action Handlers
+  const actions = useAtlasStrategyActions({
+    strategies: state.strategies,
+    currentStrategy: state.currentStrategy,
+    currentTier: state.currentTier,
+    calculationSummary: calc.calculationSummary,
+    filterCategory: state.filterCategory,
+    updateStrategies: state.updateStrategies,
+    setSelectedStrategyId: state.setSelectedStrategyId,
+    setSelectedTierId: state.setSelectedTierId,
+    setFilterCategory: state.setFilterCategory,
+    setEditingStrategy: state.setEditingStrategy,
+    setIsEditModalOpen: state.setIsEditModalOpen,
+    onShowToast
+  });
 
   return {
-    strategies,
-    currentStrategy,
-    currentTier,
-    selectedStrategyId,
-    setSelectedStrategyId: (id: string) => {
-      setSelectedStrategyId(id);
-      const target = strategies.find(s => s.id === id);
-      if (target && target.tiers.length > 0) {
-        setSelectedTierId(target.tiers[0].id);
-      } else {
-        setSelectedTierId('');
-      }
-    },
-    selectedTierId,
-    setSelectedTierId,
-    filterCategory,
-    setFilterCategory,
-    searchQuery,
-    setSearchQuery,
-    filteredStrategies,
-    batchSize,
-    setBatchSize,
-    calculationSummary,
-    ninjaRates,
-    isRatesLoading,
-    editingStrategy,
-    setEditingStrategy,
-    isEditModalOpen,
-    setIsEditModalOpen,
+    strategies: state.strategies,
+    currentStrategy: state.currentStrategy,
+    currentTier: state.currentTier,
+    selectedStrategyId: state.selectedStrategyId,
+    setSelectedStrategyId: state.setSelectedStrategyId,
+    selectedTierId: state.selectedTierId,
+    setSelectedTierId: state.setSelectedTierId,
+    filterCategory: state.filterCategory,
+    setFilterCategory: state.setFilterCategory,
+    searchQuery: state.searchQuery,
+    setSearchQuery: state.setSearchQuery,
+    filteredStrategies: calc.filteredStrategies,
+    batchSize: state.batchSize,
+    setBatchSize: state.setBatchSize,
+    calculationSummary: calc.calculationSummary,
+    ninjaRates: rates.ninjaRates,
+    isRatesLoading: rates.isRatesLoading,
+    editingStrategy: state.editingStrategy,
+    setEditingStrategy: state.setEditingStrategy,
+    isEditModalOpen: state.isEditModalOpen,
+    setIsEditModalOpen: state.setIsEditModalOpen,
     // Operations
-    updateCurrentTier,
-    updateAllocatedNodes,
-    addScarab,
-    removeScarab,
-    updateScarab,
-    addExtraItem,
-    removeExtraItem,
-    updateExtraItem,
-    addTier,
-    duplicateTier,
-    deleteTier,
-    renameTier,
-    createNewStrategy,
-    saveStrategyEdit,
-    duplicateStrategy,
-    deleteStrategy,
-    deleteCategory,
-    clearAllStrategies,
-    copyShoppingList,
-    copyTradeKeywords,
-    copyPoeItemFormat,
-    exportToJson,
-    importFromJson
+    updateCurrentTier: actions.updateCurrentTier,
+    updateAllocatedNodes: actions.updateAllocatedNodes,
+    addScarab: actions.addScarab,
+    removeScarab: actions.removeScarab,
+    updateScarab: actions.updateScarab,
+    addExtraItem: actions.addExtraItem,
+    removeExtraItem: actions.removeExtraItem,
+    updateExtraItem: actions.updateExtraItem,
+    addTier: actions.addTier,
+    duplicateTier: actions.duplicateTier,
+    deleteTier: actions.deleteTier,
+    renameTier: actions.renameTier,
+    createNewStrategy: actions.createNewStrategy,
+    saveStrategyEdit: actions.saveStrategyEdit,
+    duplicateStrategy: actions.duplicateStrategy,
+    deleteStrategy: actions.deleteStrategy,
+    deleteCategory: actions.deleteCategory,
+    clearAllStrategies: actions.clearAllStrategies,
+    copyShoppingList: actions.copyShoppingList,
+    copyTradeKeywords: actions.copyTradeKeywords,
+    copyPoeItemFormat: actions.copyPoeItemFormat,
+    exportToJson: actions.exportToJson,
+    importFromJson: actions.importFromJson
   };
 }

@@ -28,3 +28,5 @@ export class LocalStorageAdapter implements IStoragePort {
     } catch {}
   }
 }
+
+export const defaultStorage: IStoragePort = new LocalStorageAdapter();

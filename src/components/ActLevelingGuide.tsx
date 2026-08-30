@@ -6,35 +6,31 @@ import { ClassRewardFilter } from './acts/ClassRewardFilter';
 import { ActStepList } from './acts/ActStepList';
 import { ActCheckpoints } from './acts/ActCheckpoints';
 import { ActMiniOverlay } from './acts/ActMiniOverlay';
+import type { IStoragePort } from '../application/ports/IStoragePort';
+import { defaultStorage } from '../infrastructure/storage/LocalStorageAdapter';
 import { Map, RotateCcw, Sparkles } from 'lucide-react';
 
 interface ActLevelingGuideProps {
   onShowToast: (msg: string) => void;
+  storage?: IStoragePort;
 }
 
 const STORAGE_KEY_PROGRESS = 'poe_act_guide_completed_steps';
 const STORAGE_KEY_CLASS = 'poe_act_guide_selected_class';
 
-export const ActLevelingGuide: React.FC<ActLevelingGuideProps> = ({ onShowToast }) => {
+export const ActLevelingGuide: React.FC<ActLevelingGuideProps> = ({
+  onShowToast,
+  storage = defaultStorage
+}) => {
   const [currentActNum, setCurrentActNum] = useState<number>(1);
   const [selectedClass, setSelectedClass] = useState<CharacterClass>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_CLASS);
-      if (saved) return saved as CharacterClass;
-    } catch {
-      // ignore
-    }
-    return 'witch';
+    return storage.getItem<CharacterClass>(STORAGE_KEY_CLASS, 'witch');
   });
 
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_PROGRESS);
-      if (saved) {
-        return new Set(JSON.parse(saved));
-      }
-    } catch {
-      // ignore
+    const saved = storage.getItem<string[] | null>(STORAGE_KEY_PROGRESS, null);
+    if (Array.isArray(saved)) {
+      return new Set(saved);
     }
     return new Set();
   });
@@ -44,11 +40,7 @@ export const ActLevelingGuide: React.FC<ActLevelingGuideProps> = ({ onShowToast 
   // Sync class selection
   const handleSelectClass = (cls: CharacterClass) => {
     setSelectedClass(cls);
-    try {
-      localStorage.setItem(STORAGE_KEY_CLASS, cls);
-    } catch {
-      // ignore
-    }
+    storage.setItem(STORAGE_KEY_CLASS, cls);
     onShowToast(`🧙‍♂️ 已切換起手職業為：${cls.toUpperCase()}`);
   };
 
@@ -61,11 +53,7 @@ export const ActLevelingGuide: React.FC<ActLevelingGuideProps> = ({ onShowToast 
       } else {
         next.add(stepId);
       }
-      try {
-        localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(Array.from(next)));
-      } catch {
-        // ignore
-      }
+      storage.setItem(STORAGE_KEY_PROGRESS, Array.from(next));
       return next;
     });
   };
@@ -73,11 +61,7 @@ export const ActLevelingGuide: React.FC<ActLevelingGuideProps> = ({ onShowToast 
   const handleResetProgress = () => {
     if (window.confirm('確定要重置所有章節的拓荒完成進度嗎？')) {
       setCompletedSteps(new Set());
-      try {
-        localStorage.removeItem(STORAGE_KEY_PROGRESS);
-      } catch {
-        // ignore
-      }
+      storage.removeItem(STORAGE_KEY_PROGRESS);
       onShowToast('🔄 已重置所有章節拓荒進度！');
     }
   };
