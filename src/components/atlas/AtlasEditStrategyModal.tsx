@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { AtlasStrategy, AtlasMechanicCategory } from '../../domain/atlas/types';
+import { parseAtlasUrlOrBase64 } from '../../domain/atlas/atlasTreeEncoder';
 import { X, Save, Edit3, Shield, MapPin, Link2, Trash2 } from 'lucide-react';
 
 interface AtlasEditStrategyModalProps {
@@ -54,12 +55,22 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
       .map(s => s.trim())
       .filter(Boolean);
 
-    // Apply to tiers if needed
-    const updatedTiers = formData.tiers.map(t => ({
-      ...t,
-      recommendedMaps: recommendedMaps.length > 0 ? recommendedMaps : t.recommendedMaps,
-      coreKeystones: coreKeystones.length > 0 ? coreKeystones : t.coreKeystones
-    }));
+    // Apply to tiers if needed, and sync allocatedNodes if valid atlasTreeUrl is provided
+    const updatedTiers = formData.tiers.map((t, idx) => {
+      let allocatedNodes = t.allocatedNodes;
+      if (idx === 0 && t.atlasTreeUrl && t.atlasTreeUrl.trim()) {
+        const decoded = parseAtlasUrlOrBase64(t.atlasTreeUrl.trim());
+        if (decoded.isOk() && decoded.value.nodeIds.length > 0) {
+          allocatedNodes = decoded.value.nodeIds;
+        }
+      }
+      return {
+        ...t,
+        allocatedNodes,
+        recommendedMaps: recommendedMaps.length > 0 ? recommendedMaps : t.recommendedMaps,
+        coreKeystones: coreKeystones.length > 0 ? coreKeystones : t.coreKeystones
+      };
+    });
 
     const updatedStrategy: AtlasStrategy = {
       ...formData,
@@ -220,7 +231,7 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
           {/* Atlas Tree URL */}
           <div>
             <label style={{ fontSize: '0.82rem', color: 'var(--text-gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-              <Link2 size={14} /> 輿圖天賦樹網址 (Maxroll / PoePlanner / 官方網址)：
+              <Link2 size={14} /> 輿圖天賦樹網址 / 代碼 (PoEPlanner / 官方網址 / Base64)：
             </label>
             <input
               type="text"
@@ -231,9 +242,12 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
                 const newTiers = formData.tiers.map((t, idx) => idx === 0 ? { ...t, atlasTreeUrl: url } : t);
                 setFormData({ ...formData, tiers: newTiers });
               }}
-              placeholder="https://poeplanner.com/atlas-tree/..."
+              placeholder="https://poeplanner.com/atlas-tree/... 或 官方天賦網址 或 Base64"
               style={{ width: '100%', height: '34px', fontSize: '0.84rem' }}
             />
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '3px' }}>
+              💡 提示：儲存時將自動解析天賦節點並同步至內建輿圖規劃器畫布。
+            </div>
           </div>
 
           {/* Mechanic Notes */}

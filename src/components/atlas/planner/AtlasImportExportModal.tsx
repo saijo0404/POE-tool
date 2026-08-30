@@ -4,7 +4,8 @@ import {
   generateAtlasTreeUrl,
   encodeAtlasTreeBase64
 } from '../../../domain/atlas/atlasTreeEncoder';
-import { X, Upload, Copy } from 'lucide-react';
+import { X, Upload, Copy, ExternalLink } from 'lucide-react';
+import { poeApi } from '../../../services/api';
 
 interface AtlasImportExportModalProps {
   allocatedNodeIds: Set<string>;
@@ -60,6 +61,17 @@ export const AtlasImportExportModal: React.FC<AtlasImportExportModalProps> = ({
       onShowToast(`📋 已複製【${label}】至剪貼簿！`);
     } catch {
       onShowToast('複製失敗');
+    }
+  };
+
+  const openInBrowser = async (url: string, label: string) => {
+    try {
+      await poeApi.openExternalUrl(url).catch(() => {
+        window.open(url, '_blank');
+      });
+      onShowToast(`🌐 已在外部瀏覽器開啟【${label}】！`);
+    } catch {
+      window.open(url, '_blank');
     }
   };
 
@@ -143,8 +155,11 @@ export const AtlasImportExportModal: React.FC<AtlasImportExportModalProps> = ({
               <div style={{ fontSize: '0.76rem', color: 'var(--text-dim)', marginBottom: '4px' }}>PoEPlanner 分享網址：</div>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input type="text" readOnly value={poePlannerUrl} className="poe-input" style={{ fontSize: '0.75rem', flex: 1 }} />
-                <button type="button" className="poe-button-secondary" onClick={() => copyToClipboard(poePlannerUrl, 'PoEPlanner 網址')}>
+                <button type="button" className="poe-button-secondary" onClick={() => copyToClipboard(poePlannerUrl, 'PoEPlanner 網址')} title="複製網址">
                   <Copy size={13} />
+                </button>
+                <button type="button" className="poe-button-secondary" onClick={() => openInBrowser(poePlannerUrl, 'PoEPlanner')} title="在外部瀏覽器開啟">
+                  <ExternalLink size={13} />
                 </button>
               </div>
             </div>
@@ -153,8 +168,11 @@ export const AtlasImportExportModal: React.FC<AtlasImportExportModalProps> = ({
               <div style={{ fontSize: '0.76rem', color: 'var(--text-dim)', marginBottom: '4px' }}>PoE 官方全螢幕天賦樹網址：</div>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input type="text" readOnly value={officialUrl} className="poe-input" style={{ fontSize: '0.75rem', flex: 1 }} />
-                <button type="button" className="poe-button-secondary" onClick={() => copyToClipboard(officialUrl, '官方天賦網址')}>
+                <button type="button" className="poe-button-secondary" onClick={() => copyToClipboard(officialUrl, '官方天賦網址')} title="複製網址">
                   <Copy size={13} />
+                </button>
+                <button type="button" className="poe-button-secondary" onClick={() => openInBrowser(officialUrl, '官方天賦網址')} title="在外部瀏覽器開啟">
+                  <ExternalLink size={13} />
                 </button>
               </div>
             </div>
@@ -163,7 +181,7 @@ export const AtlasImportExportModal: React.FC<AtlasImportExportModalProps> = ({
               <div style={{ fontSize: '0.76rem', color: 'var(--text-dim)', marginBottom: '4px' }}>Base64 二進制編碼：</div>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input type="text" readOnly value={base64Code} className="poe-input" style={{ fontSize: '0.75rem', flex: 1 }} />
-                <button type="button" className="poe-button-secondary" onClick={() => copyToClipboard(base64Code, 'Base64 編碼')}>
+                <button type="button" className="poe-button-secondary" onClick={() => copyToClipboard(base64Code, 'Base64 編碼')} title="複製 Base64 代碼">
                   <Copy size={13} />
                 </button>
               </div>

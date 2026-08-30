@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import type { AtlasStrategy, AtlasStrategyTier } from '../../domain/atlas/types';
-import { ExternalLink, Copy, MapPin, Shield, BookOpen, Edit, CopyPlus, Trash2, Compass, ChevronDown, ChevronUp } from 'lucide-react';
-import { sanitizeAtlasTreeUrl } from '../../domain/atlas/atlasHelpers';
-import { poeApi } from '../../services/api';
+import { MapPin, Shield, BookOpen, Edit, CopyPlus, Trash2, Compass, ChevronDown, ChevronUp } from 'lucide-react';
 import { AtlasNativePlanner } from './AtlasNativePlanner';
 
 interface AtlasStrategyDetailsProps {
@@ -25,27 +23,6 @@ export const AtlasStrategyDetails: React.FC<AtlasStrategyDetailsProps> = ({
   onShowToast
 }) => {
   const [isPlannerExpanded, setIsPlannerExpanded] = useState<boolean>(true);
-  const treeUrl = sanitizeAtlasTreeUrl(currentTier.atlasTreeUrl);
-
-  const handleOpenAtlasTree = async () => {
-    try {
-      await poeApi.openExternalUrl(treeUrl).catch(() => {
-        window.open(treeUrl, '_blank');
-      });
-      onShowToast(`🌐 已在瀏覽器為您開啟【${currentTier.name}】輿圖天賦樹！`);
-    } catch {
-      window.open(treeUrl, '_blank');
-    }
-  };
-
-  const handleCopyAtlasTree = async () => {
-    try {
-      await navigator.clipboard.writeText(treeUrl);
-      onShowToast('📋 已複製輿圖天賦樹網址至剪貼簿！');
-    } catch {
-      onShowToast('複製失敗');
-    }
-  };
 
   return (
     <div className="poe-card" style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -166,63 +143,37 @@ export const AtlasStrategyDetails: React.FC<AtlasStrategyDetailsProps> = ({
         </div>
       </div>
 
-      {/* Atlas Tree Action Bar & Toggle */}
+      {/* Atlas Tree Planner Section Header & Toggle */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '10px',
-        background: 'linear-gradient(90deg, rgba(200, 170, 110, 0.1) 0%, rgba(14, 143, 127, 0.1) 100%)',
+        background: 'linear-gradient(90deg, rgba(200, 170, 110, 0.08) 0%, rgba(14, 143, 127, 0.08) 100%)',
         border: '1px solid rgba(200, 170, 110, 0.25)',
-        padding: '10px 14px',
+        padding: '8px 14px',
         borderRadius: '6px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-gold)', fontWeight: 600, fontSize: '0.88rem' }}>
             <Compass size={17} />
-            <span>內建輿圖天賦規劃器：</span>
+            <span>內建輿圖天賦規劃器 (Native Atlas Planner)</span>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            {/* Toggle Planner Button */}
-            <button
-              type="button"
-              className={isPlannerExpanded ? 'poe-button' : 'poe-button-secondary'}
-              onClick={() => setIsPlannerExpanded(!isPlannerExpanded)}
-              style={{ fontSize: '0.82rem', padding: '5px 12px', height: '30px', display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              <span>{isPlannerExpanded ? '收合天賦規劃畫布' : '展開天賦規劃畫布'}</span>
-              {isPlannerExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-            </button>
-
-            {/* External Browser Button */}
-            <button
-              type="button"
-              className="poe-button-secondary"
-              onClick={handleOpenAtlasTree}
-              style={{ fontSize: '0.8rem', padding: '5px 10px', height: '30px', display: 'flex', alignItems: 'center', gap: '4px' }}
-              title="在系統預設瀏覽器中開啟"
-            >
-              <ExternalLink size={13} /> 外部瀏覽器開啟
-            </button>
-
-            {/* Copy Link Button */}
-            <button
-              type="button"
-              className="poe-button-secondary"
-              onClick={handleCopyAtlasTree}
-              style={{ fontSize: '0.8rem', padding: '5px 10px', height: '30px', display: 'flex', alignItems: 'center', gap: '4px' }}
-              title="複製天賦樹網址"
-            >
-              <Copy size={13} /> 複製網址
-            </button>
-          </div>
+          <span style={{ fontSize: '0.76rem', color: 'var(--text-dim)' }}>
+            （支援節點互動配置、智能尋路、匯入匯出與屬性精算）
+          </span>
         </div>
 
-        <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {treeUrl}
-        </div>
+        <button
+          type="button"
+          className={isPlannerExpanded ? 'poe-button' : 'poe-button-secondary'}
+          onClick={() => setIsPlannerExpanded(!isPlannerExpanded)}
+          style={{ fontSize: '0.82rem', padding: '4px 12px', height: '28px', display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <span>{isPlannerExpanded ? '收合天賦規劃畫布' : '展開天賦規劃畫布'}</span>
+          {isPlannerExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </button>
       </div>
 
       {/* Embedded Native Interactive Atlas Tree Planner */}
@@ -261,3 +212,5 @@ export const AtlasStrategyDetails: React.FC<AtlasStrategyDetailsProps> = ({
     </div>
   );
 };
+
+export default AtlasStrategyDetails;
