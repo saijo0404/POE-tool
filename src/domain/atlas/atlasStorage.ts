@@ -1,4 +1,5 @@
 import type { AtlasStrategy } from './types';
+import { sanitizeExtraItems } from './atlasCraftRules';
 
 export const ATLAS_STORAGE_KEY = 'poe_atlas_custom_strategies_v1';
 export const DEFAULT_ATLAS_TREE_URL = 'https://poeplanner.com/atlas-tree';
@@ -25,7 +26,8 @@ export function loadStrategiesFromStorage(): AtlasStrategy[] {
           ...strat,
           tiers: (strat.tiers || []).map(tier => ({
             ...tier,
-            atlasTreeUrl: sanitizeAtlasTreeUrl(tier.atlasTreeUrl)
+            atlasTreeUrl: sanitizeAtlasTreeUrl(tier.atlasTreeUrl),
+            extraItems: sanitizeExtraItems(tier.extraItems)
           }))
         }));
       }
