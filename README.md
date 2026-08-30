@@ -5,13 +5,13 @@
 [![Tauri 2.0](https://img.shields.io/badge/Tauri-2.0-24C8D8.svg?logo=tauri&logoColor=white)](https://tauri.app/)
 [![Rust](https://img.shields.io/badge/Rust-1.80%2B-orange.svg?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B%20Strict-blue.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0%2B-646cff.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tests](https://img.shields.io/badge/Tests-215%20Passed-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-271%20Passed-success.svg)]()
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20Clean%20Code-purple.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
-> **POE_tool** 是一款專為台服與國際服《流亡黯道 (Path of Exile)》玩家打造的極速即時查價、倉庫資產追蹤與 Build 造價計算工具。採用 **Tauri 2.0 + Rust + React 19 + 六角架構 (Hexagonal Architecture)**，打包為純單一執行檔（`.exe`），啟動即用、**零 Node.js 執行期依賴**、記憶體佔用極低且具備毫秒級遊戲指令響應速度。
+> **POE_tool** 是一款專為台服與國際服《流亡黯道 (Path of Exile)》玩家打造的極速即時查價、倉庫資產追蹤、Build 造價精算與輿圖策略規劃工具。採用 **Tauri 2.0 + Rust + React 19 + 六角架構 (Hexagonal Architecture)**，打包為純單一執行檔（`.exe`），啟動即用、**零 Node.js 執行期依賴**、記憶體佔用極低且具備毫秒級遊戲指令響應速度。
 
 ---
 
@@ -38,21 +38,23 @@
 - **遊戲內 `Ctrl+C` 自動捕捉**：
   在遊戲中對著任意裝備按下 `Ctrl+C` 複製，工具即時透過剪貼簿自動解析物品屬性，一秒呈現市集即時刊登、官方現貨底價與中位數行情。
 - **Win32 原生遊戲指令發送 (< 1ms)**：
-  點擊「前往藏身處 (Travel to Hideout)」或快速密語時，Rust 端透過 Win32 原生 `SendInput` 瞬間完成視窗切換與指令發送，徹底消除傳統腳本冷啟動卡頓。
+  點擊「前往藏身處 (Travel to Hideout - F5)」或快速密語時，Rust 端透過 Win32 原生 `SendInput` 與安全的剪貼簿注入管線，瞬間完成視窗切換與指令發送，徹底消除傳統腳本冷啟動與輸入遺失問題。
 - **官方 API 智慧多通道節流 (Rate-Limiting)**：
   Rust 核心內建 Tokio 多通道狀態機，自動解析 GGG Rate-Limit 標頭並智慧退避，確保高頻查價不遭遇 HTTP 429 封鎖。
 
 ### 2. 💰 倉庫資產與財富追蹤 (Wealth Tracker & Stash Breakdown)
-- **真實資產即時估值**：
-  對接官方 Stash API 與 poe.ninja / GGG 官方貨幣交易所即時現貨匯率，自動計算倉庫頁與角色身上的通貨、碎片、星團珠寶、地圖與傳奇裝備之 Chaos / Divine 總淨值。
+- **真實資產即時估值（支援繁中字典轉換）**：
+  對接官方 Stash API 與 poe.ninja / GGG 官方貨幣交易所即時現貨匯率，繁中物品自動轉換中英字典，精準計算倉庫頁與角色身上的通貨、碎片、星團珠寶、命運卡、聖甲蟲、精髓、地圖與傳奇裝備之 Chaos / Divine 總淨值。
 - **分類佔比、自選分頁與門檻過濾**：
   支援勾選特定倉庫頁面、設定最低價值門檻（過濾微量垃圾物），並提供前 20 大高價值物品清單與各頁面排行。
 - **自動資產快照、趨勢圖表與社群分享**：
   支援自訂背景排程週期（如每 60 分鐘）自動記錄資產快照，透過視覺化折線圖直觀追蹤財富增長動態，並支援一鍵匯出 **CSV 歷程報表** 與 **Discord 格式摘要**。
 
-### 3. 🧮 pobb.in / poe.ninja 流派造價計算器 (Build Cost Calculator)
-- **一鍵解析配置**：
-  直接貼上 `pobb.in` 連結或 `poe.ninja` 角色流派網址，Rust 核心直接於記憶體中解壓縮 Zlib Base64 XML 代碼，抓取全套裝備、技能寶石、傳奇藥劑與珠寶插槽。
+### 3. 🧮 流派造價計算器 (Build Cost Calculator - 支援 PoB 代碼與 ninja 解析)
+- **多來源一鍵解析配置**：
+  - **Path of Building (PoB) 原始代碼**：直接貼上 PoB 匯出的 **Raw Base64 壓縮碼** 或 **原始 XML**，Rust 核心在記憶體中進行 Base64 解碼與 zlib inflate 解壓縮。
+  - **線上網址**：支援直接貼入 `pobb.in` 或 `poe.ninja` 角色流派網址。
+  - 自動分類與抓取全套裝備、技能寶石、傳奇藥劑、珠寶與插槽。
 - **官方即時現貨價同步 (Live Trade Sync)**：
   自動將 PoB 各部位裝備轉譯為官方 Trade 查詢條件，支援直接在介面中一鍵同步官方現貨價與開啟搜尋連結。
 - **流派造價報表複製**：
@@ -67,7 +69,7 @@
   連動 poe.ninja 即時物價與神聖石匯率，精算單場成本、淨利潤、ROI 與時薪估計，並提供一鍵複製批次備料採購清單與市集精確搜尋關鍵字。
 
 ### 5. 📖 章節拓荒全指引 (Act Leveling Guide)
-- **Act 1 ~ Act 10 最佳主線路線**：完整任務流程、被動技能點、昇華試煉與天賦拓荒節奏。
+- **Act 1 ~ Act 10 最佳主線路線**：完整任務流程、被動技能點、昇華試煉與天賦拓荒節奏，採模組化章節架構維護。
 - **職業寶石獎勵過濾與迷你浮窗模式**：支援職業專屬寶石過濾與懸浮置頂半透明迷你模式。
 
 ### 6. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
@@ -101,8 +103,9 @@
 ```
 
 - **微模組化設計**：所有生產檔案長度嚴格控制在 **$\le 200$ 行** 內，所有函式長度嚴格控制在 **$\le 30$ 行** 內。
+- **六角架構埠口解耦 (IStoragePort)**：全面採用依賴注入 (DIP)，徹底消除 UI 元件與全域 `localStorage` 的直接綁定。
 - **Railway-oriented 錯誤處理**：全面採用 `Result<T, E>` 與型別化的 `DomainError`，拒絕未處理的例外拋出。
-- **TypeScript Strict Typing**：全域無 `any` 宣告，所有資料傳遞皆具備嚴格介面防護。
+- **TypeScript Strict Typing**：全域無顯式 `any` 宣告，所有資料傳遞皆具備嚴格介面防護。
 - **雙向適配器支援**：前端透過 `ApiClientFactory` 支援 Tauri 原生環境與純瀏覽器展示環境之無縫相容。
 
 ---
@@ -167,16 +170,20 @@ npm run tauri:dev
 
 ## 🛠️ 建置與測試指南 (Build & Testing)
 
-### 執行完整測試套件 (134 Tests Passed)
+### 執行完整測試套件 (271 Tests Passed)
 
 ```bash
-# 1. 執行前端 Vitest 單元測試 (25 Test Suites, 113 Tests)
+# 1. 執行前端 Vitest 單元測試 (49 Test Suites, 232 Tests)
 npm test
 
-# 2. 執行後端 Rust Cargo 單元測試 (21 Tests)
+# 2. 執行後端 Rust Cargo 單元測試 (39 Tests)
 cargo test --manifest-path src-tauri/Cargo.toml
 
-# 3. 執行前端生產編譯型別檢查
+# 3. 執行前端型別檢查與代碼品質檢驗
+npm run typecheck
+npm run lint
+
+# 4. 執行前端生產編譯
 npm run build
 ```
 
@@ -217,9 +224,11 @@ POE_tool/
 │   ├── tw_ggg_stats.json               # 台服詞綴資料
 │   ├── item_dictionary.json            # 5,100+ 中英物品名稱雙向字典
 │   └── stat_dictionary.json            # 17,600+ 中英詞綴對照雙向字典
-├── src/                                # React 19 + TypeScript 六角架構前端
+├── src/                                # React 19 + TypeScript 六角架構前端 (各檔案 <= 200 行)
 │   ├── application/ports/              # 應用抽象介面 (IApiClientPort, IStoragePort)
 │   ├── domain/                         # 純領域核心 (型別定義、Result 錯誤處理、純函式計算)
+│   │   ├── acts/                       # 章節拓荒指引資料 (acts/act1.ts ~ act10.ts)
+│   │   ├── atlas/                      # 輿圖天賦拓撲、聖甲蟲資料庫、尋路與算力核心
 │   │   ├── errors/                     # Result<T, E> 與 DomainError
 │   │   ├── item/                       # 物品解析、詞綴格式化
 │   │   ├── trade/                      # 市集請求結構、排序與過濾
@@ -228,8 +237,10 @@ POE_tool/
 │   │   └── settings/                   # 系統設定領域實體
 │   ├── infrastructure/                 # 基礎設施適配器
 │   │   ├── api/                        # TauriBridgeClient, HttpFallbackClient, ApiClientFactory
-│   │   └── storage/                    # LocalStorageAdapter
+│   │   └── storage/                    # LocalStorageAdapter (實作 IStoragePort)
 │   ├── components/                     # 模組化展示組件 (各檔案 <= 200 行)
+│   │   ├── acts/                       # 章節拓荒子元件
+│   │   ├── atlas/                      # 輿圖規劃器與聖甲蟲子元件
 │   │   ├── price/                      # 即時查價子元件 (TradeListingView, AffixFilterList...)
 │   │   ├── wealth/                     # 倉庫資產子元件 (WealthHeaderCard, TabSidebarList...)
 │   │   ├── build/                      # 造價計算子元件 (BuildInputBar, BuildItemRow...)
@@ -238,8 +249,9 @@ POE_tool/
 │   │   ├── PriceChecker.tsx            # 查價頁容器
 │   │   ├── WealthTracker.tsx           # 資產頁容器
 │   │   ├── BuildCalculator.tsx         # 造價頁容器
+│   │   ├── AtlasStrategyHub.tsx        # 輿圖策略核心容器
 │   │   └── SettingsModal.tsx           # 設定彈窗容器
-│   ├── hooks/                          # 業務 Hooks (usePriceChecker, useWealthTracker, useBuildCalculator...)
+│   ├── hooks/                          # 業務 Hooks (usePriceChecker, useWealthTracker, useAtlasStrategy...)
 │   ├── utils/                          # 工具庫 (image, tauri, wealthExport, wealthCalculator)
 │   ├── context/                        # React Context 全域狀態管理
 │   ├── App.tsx                         # 主應用導航入口
@@ -260,7 +272,7 @@ POE_tool/
 │       │   ├── trade/                  # 市集搜尋、Listing 解析與密語發送 (query_builder, trade_client...)
 │       │   ├── dictionary/             # 中英詞綴索引與匹配 (state, base_types, trade_stats...)
 │       │   ├── stash/                  # 倉庫抓取、資產估值與快照排程 (stash_api, valuation, snapshot_manager...)
-│       │   ├── build_calc/             # PoB XML 解碼、詞綴轉譯與整套造價 (pob_decoder, cost_calculator...)
+│       │   ├── build_calc/             # PoB XML/Base64 解碼、詞綴轉譯與整套造價 (character_parser, pob_decoder...)
 │       │   ├── ninja/                  # 官方交易所與 poe.ninja 即時物價 (official_exchange, ninja_api...)
 │       │   ├── logger/                 # 跨平台日誌記錄與檔案輪替 (path_resolver, writer...)
 │       │   ├── rate_limiter.rs         # GGG API 智慧多通道速率限制器
