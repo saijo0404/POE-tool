@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import type { AppSettings } from '../types/poe';
+import type { AppSettings, CharacterInfo } from '../types/poe';
 import { poeApi } from '../services/api';
 import { SettingsContext } from './settingsContextDef';
 export type { SettingsContextType } from './settingsContextDef';
@@ -25,7 +25,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch {}
     return defaultSettings;
   });
-  const [characters, setCharacters] = useState<any[]>([]);
+  const [characters, setCharacters] = useState<CharacterInfo[]>([]);
   const [divineRate, setDivineRate] = useState<number>(150);
   const [isRateRefreshing, setIsRateRefreshing] = useState<boolean>(false);
   const [_isLoading, setIsLoading] = useState<boolean>(true);
@@ -97,9 +97,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const timer = setInterval(() => {
       refreshDivineRate(undefined, true);
     }, 10 * 60 * 1000);
-    if (timer && typeof (timer as any).unref === 'function') {
-      (timer as any).unref();
-    }
+    const timerNode = timer as unknown as { unref?: () => void };
+    timerNode.unref?.();
     return () => clearInterval(timer);
   }, [refreshDivineRate]);
 

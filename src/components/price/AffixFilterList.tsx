@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Filter, Link2, Skull, ShieldCheck, Plus, Search, RefreshCw } from 'lucide-react';
-import type { ParsedItemMod } from '../../types/poe';
+import type { ParsedItemMod, TradeStatusOption } from '../../types/poe';
 import { ModCategoryGroup } from './ModCategoryGroup';
 import { CustomModModal } from './CustomModModal';
 
 interface AffixFilterListProps {
   mods: ParsedItemMod[];
-  tradeStatus?: 'instant' | 'securable' | 'any_buyout' | 'onlineleague' | 'online' | 'any';
-  setTradeStatus?: (val: 'instant' | 'securable' | 'any_buyout' | 'onlineleague' | 'online' | 'any') => void;
+  tradeStatus?: TradeStatusOption;
+  setTradeStatus?: (val: TradeStatusOption) => void;
   linksMin?: number;
   setLinksMin?: (val: number | undefined) => void;
   corruptedFilter?: boolean;
@@ -63,7 +63,7 @@ export const AffixFilterList: React.FC<AffixFilterListProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <ShieldCheck size={14} color="var(--text-gold)" />
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>交易方式:</span>
-            <select className="poe-input" value={tradeStatus} onChange={e => setTradeStatus(e.target.value as any)} style={{ padding: '3px 8px', fontSize: '0.8rem', background: '#121214', color: 'var(--text-bright)' }}>
+            <select className="poe-input" value={tradeStatus} onChange={e => setTradeStatus(e.target.value as TradeStatusOption)} style={{ padding: '3px 8px', fontSize: '0.8rem', background: '#121214', color: 'var(--text-bright)' }}>
               <option value="instant">Instant Buyout (僅即時直購 - 預設)</option>
               <option value="securable">Securable (可擔保交易)</option>
               <option value="any_buyout">Instant Buyout and In Person (任何直購)</option>

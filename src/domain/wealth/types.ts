@@ -61,3 +61,18 @@ export interface StashProgress {
   currentTabName: string;
   stage: string;
 }
+
+export interface WealthFilterState {
+  minValueChaos: number;
+  ignoredTabNames: string[];
+  selectedCategory: string;
+}
+
+export interface FilteredWealthData {
+  totalChaos: number;
+  totalDivine: number;
+  tabSummaries: StashTabSummary[];
+  topItems: StashItem[];
+  allItems: StashItem[];
+}
+

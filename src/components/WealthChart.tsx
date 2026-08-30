@@ -159,7 +159,7 @@ export const WealthChart: React.FC<WealthChartProps> = ({ snapshots }) => {
             <YAxis yAxisId="right" orientation="right" stroke="#f3d179" fontSize={12} unit=" c" />
             <Tooltip
               contentStyle={{ backgroundColor: '#101622', borderColor: '#c8aa6e', color: '#fff', borderRadius: '6px' }}
-              formatter={(val: any, name: any) => [
+              formatter={(val, name) => [
                 name === 'divine' ? `${val} Divine Orbs` : `${val} Chaos Orbs`,
                 name === 'divine' ? '總資產 (神聖石)' : '總資產 (混沌石)'
               ]}

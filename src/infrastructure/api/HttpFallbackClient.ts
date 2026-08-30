@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import type { IPoeApiClient } from '../../application/ports/IPoeApiClient';
 import type {
   AppSettings, CharacterInfo, ConnectionTestResult, LoginAuthResult, AuthStatusResult,
@@ -8,7 +9,7 @@ import type {
 } from '../../types/poe';
 
 export class HttpFallbackClient implements IPoeApiClient {
-  private async safeGet<T>(url: string, options?: any, fallback?: T): Promise<T> {
+  private async safeGet<T>(url: string, options?: AxiosRequestConfig, fallback?: T): Promise<T> {
     try {
       const res = await axios.get<T>(url, options);
       return res.data;
@@ -18,7 +19,7 @@ export class HttpFallbackClient implements IPoeApiClient {
     }
   }
 
-  private async safePost<T>(url: string, data?: any, options?: any, fallback?: T): Promise<T> {
+  private async safePost<T>(url: string, data?: unknown, options?: AxiosRequestConfig, fallback?: T): Promise<T> {
     try {
       const res = await axios.post<T>(url, data, options);
       return res.data;

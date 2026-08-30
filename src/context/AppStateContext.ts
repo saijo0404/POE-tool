@@ -1,11 +1,21 @@
 import { createContext } from 'react';
-import type { ParsedItem, ParsedItemMod, TradeSearchResult, WealthSnapshot } from '../types/poe';
+import type {
+  ParsedItem,
+  ParsedItemMod,
+  TradeSearchResult,
+  WealthSnapshot,
+  BuildCostResult,
+  TradeStatusOption,
+  WealthFilterState
+} from '../types/poe';
+
+export type { WealthFilterState };
 
 export interface PriceCheckerCacheState {
   rawText: string;
   parsedItem: ParsedItem | null;
   mods: ParsedItemMod[];
-  tradeStatus: 'instant' | 'securable' | 'any_buyout' | 'onlineleague' | 'online' | 'any';
+  tradeStatus: TradeStatusOption;
   sortBy: 'price_asc' | 'price_desc' | 'indexed_desc';
   linksMin?: number;
   corruptedFilter?: boolean;
@@ -15,15 +25,10 @@ export interface PriceCheckerCacheState {
 
 export interface BuildCalculatorCacheState {
   ninjaUrl: string;
-  buildResult: any | null;
+  buildResult: BuildCostResult | null;
   activeCategoryTab: 'all' | 'equipment' | 'gems' | 'flasks' | 'jewels';
 }
 
-export interface WealthFilterState {
-  minValueChaos: number; // Exclude items below this Chaos threshold (e.g. 0, 1, 5, 10)
-  ignoredTabNames: string[]; // Tabs excluded from total wealth calculation
-  selectedCategory: string; // 'ALL', 'Currency', 'Fragment', 'DivCard', etc.
-}
 
 export interface AppStateContextType {
   // Price Checker Cache

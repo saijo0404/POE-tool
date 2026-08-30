@@ -61,7 +61,7 @@ export const TradeListingView: React.FC<TradeListingViewProps> = ({
             <select
               className="poe-input"
               value={sortBy}
-              onChange={e => onChangeSortBy(e.target.value as any)}
+              onChange={e => onChangeSortBy(e.target.value as 'price_asc' | 'price_desc' | 'indexed_desc')}
               style={{ padding: '3px 8px', fontSize: '0.8rem', background: '#121214', color: 'var(--text-bright)' }}
             >
               <option value="price_asc">價格：由低至高</option>

@@ -105,7 +105,7 @@ export const TabBreakdown: React.FC<TabBreakdownProps> = ({
             <select
               className="poe-input"
               value={sortBy}
-              onChange={e => setSortBy(e.target.value as any)}
+              onChange={e => setSortBy(e.target.value as 'value' | 'stack' | 'name')}
               style={{ padding: '4px 8px', fontSize: '0.8rem', background: '#121214', color: 'var(--text-bright)' }}
             >
               <option value="value">總價高至低</option>

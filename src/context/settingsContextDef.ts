@@ -1,9 +1,10 @@
 import { createContext } from 'react';
-import type { AppSettings } from '../types/poe';
+import type { AppSettings, CharacterInfo } from '../types/poe';
 
 export interface SettingsContextType {
   settings: AppSettings;
-  characters: any[];
+  characters: CharacterInfo[];
+
   isLoading: boolean;
   activeLeague: string;
   divineRate: number;
