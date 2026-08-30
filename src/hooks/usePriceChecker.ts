@@ -70,10 +70,18 @@ export function usePriceChecker({
     try {
       const activeMods = targetMods.filter(m => m.enabled);
       const res = await poeApi.searchTrade({
-        league: selectedLeague, tradeStatus, name: targetItem.name,
-        baseType: targetItem.baseType, rarity: targetItem.rarity, linksMin: targetLinks,
-        corrupted: targetCorrupted, itemLevelMin: targetIlvl, selectedMods: activeMods,
-        sort: getSortConfig(sortBy), fetchOffset: fetchOffset || 0
+        league: selectedLeague,
+        tradeStatus,
+        name: targetItem.name,
+        baseType: targetItem.baseType,
+        rarity: targetItem.rarity,
+        linksMin: targetLinks,
+        corrupted: targetCorrupted,
+        itemLevelMin: targetIlvl,
+        selectedMods: activeMods,
+        item: targetItem,
+        sort: getSortConfig(sortBy),
+        fetchOffset: fetchOffset || 0
       });
 
       if (isLoadMore) {

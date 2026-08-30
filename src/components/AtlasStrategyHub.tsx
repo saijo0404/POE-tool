@@ -63,6 +63,8 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
     deleteCategory,
     clearAllStrategies,
     copyShoppingList,
+    copyTradeKeywords,
+    copyPoeItemFormat,
     exportToJson,
     importFromJson
   } = useAtlasStrategy({
@@ -254,6 +256,9 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
               batchSize={batchSize}
               onSelectBatchSize={setBatchSize}
               onCopyShoppingList={copyShoppingList}
+              onCopyTradeKeywords={copyTradeKeywords}
+              onCopyPoeItemFormat={copyPoeItemFormat}
+              league={league}
               divineRate={divineRate}
             />
           </div>

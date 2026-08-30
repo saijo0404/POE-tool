@@ -208,7 +208,7 @@ export const AtlasEditStrategyModal: React.FC<AtlasEditStrategyModalProps> = ({
               className="poe-input"
               value={mapsInput}
               onChange={e => setMapsInput(e.target.value)}
-              placeholder="例如: 幽閉墓穴 (Dunes), 劇毒林地 (Toxic Sewer), 堡壘 (Citadel T17)"
+              placeholder="例如: T16 地圖, T17 地圖, T16 8詞已污染地圖"
               style={{ width: '100%', height: '34px', fontSize: '0.84rem' }}
             />
           </div>

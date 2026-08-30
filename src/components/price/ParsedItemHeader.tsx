@@ -29,6 +29,9 @@ function getFallbackCategoryIcon(baseType?: string, itemClass?: string): string 
 export const ParsedItemHeader: React.FC<ParsedItemHeaderProps> = ({ parsedItem, itemIconUrl }) => {
   const resolvedIcon = itemIconUrl ? getImageUrl(itemIconUrl) : getFallbackCategoryIcon(parsedItem.baseType, parsedItem.itemClass);
 
+  const mapTierMatch = parsedItem.rawText?.match(/(?:地圖階級|Map\s*Tier|階級|Tier):\s*(\d+)/i);
+  const mapTier = mapTierMatch ? mapTierMatch[1] : null;
+
   return (
     <div style={{
       borderBottom: '1px solid rgba(200, 170, 110, 0.2)',
@@ -77,7 +80,12 @@ export const ParsedItemHeader: React.FC<ParsedItemHeaderProps> = ({ parsedItem, 
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '8px', fontSize: '0.8rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px', fontSize: '0.8rem' }}>
+        {mapTier && (
+          <span style={{ background: '#172030', padding: '2px 8px', borderRadius: '4px', border: '1px solid var(--border-gold)', color: 'var(--text-gold)', fontWeight: 600 }}>
+            地圖階級: Tier {mapTier}
+          </span>
+        )}
         {parsedItem.itemLevel && (
           <span style={{ background: '#172030', padding: '2px 8px', borderRadius: '4px', border: '1px solid #2a364f' }}>
             物品等級: iLvl {parsedItem.itemLevel}

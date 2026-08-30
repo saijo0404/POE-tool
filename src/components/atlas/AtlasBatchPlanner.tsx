@@ -1,12 +1,17 @@
 import React from 'react';
 import type { AtlasCalculationSummary } from '../../domain/atlas/types';
-import { ShoppingCart, Copy } from 'lucide-react';
+import { resolveItemTradeMeta, formatItemAsPoeClipboard } from '../../domain/atlas/atlasHelpers';
+import { poeApi } from '../../services/api';
+import { ShoppingCart, Copy, Search, ExternalLink, FileText } from 'lucide-react';
 
 interface AtlasBatchPlannerProps {
   summary: AtlasCalculationSummary;
   batchSize: number;
   onSelectBatchSize: (size: number) => void;
   onCopyShoppingList: () => void;
+  onCopyTradeKeywords?: () => void;
+  onCopyPoeItemFormat?: () => void;
+  league?: string;
   divineRate?: number;
 }
 
@@ -16,7 +21,10 @@ export const AtlasBatchPlanner: React.FC<AtlasBatchPlannerProps> = ({
   summary,
   batchSize,
   onSelectBatchSize,
-  onCopyShoppingList
+  onCopyShoppingList,
+  onCopyTradeKeywords,
+  onCopyPoeItemFormat,
+  league
 }) => {
   return (
     <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -102,15 +110,40 @@ export const AtlasBatchPlanner: React.FC<AtlasBatchPlannerProps> = ({
           </div>
         </div>
 
-        {/* Copy Shopping List Button */}
-        <button
-          type="button"
-          className="poe-button"
-          onClick={onCopyShoppingList}
-          style={{ fontSize: '0.85rem', padding: '7px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
-        >
-          <Copy size={15} /> 一鍵複製採購清單
-        </button>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="poe-button"
+            onClick={onCopyShoppingList}
+            style={{ fontSize: '0.82rem', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            title="複製完整備料清單（含利潤、明細、市集關鍵字與裝備查詢格式）"
+          >
+            <Copy size={14} /> 一鍵複製採購清單
+          </button>
+          {onCopyTradeKeywords && (
+            <button
+              type="button"
+              className="poe-button-secondary"
+              onClick={onCopyTradeKeywords}
+              style={{ fontSize: '0.82rem', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+              title="僅複製乾淨的市集搜尋關鍵字（中文與英文大宗採購）"
+            >
+              <Search size={14} /> 複製市集關鍵字
+            </button>
+          )}
+          {onCopyPoeItemFormat && (
+            <button
+              type="button"
+              className="poe-button-secondary"
+              onClick={onCopyPoeItemFormat}
+              style={{ fontSize: '0.82rem', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+              title="複製為符合裝備查詢（PriceChecker / 遊戲內 Ctrl+C）的標準格式"
+            >
+              <FileText size={14} /> 複製裝備查詢格式
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Materials Requirements Table */}
@@ -126,49 +159,91 @@ export const AtlasBatchPlanner: React.FC<AtlasBatchPlannerProps> = ({
               <th style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-gold)', fontWeight: 600 }}>參考單價</th>
               <th style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-gold)', fontWeight: 600 }}>總費用 (Chaos)</th>
               <th style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-gold)', fontWeight: 600 }}>總費用 (Divine)</th>
+              <th style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-gold)', fontWeight: 600 }}>市集與查價</th>
             </tr>
           </thead>
           <tbody>
             {summary.batchItems.length > 0 ? (
-              summary.batchItems.map((item, idx) => (
-                <tr
-                  key={idx}
-                  className="poe-table-row"
-                  style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
-                >
-                  <td style={{ padding: '8px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '0.9rem' }}>
-                        {item.category === 'scarab' ? '🪲' : '📦'}
-                      </span>
-                      <div>
-                        <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{item.name}</div>
-                        {item.nameEn && !item.name.includes(item.nameEn) && (
-                          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{item.nameEn}</div>
-                        )}
+              summary.batchItems.map((item, idx) => {
+                const meta = resolveItemTradeMeta(item, league);
+                return (
+                  <tr
+                    key={idx}
+                    className="poe-table-row"
+                    style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
+                  >
+                    <td style={{ padding: '8px 12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontSize: '0.9rem' }}>
+                          {item.category === 'scarab' ? '🪲' : '📦'}
+                        </span>
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{item.name}</div>
+                          {meta.cleanEnglishName && !item.name.includes(meta.cleanEnglishName) && (
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{meta.cleanEnglishName}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                    x {item.unitCount}
-                  </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-gold)', fontWeight: 700 }}>
-                    x {item.totalCount}
-                  </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-muted)' }}>
-                    {item.unitPriceChaos} C
-                  </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-gold)' }}>
-                    {item.totalCostChaos} C
-                  </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-dim)' }}>
-                    ~{item.totalCostDivine} Div
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      x {item.unitCount}
+                    </td>
+                    <td style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-gold)', fontWeight: 700 }}>
+                      x {item.totalCount}
+                    </td>
+                    <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-muted)' }}>
+                      {item.unitPriceChaos} C
+                    </td>
+                    <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-gold)' }}>
+                      {item.totalCostChaos} C
+                    </td>
+                    <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--text-dim)' }}>
+                      ~{item.totalCostDivine} Div
+                    </td>
+                    <td style={{ padding: '8px 12px', textAlign: 'center' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        {meta.tradeSearchUrl ? (
+                          <button
+                            type="button"
+                            className="poe-button-secondary"
+                            onClick={() => poeApi.openExternalUrl(meta.tradeSearchUrl!)}
+                            style={{
+                              fontSize: '0.72rem',
+                              padding: '2px 7px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                              height: '24px'
+                            }}
+                            title={`在官方市集搜尋 ${meta.cleanEnglishName}`}
+                          >
+                            <ExternalLink size={11} /> 市集
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          className="poe-button-secondary"
+                          onClick={() => navigator.clipboard.writeText(formatItemAsPoeClipboard(item, 'zh'))}
+                          style={{
+                            fontSize: '0.72rem',
+                            padding: '2px 7px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                            height: '24px'
+                          }}
+                          title="複製為遊戲內 / 裝備查詢格式 (Ctrl+C)"
+                        >
+                          <FileText size={11} /> 查價格式
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-dim)' }}>
+                <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-dim)' }}>
                   當前分級尚未設定聖甲蟲或額外物品
                 </td>
               </tr>

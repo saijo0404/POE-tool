@@ -6,7 +6,13 @@ import type {
   BatchItemRequirement
 } from './types';
 import { SCARAB_DATABASE, POPULAR_EXTRA_ITEMS } from './scarabDatabase';
-export { generateShoppingListText } from './atlasShoppingList';
+export {
+  generateShoppingListText,
+  generateTradeKeywordsText,
+  generatePoeItemFormatListText,
+  formatItemAsPoeClipboard,
+  resolveItemTradeMeta
+} from './atlasShoppingList';
 
 export function resolveScarabPrice(
   scarab: AtlasTierScarab,

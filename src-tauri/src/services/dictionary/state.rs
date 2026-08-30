@@ -63,6 +63,10 @@ impl DictionaryState {
             }
         }
 
+        for (k, v) in super::base_types::get_common_item_map() {
+            self.item_dict.insert(k, v);
+        }
+
         let data_dir = get_data_dir();
         let stat_path = data_dir.join("stat_dictionary.json");
         let item_path = data_dir.join("item_dictionary.json");
