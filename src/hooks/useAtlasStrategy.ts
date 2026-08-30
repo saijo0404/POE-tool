@@ -10,7 +10,9 @@ import {
   loadStrategiesFromStorage,
   saveStrategiesToStorage,
   computeAtlasSummary,
-  generateShoppingListText
+  generateShoppingListText,
+  generateTradeKeywordsText,
+  generatePoeItemFormatListText
 } from '../domain/atlas/atlasHelpers';
 import { poeApi } from '../services/api';
 
@@ -192,11 +194,11 @@ export function useAtlasStrategy({
           id: `tier_${Date.now()}_1`,
           name: '入門低配 (Budget)',
           description: '低成本起手配置',
-          recommendedMaps: ['幽閉墓穴 (Dunes)'],
+          recommendedMaps: ['T16 地圖'],
           coreKeystones: ['專注單一 (Singular Focus)'],
           scarabs: [],
           extraItems: [
-            { id: `ex_${Date.now()}_1`, name: 'T16 幽閉墓穴 (Dunes)', category: 'map', count: 1, unitPriceChaos: 4 }
+            { id: `ex_${Date.now()}_1`, name: 'T16 地圖 (Tier 16 Map)', nameEn: 'Tier 16 Map', category: 'map', count: 1, unitPriceChaos: 4 }
           ],
           estimatedRevenuePerMapChaos: 60,
           mapsPerHour: 15
@@ -292,11 +294,11 @@ export function useAtlasStrategy({
       id: newTierId,
       name: tierName.trim() || `自訂分級 ${currentStrategy.tiers.length + 1}`,
       description: '自訂輿圖分級設定',
-      recommendedMaps: ['幽閉墓穴 (Dunes)'],
+      recommendedMaps: ['T16 地圖'],
       coreKeystones: ['專注單一 (Singular Focus)'],
       scarabs: [],
       extraItems: [
-        { id: `ex_${Date.now()}`, name: 'T16 幽閉墓穴 (Dunes)', category: 'map', count: 1, unitPriceChaos: 4 }
+        { id: `ex_${Date.now()}`, name: 'T16 地圖 (Tier 16 Map)', nameEn: 'Tier 16 Map', category: 'map', count: 1, unitPriceChaos: 4 }
       ],
       estimatedRevenuePerMapChaos: 80,
       mapsPerHour: 15
@@ -367,6 +369,30 @@ export function useAtlasStrategy({
       onShowToast('複製失敗，請手動選取');
     }
   }, [currentStrategy, currentTier, calculationSummary, onShowToast]);
+
+  // Copy trade keywords
+  const copyTradeKeywords = useCallback(async () => {
+    if (!calculationSummary) return;
+    const text = generateTradeKeywordsText(calculationSummary);
+    try {
+      await navigator.clipboard.writeText(text);
+      onShowToast(`🔍 已複製 ${calculationSummary.batchSize} 場地圖市集搜尋關鍵字！`);
+    } catch {
+      onShowToast('複製失敗，請手動選取');
+    }
+  }, [calculationSummary, onShowToast]);
+
+  // Copy PoE item clipboard format (for 裝備查詢 / PriceChecker)
+  const copyPoeItemFormat = useCallback(async () => {
+    if (!calculationSummary) return;
+    const text = generatePoeItemFormatListText(calculationSummary, 'zh');
+    try {
+      await navigator.clipboard.writeText(text);
+      onShowToast(`📋 已複製 ${calculationSummary.batchSize} 場地圖裝備查詢格式至剪貼簿！`);
+    } catch {
+      onShowToast('複製失敗，請手動選取');
+    }
+  }, [calculationSummary, onShowToast]);
 
   // Export JSON
   const exportToJson = useCallback(() => {
@@ -453,6 +479,8 @@ export function useAtlasStrategy({
     deleteCategory,
     clearAllStrategies,
     copyShoppingList,
+    copyTradeKeywords,
+    copyPoeItemFormat,
     exportToJson,
     importFromJson
   };

@@ -485,15 +485,13 @@ export const POPULAR_EXTRA_ITEMS: Array<{
   { name: '地圖工藝：儀式 (Ritual)', nameEn: 'Ritual Craft', category: 'craft', defaultPriceChaos: 8 },
   { name: '地圖工藝：命運 (Fortune Favours)', nameEn: 'Fortune Favours the Brave', category: 'craft', defaultPriceChaos: 3 },
 
-  // Map Bases
-  { name: 'T16 劇毒林地 (Toxic Sewer)', nameEn: 'T16 Toxic Sewer Map', category: 'map', defaultPriceChaos: 4 },
-  { name: 'T16 幽閉墓穴 (Dunes)', nameEn: 'T16 Dunes Map', category: 'map', defaultPriceChaos: 4 },
-  { name: 'T16 濱海山丘 (Strand)', nameEn: 'T16 Strand Map', category: 'map', defaultPriceChaos: 4 },
-  { name: 'T16 市集 (City Square)', nameEn: 'T16 City Square Map', category: 'map', defaultPriceChaos: 4 },
-  { name: 'T16 8詞已污染地圖 (8-Mod Corrupted)', nameEn: 'T16 8-Mod Corrupted Map', category: 'map', defaultPriceChaos: 10 },
-  { name: 'T17 堡壘 (Citadel Map)', nameEn: 'T17 Citadel Map', category: 'map', defaultPriceChaos: 65 },
-  { name: 'T17 聖所 (Sanctuary Map)', nameEn: 'T17 Sanctuary Map', category: 'map', defaultPriceChaos: 60 },
-  { name: 'T17 恐懼要塞 (Abomination Map)', nameEn: 'T17 Abomination Map', category: 'map', defaultPriceChaos: 65 },
+  // Map Bases (Tier based - no layout names)
+  { name: 'T16 地圖 (Tier 16 Map)', nameEn: 'Tier 16 Map', category: 'map', defaultPriceChaos: 4 },
+  { name: 'T17 地圖 (Tier 17 Map)', nameEn: 'Tier 17 Map', category: 'map', defaultPriceChaos: 65 },
+  { name: 'T16 8詞已污染地圖 (8-Mod Corrupted)', nameEn: 'Tier 16 8-Mod Corrupted Map', category: 'map', defaultPriceChaos: 10 },
+  { name: 'T15 地圖 (Tier 15 Map)', nameEn: 'Tier 15 Map', category: 'map', defaultPriceChaos: 3 },
+  { name: 'T14 地圖 (Tier 14 Map)', nameEn: 'Tier 14 Map', category: 'map', defaultPriceChaos: 2 },
+  { name: 'T1-T13 地圖 (Low/Mid Tier Map)', nameEn: 'Tier 1-13 Map', category: 'map', defaultPriceChaos: 1 },
 
   // Delirium Orbs
   { name: '占卜瞻妄玉 (Diviner\'s Delirium Orb)', nameEn: "Diviner's Delirium Orb", category: 'delirium', defaultPriceChaos: 22 },

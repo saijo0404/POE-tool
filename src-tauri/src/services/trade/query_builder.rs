@@ -44,7 +44,7 @@ fn resolve_item_identity(query_obj: &mut Value, req: &TradeQueryRequest) {
         .rarity
         .as_deref()
         .or_else(|| req.item.as_ref().map(|i| i.rarity.as_str()))
-        .unwrap_or("Rare");
+        .unwrap_or("");
     let is_unique = item_rarity.eq_ignore_ascii_case("unique");
 
     let raw_name = req
@@ -72,15 +72,28 @@ fn resolve_item_identity(query_obj: &mut Value, req: &TradeQueryRequest) {
         String::new()
     };
 
+    let is_generic_map = (tr_base.eq_ignore_ascii_case("Map")
+        || tr_base == "地圖"
+        || tr_name.eq_ignore_ascii_case("Map")
+        || tr_name == "地圖")
+        && !is_unique;
+
+    if is_generic_map {
+        // For generic maps, do not set query_obj["type"] because "Map" is a category filter on PoE trade
+        return;
+    }
+
     if is_unique {
-        if !tr_name.is_empty() && tr_name.is_ascii() {
+        if !tr_name.is_empty() {
             query_obj["name"] = json!(tr_name);
         }
-        if !tr_base.is_empty() && tr_base != tr_name && tr_base.is_ascii() {
+        if !tr_base.is_empty() && tr_base != tr_name {
             query_obj["type"] = json!(tr_base);
         }
-    } else if !tr_base.is_empty() && tr_base.is_ascii() {
+    } else if !tr_base.is_empty() {
         query_obj["type"] = json!(tr_base);
+    } else if !tr_name.is_empty() {
+        query_obj["type"] = json!(tr_name);
     }
 }
 
@@ -89,6 +102,9 @@ fn build_stat_filters(req: &TradeQueryRequest) -> Vec<Value> {
     if let Some(filters) = &req.filters {
         for f in filters {
             if f.disabled.unwrap_or(false) {
+                continue;
+            }
+            if f.stat_id.starts_with("custom") || !f.stat_id.contains('.') {
                 continue;
             }
             let mut filter_entry = json!({ "id": f.stat_id });
@@ -216,24 +232,77 @@ fn build_top_filters(req: &TradeQueryRequest) -> Value {
         .rarity
         .as_deref()
         .or_else(|| req.item.as_ref().map(|i| i.rarity.as_str()))
-        .unwrap_or("Rare");
+        .unwrap_or("");
+    let raw_base = req
+        .base_type
+        .as_deref()
+        .or_else(|| req.item.as_ref().map(|i| i.base_type.as_str()))
+        .unwrap_or("");
+    let raw_name = req
+        .name
+        .as_deref()
+        .or_else(|| req.item.as_ref().map(|i| i.name.as_str()))
+        .unwrap_or("");
+    let is_generic_map = (raw_base.eq_ignore_ascii_case("Map")
+        || raw_base == "地圖"
+        || raw_name.eq_ignore_ascii_case("Map")
+        || raw_name == "地圖")
+        && !item_rarity.eq_ignore_ascii_case("unique");
+
     let rarity_option = match item_rarity.to_lowercase().as_str() {
         "rare" => Some("rare"),
         "unique" => Some("unique"),
         "magic" => Some("magic"),
         "normal" => Some("normal"),
-        "currency" => Some("currency"),
-        "gem" => Some("gem"),
+        "nonunique" => Some("nonunique"),
         _ => None,
     };
+
+    let mut type_filter_obj = json!({});
     if let Some(opt) = rarity_option {
-        top_filters["type_filters"] = json!({ "filters": { "rarity": { "option": opt } } });
+        type_filter_obj["rarity"] = json!({ "option": opt });
     }
+    if is_generic_map {
+        type_filter_obj["category"] = json!({ "option": "map" });
+    }
+    if type_filter_obj.as_object().is_some_and(|o| !o.is_empty()) {
+        top_filters["type_filters"] = json!({ "filters": type_filter_obj });
+    }
+
     if let Some(links_min) = req.links_min {
         if links_min > 0 {
             top_filters["socket_filters"] = json!({ "filters": { "links": { "min": links_min } } });
         }
     }
+
+    // Map filters (tier)
+    let map_tier = req
+        .item
+        .as_ref()
+        .and_then(|item| {
+            let re = regex::Regex::new(r"(?i)(?:地圖階級|Map\s*Tier|階級|Tier):\s*(\d+)").ok()?;
+            let cap = re.captures(&item.raw_text)?;
+            cap[1].parse::<i64>().ok()
+        })
+        .or_else(|| {
+            let re = regex::Regex::new(r"(?i)(?:T|Tier\s*)(\d+)").ok()?;
+            if let Some(cap) = re.captures(raw_name) {
+                cap[1].parse::<i64>().ok()
+            } else if let Some(cap) = re.captures(raw_base) {
+                cap[1].parse::<i64>().ok()
+            } else {
+                None
+            }
+        });
+
+    if let Some(tier) = map_tier {
+        top_filters["map_filters"] = json!({
+            "filters": {
+                "map_tier": { "min": tier, "max": tier }
+            }
+        });
+    }
+
     let mut misc_filters = json!({});
     if let Some(corrupted) = req.corrupted {
         misc_filters["corrupted"] = json!({ "option": if corrupted { "true" } else { "false" } });

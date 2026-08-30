@@ -111,6 +111,7 @@ export interface AtlasStrategy {
 
 export interface BatchItemRequirement {
   name: string;
+  nameEn?: string;
   category: 'scarab' | ExtraItemCategory;
   unitCount: number;
   totalCount: number;
