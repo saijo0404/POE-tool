@@ -436,3 +436,118 @@ fn test_parse_character_window_json_with_stringified_item_data() {
         "Stats must be generated for stringified itemData"
     );
 }
+
+#[tokio::test]
+async fn test_fetch_pob_or_ninja_build_raw_xml() {
+    let xml = r#"<PathOfBuilding>
+        <Build level="92" className="Shadow" ascendClassName="Trickster" league="Settlers" />
+        <Items>
+            <Item id="1">
+Rarity: UNIQUE
+Shavronne's Wrappings
+Occultist's Vestment
+Item Level: 80
+Quality: 20
+Sockets: B-B-B-B-B-B
+Implicits: 0
+10% increased Spell Damage
++140 to maximum Energy Shield
+10% increased maximum Energy Shield
+10% increased Lightning Resistance
+Reflects 1 to 250 Lightning Damage to Attackers on Block
+Chaos Damage does not bypass Energy Shield
+            </Item>
+            <ItemSet useSecondWeaponSet="false" id="1">
+                <Slot name="Body Armour" itemId="1" />
+            </ItemSet>
+        </Items>
+    </PathOfBuilding>"#;
+
+    let result = fetch_pob_or_ninja_build(xml).await;
+    assert!(
+        result.is_ok(),
+        "Raw PoB XML should be parsed successfully without network request"
+    );
+    let build = result.unwrap();
+    assert_eq!(build.class_name, "Shadow");
+    assert_eq!(build.ascendancy, "Trickster");
+    assert_eq!(build.level, 92);
+    assert_eq!(build.equipment.len(), 1);
+    assert_eq!(build.equipment[0].name, "Shavronne's Wrappings");
+}
+
+#[tokio::test]
+async fn test_fetch_pob_or_ninja_build_raw_base64() {
+    use base64::Engine;
+    use flate2::write::ZlibEncoder;
+    use flate2::Compression;
+    use std::io::Write;
+
+    let xml = r#"<PathOfBuilding>
+        <Build level="95" className="Witch" ascendClassName="Necromancer" league="Settlers" />
+        <Items>
+            <Item id="1">
+Rarity: UNIQUE
+Midnight Bargain
+Engraved Wand
+Item Level: 75
+Quality: 20
+Implicits: 1
+22% increased Spell Damage
++10 to Intelligence
+Cannot be used with Chaos Inoculation
+Minions have 20% increased Movement Speed
+Minions deal 30% increased Damage
++1 to Maximum number of Raised Zombies
++1 to Maximum number of Spectres
++1 to Maximum number of Skeletons
+Reserves 30% of Life
+            </Item>
+            <ItemSet useSecondWeaponSet="false" id="1">
+                <Slot name="Weapon 1" itemId="1" />
+            </ItemSet>
+        </Items>
+    </PathOfBuilding>"#;
+
+    let mut encoder = ZlibEncoder::new(Vec::new(), Compression::best());
+    encoder.write_all(xml.as_bytes()).unwrap();
+    let compressed = encoder.finish().unwrap();
+    let base64_str = base64::engine::general_purpose::STANDARD.encode(&compressed);
+    assert!(
+        base64_str.starts_with("eN"),
+        "PoB compressed base64 should start with eN"
+    );
+
+    let result = fetch_pob_or_ninja_build(&base64_str).await;
+    assert!(
+        result.is_ok(),
+        "Raw PoB Base64 should be decoded and parsed in-memory without network request: {:?}",
+        result.err()
+    );
+    let build = result.unwrap();
+    assert_eq!(build.class_name, "Witch");
+    assert_eq!(build.ascendancy, "Necromancer");
+    assert_eq!(build.level, 95);
+    assert_eq!(build.equipment.len(), 1);
+    assert_eq!(build.equipment[0].name, "Midnight Bargain");
+}
+
+#[test]
+fn test_decompress_pob_base64_with_newlines_and_url_safe() {
+    use base64::Engine;
+    use flate2::write::ZlibEncoder;
+    use flate2::Compression;
+    use std::io::Write;
+
+    let xml = r#"<PathOfBuilding><Build level="90" className="Ranger" ascendClassName="Deadeye" league="Standard" /></PathOfBuilding>"#;
+    let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
+    encoder.write_all(xml.as_bytes()).unwrap();
+    let compressed = encoder.finish().unwrap();
+    let base64_str = base64::engine::general_purpose::URL_SAFE.encode(&compressed);
+
+    // Add extra spaces and newlines
+    let wrapped_str = format!("  \n {} \r\n\t ", base64_str);
+    let decompressed = decompress_pob_base64(&wrapped_str)
+        .expect("Decompress with whitespace and URL-safe base64");
+    assert_eq!(decompressed, xml);
+}
