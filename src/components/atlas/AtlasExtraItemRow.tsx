@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { AtlasTierExtraItem, ExtraItemCategory } from '../../domain/atlas/types';
 import { resolveExtraItemPrice } from '../../domain/atlas/atlasHelpers';
-import { Trash2, Lock } from 'lucide-react';
+import { Trash2, Lock, Edit2, Check, X } from 'lucide-react';
 
 interface AtlasExtraItemRowProps {
   item: AtlasTierExtraItem;
@@ -27,49 +27,88 @@ export const AtlasExtraItemRow: React.FC<AtlasExtraItemRowProps> = ({
   onUpdate,
   onRemove
 }) => {
+  const [isEditingName, setIsEditingName] = useState<boolean>(false);
+  const [editName, setEditName] = useState<string>('');
+
   const isCraft = item.category === 'craft';
   const unitPrice = resolveExtraItemPrice(item, ninjaRates, divineRate);
   const count = isCraft ? 1 : (item.count || 1);
   const totalItemCost = Math.round(count * unitPrice * 10) / 10;
   const catInfo = CATEGORY_LABELS[item.category] || CATEGORY_LABELS.other;
 
+  const handleStartRename = () => {
+    setEditName(item.name);
+    setIsEditingName(true);
+  };
+
+  const handleSaveRename = () => {
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== item.name) {
+      onUpdate(item.id, { name: trimmed });
+    }
+    setIsEditingName(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSaveRename();
+    if (e.key === 'Escape') setIsEditingName(false);
+  };
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '10px',
-        padding: '8px 12px',
-        background: isCraft ? 'rgba(245, 158, 11, 0.05)' : 'rgba(0, 0, 0, 0.3)',
-        border: isCraft ? '1px solid rgba(245, 158, 11, 0.35)' : '1px solid rgba(200, 170, 110, 0.18)',
-        borderRadius: '6px'
-      }}
-    >
-      {/* Left: Item Info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 200px' }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px',
+      padding: '8px 12px', borderRadius: '6px',
+      background: isCraft ? 'rgba(245, 158, 11, 0.05)' : 'rgba(0, 0, 0, 0.3)',
+      border: isCraft ? '1px solid rgba(245, 158, 11, 0.35)' : '1px solid rgba(200, 170, 110, 0.18)'
+    }}>
+      {/* Left: Item Info with Inline Editable Name */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 220px' }}>
         <span style={{
-          fontSize: '0.72rem',
-          padding: '2px 6px',
-          borderRadius: '4px',
-          background: `${catInfo.color}22`,
-          color: catInfo.color,
-          border: `1px solid ${catInfo.color}55`,
-          whiteSpace: 'nowrap'
+          fontSize: '0.72rem', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap',
+          background: `${catInfo.color}22`, color: catInfo.color, border: `1px solid ${catInfo.color}55`
         }}>
           {catInfo.label}
         </span>
-        <div>
-          <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#e2e8f0' }}>
-            {item.name}
+
+        {isEditingName ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1 }}>
+            <input
+              type="text"
+              className="poe-input"
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              style={{ height: '26px', fontSize: '0.84rem', padding: '0 6px', width: '180px' }}
+            />
+            <button type="button" className="poe-button" onClick={handleSaveRename} style={{ padding: '0 5px', height: '26px' }} title="確認">
+              <Check size={12} />
+            </button>
+            <button type="button" className="poe-button-secondary" onClick={() => setIsEditingName(false)} style={{ padding: '0 5px', height: '26px' }} title="取消">
+              <X size={12} />
+            </button>
           </div>
-          {item.nameEn && (
-            <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>
-              {item.nameEn}
+        ) : (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span onDoubleClick={handleStartRename} title="雙擊以修改名稱" style={{ fontWeight: 600, fontSize: '0.88rem', color: '#e2e8f0', cursor: 'pointer' }}>
+                {item.name}
+              </span>
+              <button
+                type="button"
+                onClick={handleStartRename}
+                title="修改名稱"
+                aria-label="修改名稱"
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', padding: '2px', display: 'inline-flex' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-gold)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-dim)'; }}
+              >
+                <Edit2 size={12} />
+              </button>
             </div>
-          )}
-        </div>
+            {item.nameEn && <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>{item.nameEn}</div>}
+          </div>
+        )}
       </div>
 
       {/* Center: Count Stepper */}
@@ -79,16 +118,9 @@ export const AtlasExtraItemRow: React.FC<AtlasExtraItemRowProps> = ({
           <div
             title="地圖工藝單場固定消耗 1 次"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '3px 8px',
-              background: 'rgba(245, 158, 11, 0.15)',
-              border: '1px solid rgba(245, 158, 11, 0.4)',
-              borderRadius: '4px',
-              fontSize: '0.8rem',
-              color: 'var(--text-gold)',
-              fontWeight: 600
+              display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px',
+              background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.4)',
+              fontSize: '0.8rem', color: 'var(--text-gold)', fontWeight: 600
             }}
           >
             <Lock size={12} /> 1 次 (固定)
@@ -126,8 +158,11 @@ export const AtlasExtraItemRow: React.FC<AtlasExtraItemRowProps> = ({
               min="0"
               step="0.5"
               className="poe-input"
-              value={item.unitPriceChaos}
-              onChange={e => onUpdate(item.id, { unitPriceChaos: parseFloat(e.target.value) || 0 })}
+              value={item.unitPriceChaos !== undefined ? item.unitPriceChaos : unitPrice}
+              onChange={e => {
+                const val = parseFloat(e.target.value);
+                onUpdate(item.id, { unitPriceChaos: isNaN(val) ? 0 : Math.max(0, val) });
+              }}
               style={{ width: '55px', height: '24px', padding: '0 4px', fontSize: '0.78rem', textAlign: 'right' }}
             />
             <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>C</span>
@@ -136,9 +171,7 @@ export const AtlasExtraItemRow: React.FC<AtlasExtraItemRowProps> = ({
 
         <div style={{ textAlign: 'right', minWidth: '70px' }}>
           <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>小計</div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-gold)' }}>
-            {totalItemCost} C
-          </div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-gold)' }}>{totalItemCost} C</div>
         </div>
 
         <button

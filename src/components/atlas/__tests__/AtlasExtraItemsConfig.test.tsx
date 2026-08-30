@@ -97,4 +97,41 @@ describe('AtlasExtraItemsConfig Component (Issue #12)', () => {
     expect(screen.getByText(/將自動替換現有工藝【地圖工藝：伏擊】/i)).toBeInTheDocument();
     expect(screen.getByText(/\(工藝固定為 1\)/i)).toBeInTheDocument();
   });
+
+  it('calls onUpdateExtraItem when modifying unit price in item row (Issue #16)', () => {
+    const onUpdate = vi.fn();
+    render(
+      <AtlasExtraItemsConfig
+        {...defaultProps}
+        extraItems={[craftAmbush]}
+        onUpdateExtraItem={onUpdate}
+      />
+    );
+
+    const priceInput = screen.getByRole('spinbutton');
+    fireEvent.change(priceInput, { target: { value: '10' } });
+    expect(onUpdate).toHaveBeenCalledWith('craft_ambush', { unitPriceChaos: 10 });
+  });
+
+  it('calls onUpdateExtraItem when editing item name in item row (Issue #16)', () => {
+    const onUpdate = vi.fn();
+    render(
+      <AtlasExtraItemsConfig
+        {...defaultProps}
+        extraItems={[craftAmbush]}
+        onUpdateExtraItem={onUpdate}
+      />
+    );
+
+    const editBtn = screen.getByRole('button', { name: '修改名稱' });
+    fireEvent.click(editBtn);
+
+    const nameInput = screen.getByDisplayValue('地圖工藝：伏擊 (Ambush)');
+    fireEvent.change(nameInput, { target: { value: '伏擊 (6分產出)' } });
+
+    const saveBtn = screen.getByTitle(/確認|儲存/i);
+    fireEvent.click(saveBtn);
+
+    expect(onUpdate).toHaveBeenCalledWith('craft_ambush', { name: '伏擊 (6分產出)' });
+  });
 });
