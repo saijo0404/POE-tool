@@ -410,10 +410,22 @@ fn test_parse_scarab_and_map_item_format() {
     };
     let query_val = crate::services::trade::query_builder::build_search_query_payload(&req);
     assert_eq!(query_val["query"]["type"], serde_json::Value::Null);
-    assert_eq!(query_val["query"]["filters"]["type_filters"]["filters"]["category"]["option"], "map");
-    assert_eq!(query_val["query"]["filters"]["type_filters"]["filters"]["rarity"]["option"], "normal");
-    assert_eq!(query_val["query"]["filters"]["map_filters"]["filters"]["map_tier"]["min"], 16);
-    assert_eq!(query_val["query"]["filters"]["map_filters"]["filters"]["map_tier"]["max"], 16);
+    assert_eq!(
+        query_val["query"]["filters"]["type_filters"]["filters"]["category"]["option"],
+        "map"
+    );
+    assert_eq!(
+        query_val["query"]["filters"]["type_filters"]["filters"]["rarity"]["option"],
+        "normal"
+    );
+    assert_eq!(
+        query_val["query"]["filters"]["map_filters"]["filters"]["map_tier"]["min"],
+        16
+    );
+    assert_eq!(
+        query_val["query"]["filters"]["map_filters"]["filters"]["map_tier"]["max"],
+        16
+    );
 
     let scarab_req = crate::models::trade::TradeQueryRequest {
         league: Some("Settlers".to_string()),
@@ -432,7 +444,11 @@ fn test_parse_scarab_and_map_item_format() {
         fetch_offset: None,
         search_id: None,
     };
-    let scarab_query_val = crate::services::trade::query_builder::build_search_query_payload(&scarab_req);
+    let scarab_query_val =
+        crate::services::trade::query_builder::build_search_query_payload(&scarab_req);
     assert_eq!(scarab_query_val["query"]["type"], "Essence Scarab");
-    assert_eq!(scarab_query_val["query"]["filters"], serde_json::Value::Null);
+    assert_eq!(
+        scarab_query_val["query"]["filters"],
+        serde_json::Value::Null
+    );
 }

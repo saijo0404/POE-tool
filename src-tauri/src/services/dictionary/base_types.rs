@@ -47,7 +47,6 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("祝福石", "Blessed Orb"),
         ("聖靈之核", "Beyond Catalyst"),
         ("古靈莊園", "Sacred Lifeforce"),
-
         // Fragments
         ("充能血器", "Filled Blood Vessel"),
         ("祭壇之血容器", "Filled Blood Vessel"),
@@ -55,7 +54,6 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("正午的奉獻", "Sacrifice at Noon"),
         ("黃昏的奉獻", "Sacrifice at Dusk"),
         ("午夜的奉獻", "Sacrifice at Midnight"),
-
         // Delirium Orbs
         ("占卜瞻妄玉", "Diviner's Delirium Orb"),
         ("精髓瞻妄玉", "Fine Delirium Orb"),
@@ -64,21 +62,18 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("化石瞻妄玉", "Fossilised Delirium Orb"),
         ("飾品瞻妄玉", "Jeweller's Delirium Orb"),
         ("裂痕瞻妄玉", "Breaching Delirium Orb"),
-
         // Scarabs (Essence)
         ("精髓甲蟲", "Essence Scarab"),
         ("飛升之精髓甲蟲", "Essence Scarab of Ascent"),
         ("鈣化之精髓甲蟲", "Essence Scarab of Calcification"),
         ("穩定之精髓甲蟲", "Essence Scarab of Stability"),
         ("適應之精髓甲蟲", "Essence Scarab of Adaptation"),
-
         // Scarabs (Ambush)
         ("伏擊甲蟲", "Ambush Scarab"),
         ("隱密之伏擊甲蟲", "Ambush Scarab of Hidden Compartments"),
         ("效能之伏擊甲蟲", "Ambush Scarab of Potency"),
         ("洞察之伏擊甲蟲", "Ambush Scarab of Discernment"),
         ("圍堵之伏擊甲蟲", "Ambush Scarab of Containment"),
-
         // Scarabs (Harvest & Legion)
         ("收割甲蟲", "Harvest Scarab"),
         ("豐收之收割甲蟲", "Harvest Scarab of Cornucopia"),
@@ -87,7 +82,6 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("軍官之軍團甲蟲", "Legion Scarab of Officers"),
         ("指令之軍團甲蟲", "Legion Scarab of Command"),
         ("決鬥之軍團甲蟲", "Legion Scarab of The Sekhema"),
-
         // Scarabs (Breach, Expedition, Ritual)
         ("破滅裂痕甲蟲", "Breach Scarab"),
         ("探險甲蟲", "Expedition Scarab"),
@@ -96,7 +90,6 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("儀式甲蟲", "Ritual Scarab"),
         ("選拔之儀式甲蟲", "Ritual Scarab of Selectiveness"),
         ("富饒之儀式甲蟲", "Ritual Scarab of Abundance"),
-
         // Scarabs (Harbinger, Beyond, Domination, Delirium, Cartography, Divination)
         ("神諭甲蟲", "Harbinger Scarab"),
         ("戰爭之神諭甲蟲", "Harbinger Scarab of Warhoards"),
@@ -116,7 +109,6 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("苦痛甲蟲", "Torment Scarab"),
         ("宿敵甲蟲", "Nemesis Scarab"),
         ("野獸甲蟲", "Bestiary Scarab"),
-
         // Maps & Waystones
         ("地圖", "Map"),
         ("路標石", "Waystone"),
@@ -150,7 +142,6 @@ pub fn get_common_item_map() -> HashMap<String, String> {
         ("巨坑", "Pit Map"),
         ("濱海幽穴", "Shore Map"),
         ("晨曦之境", "Promenade Map"),
-
         // Uniques & Bases
         ("罪魔邪冠", "Hubris Circlet"),
         ("魔影法衣", "Vaal Regalia"),

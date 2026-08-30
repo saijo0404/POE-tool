@@ -36,10 +36,7 @@ fn test_base_type_lookups() {
         lookup_english_base_type("占卜瞻妄玉"),
         Some("Diviner's Delirium Orb".to_string())
     );
-    assert_eq!(
-        lookup_english_base_type("地圖"),
-        Some("Map".to_string())
-    );
+    assert_eq!(lookup_english_base_type("地圖"), Some("Map".to_string()));
     assert_eq!(
         lookup_english_base_type("路標石"),
         Some("Waystone".to_string())
