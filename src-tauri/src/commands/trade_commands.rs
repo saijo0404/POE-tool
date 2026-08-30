@@ -49,6 +49,7 @@ pub async fn send_official_whisper(
 
 #[tauri::command]
 pub async fn travel_to_hideout(
+    app: tauri::AppHandle,
     token: Option<String>,
     character_name: Option<String>,
     league: Option<String>,
@@ -79,7 +80,7 @@ pub async fn travel_to_hideout(
         }
     }
 
-    let game_triggered = send_in_game_command(&hideout_cmd).unwrap_or(false);
+    let game_triggered = send_in_game_command(Some(&app), &hideout_cmd).unwrap_or(false);
     let message = if game_triggered && official_whisper_sent {
         format!(
             "⚡ 官方直購 (Travel to Hideout) 已觸發，並在遊戲中執行 {}！",
