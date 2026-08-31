@@ -1,11 +1,12 @@
 import React from 'react';
-import { User, ShieldCheck, LogOut, RefreshCw, AlertCircle, Check } from 'lucide-react';
-import type { AppSettings, CharacterInfo } from '../../domain/settings/types';
+import { User, ShieldCheck, LogOut, RefreshCw, AlertCircle, Check, AlertTriangle, ShieldAlert } from 'lucide-react';
+import type { AppSettings, CharacterInfo, SessionHealthInfo } from '../../domain/settings/types';
 
 interface AccountAuthSectionProps {
   settings: AppSettings;
   setSettings: React.Dispatch<React.SetStateAction<AppSettings>>;
   characters: CharacterInfo[];
+  sessionHealth?: SessionHealthInfo | null;
   loggingIn: boolean;
   loginError: string | null;
   testingConn: boolean;
@@ -19,6 +20,7 @@ export const AccountAuthSection: React.FC<AccountAuthSectionProps> = ({
   settings,
   setSettings,
   characters,
+  sessionHealth,
   loggingIn,
   loginError,
   testingConn,
@@ -27,11 +29,51 @@ export const AccountAuthSection: React.FC<AccountAuthSectionProps> = ({
   onLogout,
   onTestConnection
 }) => {
+  const renderHealthBadge = () => {
+    if (!sessionHealth) return null;
+    switch (sessionHealth.state) {
+      case 'valid':
+        return (
+          <span style={{ fontSize: '0.78rem', color: '#4ade80', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(34, 197, 94, 0.15)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+            <Check size={13} /> 官方憑證有效 (連線正常)
+          </span>
+        );
+      case 'expired':
+        return (
+          <span style={{ fontSize: '0.78rem', color: '#f87171', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(239, 68, 68, 0.15)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+            <ShieldAlert size={13} /> 憑證已過期 (請重新授權)
+          </span>
+        );
+      case 'cloudflareBlocked':
+        return (
+          <span style={{ fontSize: '0.78rem', color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(245, 158, 11, 0.15)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+            <AlertTriangle size={13} /> 需 Cloudflare 安全驗證
+          </span>
+        );
+      case 'networkError':
+        return (
+          <span style={{ fontSize: '0.78rem', color: '#fb923c', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(249, 115, 22, 0.15)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(249, 115, 22, 0.3)' }}>
+            <AlertCircle size={13} /> 網路連線異常
+          </span>
+        );
+      case 'unconfigured':
+      default:
+        return (
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 255, 255, 0.05)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            ⚪ 尚未設定憑證
+          </span>
+        );
+    }
+  };
+
   return (
     <div style={{ marginBottom: '20px' }}>
-      <h3 style={{ fontSize: '1rem', color: 'var(--text-gold)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <User size={16} /> 帳號認證與官方連線 (Account Authentication)
-      </h3>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+        <h3 style={{ fontSize: '1rem', color: 'var(--text-gold)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <User size={16} /> 帳號認證與官方連線 (Account Authentication)
+        </h3>
+        {renderHealthBadge()}
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
         <div>

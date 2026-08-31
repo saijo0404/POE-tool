@@ -22,6 +22,14 @@ export function useSettings(): SettingsContextType {
       refreshSettings: async () => {},
       refreshCharacters: async () => {},
       refreshDivineRate: async () => {},
+      sessionHealth: null,
+      checkSessionHealth: async () => ({
+        state: 'unconfigured',
+        message: '尚未設定憑證',
+        lastCheckedEpochMs: 0,
+        hasPoesessid: false,
+        hasCfClearance: false
+      }),
       login: async () => ({ success: true }),
       logout: async () => {},
       divineRate: 150,

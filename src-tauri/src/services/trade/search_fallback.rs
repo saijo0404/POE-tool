@@ -11,6 +11,7 @@ pub async fn handle_search_error(
     has_auth: bool,
     search_res: reqwest::Response,
 ) -> Result<(String, Value), String> {
+    let res_headers = search_res.headers().clone();
     let status_code = search_res.status();
     let err_text = search_res.text().await.unwrap_or_default();
 
@@ -28,10 +29,18 @@ pub async fn handle_search_error(
     if target_league != "Standard" && status_code.as_u16() == 400 {
         return execute_standard_fallback(client, search_payload, settings, has_auth).await;
     }
-    Err(format!(
-        "官方市集搜尋回傳錯誤 ({}): {}",
-        status_code, err_text
-    ))
+
+    let (state, msg) = crate::services::session::classify_http_trade_error(
+        status_code.as_u16(),
+        &res_headers,
+        &err_text,
+    );
+    if state == crate::models::session::SessionState::Expired {
+        crate::services::session::mark_session_expired(&msg);
+    } else if state == crate::models::session::SessionState::CloudflareBlocked {
+        crate::services::session::mark_cloudflare_blocked(&msg);
+    }
+    Err(msg)
 }
 
 async fn retry_without_unknown_stat(

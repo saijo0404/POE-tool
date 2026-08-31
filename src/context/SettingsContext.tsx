@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import type { AppSettings, CharacterInfo } from '../types/poe';
+import type { AppSettings, CharacterInfo, SessionHealthInfo } from '../types/poe';
 import { poeApi } from '../services/api';
 import { SettingsContext } from './settingsContextDef';
 export type { SettingsContextType } from './settingsContextDef';
@@ -26,6 +26,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return defaultSettings;
   });
   const [characters, setCharacters] = useState<CharacterInfo[]>([]);
+  const [sessionHealth, setSessionHealth] = useState<SessionHealthInfo | null>(null);
   const [divineRate, setDivineRate] = useState<number>(150);
   const [isRateRefreshing, setIsRateRefreshing] = useState<boolean>(false);
   const [_isLoading, setIsLoading] = useState<boolean>(true);
@@ -44,6 +45,24 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     } catch {
       console.warn('[SettingsContext] Failed to load characters');
+    }
+  }, []);
+
+  const checkSessionHealth = useCallback(async (force?: boolean): Promise<SessionHealthInfo> => {
+    try {
+      const health = await poeApi.checkSessionHealth(force);
+      setSessionHealth(health);
+      return health;
+    } catch (e) {
+      const fallback: SessionHealthInfo = {
+        state: 'networkError',
+        message: e instanceof Error ? e.message : '無法確認 Session 狀態',
+        lastCheckedEpochMs: Date.now(),
+        hasPoesessid: Boolean(settingsRef.current.poesessid),
+        hasCfClearance: Boolean(settingsRef.current.cf_clearance)
+      };
+      setSessionHealth(fallback);
+      return fallback;
     }
   }, []);
 
@@ -81,16 +100,40 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const latestCharLeague = currentChars.length > 0 ? currentChars[0].league : undefined;
         const targetLeague = current.league && current.league !== 'Auto' ? current.league : (latestCharLeague || 'Settlers');
         await refreshDivineRate(targetLeague, true);
+        await checkSessionHealth(false);
       }
     } catch {
       console.warn('[SettingsContext] Failed to load settings');
     } finally {
       setIsLoading(false);
     }
-  }, [refreshCharacters, refreshDivineRate]);
+  }, [refreshCharacters, refreshDivineRate, checkSessionHealth]);
 
   useEffect(() => {
     refreshSettings();
+  }, [refreshSettings]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('__TAURI_INTERNALS__' in window)) {
+      return;
+    }
+    let unmounted = false;
+    let unlistenFn: (() => void) | undefined;
+    import('@tauri-apps/api/event')
+      .then(({ listen }) => {
+        if (unmounted) return;
+        listen('auto-login-completed', () => {
+          refreshSettings();
+        }).then(unlisten => {
+          unlistenFn = unlisten;
+        });
+      })
+      .catch(() => {});
+
+    return () => {
+      unmounted = true;
+      if (unlistenFn) unlistenFn();
+    };
   }, [refreshSettings]);
 
   useEffect(() => {
@@ -112,6 +155,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (updated.league && updated.league !== 'Auto') {
         refreshDivineRate(updated.league, true);
       }
+      await checkSessionHealth(false);
       return updated;
     } catch {
       const merged = { ...settings, ...newSettings };
@@ -133,10 +177,17 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       await poeApi.logoutAuth();
     } catch {}
     try {
-      await poeApi.updateSettings({ poesessid: '', accountName: '' });
+      await poeApi.updateSettings({ poesessid: '', accountName: '', cf_clearance: '' });
     } catch {}
-    setSettings(prev => ({ ...prev, poesessid: '', accountName: '' }));
+    setSettings(prev => ({ ...prev, poesessid: '', accountName: '', cf_clearance: '' }));
     setCharacters([]);
+    setSessionHealth({
+      state: 'unconfigured',
+      message: '尚未設定 POESESSID 官方憑證',
+      lastCheckedEpochMs: Date.now(),
+      hasPoesessid: false,
+      hasCfClearance: false
+    });
   };
 
   const activeLeague = settings.league && settings.league !== 'Auto'
@@ -152,6 +203,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         refreshSettings,
         refreshCharacters,
         refreshDivineRate,
+        sessionHealth,
+        checkSessionHealth,
         login: handleLogin,
         logout: handleLogout,
         divineRate,

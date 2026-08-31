@@ -31,6 +31,7 @@ export function usePriceChecker({
   const [searching, setSearching] = useState<boolean>(false);
   const [tradeResults, setTradeResults] = useState<TradeSearchResult | null>(cached?.tradeResults || null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
   const filters = useItemFilters({
@@ -84,6 +85,7 @@ export function usePriceChecker({
         fetchOffset: fetchOffset || 0
       });
 
+      setAuthError(null);
       if (isLoadMore) {
         setTradeResults(prev => mergeTradeResults(prev, res));
       } else {
@@ -99,7 +101,18 @@ export function usePriceChecker({
       }
       return res;
     } catch (e: unknown) {
-      onShowToast(e instanceof Error ? e.message : '查價失敗，請稍後再試');
+      const msg = e instanceof Error ? e.message : String(e);
+      if (
+        msg.includes('AUTH_SESSION_EXPIRED') ||
+        msg.includes('CLOUDFLARE_CHALLENGE') ||
+        msg.includes('403') ||
+        msg.includes('401') ||
+        msg.includes('憑證已過期') ||
+        msg.includes('Cloudflare')
+      ) {
+        setAuthError(msg);
+      }
+      onShowToast(msg || '查價失敗，請稍後再試');
       return null;
     } finally {
       setSearching(false);
@@ -144,9 +157,10 @@ export function usePriceChecker({
     linksMin: filters.linksMin, setLinksMin: filters.setLinksMin,
     corruptedFilter: filters.corruptedFilter, setCorruptedFilter: filters.setCorruptedFilter,
     itemLevelMin: filters.itemLevelMin, setItemLevelMin: filters.setItemLevelMin,
-    searching, tradeResults, copiedId,
+    searching, tradeResults, copiedId, authError, clearAuthError: () => setAuthError(null),
     recentSearches, clearRecentSearches,
     handleSearchTrade: () => executeTradeSearch(parsedItem, filters.mods, filters.linksMin, filters.corruptedFilter, filters.itemLevelMin),
+    retrySearch: () => executeTradeSearch(parsedItem, filters.mods, filters.linksMin, filters.corruptedFilter, filters.itemLevelMin),
     handleLoadMore: () => {
       if (!tradeResults || loadingMore || tradeResults.listings.length >= tradeResults.total) return;
       executeTradeSearch(parsedItem, filters.mods, filters.linksMin, filters.corruptedFilter, filters.itemLevelMin, tradeResults.listings.length);

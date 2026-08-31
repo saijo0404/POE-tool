@@ -94,7 +94,10 @@ const LOGIN_INIT_SCRIPT: &str = r#"
         function doAutoBind(accountName) {
             if (syncTriggered || !accountName) return;
             syncTriggered = true;
-            try { window.location.hash = 'poe_auth=' + encodeURIComponent(accountName); } catch (e) {}
+            try {
+                var ua = encodeURIComponent(navigator.userAgent || '');
+                window.location.hash = 'poe_auth=' + encodeURIComponent(accountName) + '&ua=' + ua;
+            } catch (e) {}
             document.title = 'AUTH_OK:' + accountName;
         }
         function checkLoginStatus() {
@@ -184,7 +187,7 @@ fn spawn_login_watcher(app: tauri::AppHandle) {
                 Some(w) => w,
                 None => break,
             };
-            if let Some(acc_name) = detect_account_from_window(&current_win) {
+            if let Some((acc_name, ua_opt)) = detect_account_from_window(&current_win) {
                 let (poesessid_opt, cf_opt) = extract_poe_cookies_from_webview(&current_win)
                     .await
                     .unwrap_or((None, None));
@@ -193,6 +196,7 @@ fn spawn_login_watcher(app: tauri::AppHandle) {
                     acc_name,
                     poesessid_opt,
                     cf_opt,
+                    ua_opt,
                     Vec::new(),
                 )
                 .await;
@@ -206,15 +210,26 @@ fn spawn_login_watcher(app: tauri::AppHandle) {
     });
 }
 
-fn detect_account_from_window(win: &tauri::WebviewWindow) -> Option<String> {
+fn detect_account_from_window(win: &tauri::WebviewWindow) -> Option<(String, Option<String>)> {
     if let Ok(url) = win.url() {
         let url_str = url.as_str();
         if let Some(pos) = url_str.find("poe_auth=") {
             let encoded = &url_str[pos + "poe_auth=".len()..];
             let acc = encoded.split('&').next().unwrap_or("");
-            let decoded = urlencoding::decode(acc).unwrap_or_default().to_string();
-            if !decoded.is_empty() {
-                return Some(decoded);
+            let decoded_acc = urlencoding::decode(acc).unwrap_or_default().to_string();
+
+            let mut ua_opt = None;
+            if let Some(ua_pos) = url_str.find("&ua=") {
+                let ua_encoded = &url_str[ua_pos + "&ua=".len()..];
+                let raw_ua = ua_encoded.split('&').next().unwrap_or("");
+                let decoded_ua = urlencoding::decode(raw_ua).unwrap_or_default().to_string();
+                if !decoded_ua.is_empty() {
+                    ua_opt = Some(decoded_ua);
+                }
+            }
+
+            if !decoded_acc.is_empty() {
+                return Some((decoded_acc, ua_opt));
             }
         }
     }
@@ -222,7 +237,7 @@ fn detect_account_from_window(win: &tauri::WebviewWindow) -> Option<String> {
         if let Some(acc) = title.strip_prefix("AUTH_OK:") {
             let acc = acc.trim().to_string();
             if !acc.is_empty() {
-                return Some(acc);
+                return Some((acc, None));
             }
         }
     }

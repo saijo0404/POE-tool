@@ -41,3 +41,19 @@ export interface AuthStatusResult {
   loggedIn: boolean;
   accountName: string;
 }
+
+export type SessionState =
+  | 'valid'
+  | 'expired'
+  | 'cloudflareBlocked'
+  | 'unconfigured'
+  | 'networkError';
+
+export interface SessionHealthInfo {
+  state: SessionState;
+  message: string;
+  accountName?: string;
+  lastCheckedEpochMs: number;
+  hasPoesessid: boolean;
+  hasCfClearance: boolean;
+}

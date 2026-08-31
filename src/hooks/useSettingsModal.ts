@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { AppSettings, CharacterInfo } from '../domain/settings/types';
+import type { AppSettings, CharacterInfo, SessionHealthInfo } from '../domain/settings/types';
 import type { StashTabMeta } from '../domain/wealth/types';
 import { poeApi } from '../services/api';
 
@@ -21,6 +21,7 @@ export function useSettingsModal({
   });
   const [availableTabs, setAvailableTabs] = useState<StashTabMeta[]>([]);
   const [characters, setCharacters] = useState<CharacterInfo[]>([]);
+  const [sessionHealth, setSessionHealth] = useState<SessionHealthInfo | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
   const [loggingIn, setLoggingIn] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -31,6 +32,7 @@ export function useSettingsModal({
     if (isOpen) {
       poeApi.getSettings().then(s => setSettings(s)).catch(() => {});
       poeApi.getCharacters().then(c => setCharacters(c || [])).catch(() => {});
+      poeApi.getSessionHealth().then(h => setSessionHealth(h)).catch(() => {});
     }
   }, [isOpen]);
 
@@ -46,6 +48,7 @@ export function useSettingsModal({
         const chars = await poeApi.getCharacters();
         setCharacters(chars || []);
         onSettingsUpdated();
+        poeApi.getSessionHealth().then(h => setSessionHealth(h)).catch(() => {});
       } else {
         onShowToast(res.message || '已在預設瀏覽器中開啟官方登入網址！');
       }
@@ -66,6 +69,7 @@ export function useSettingsModal({
       setCharacters([]);
       setTestResult(null);
       onSettingsUpdated();
+      poeApi.getSessionHealth().then(h => setSessionHealth(h)).catch(() => {});
     } catch {
       onShowToast('登出失敗');
     }
@@ -84,6 +88,7 @@ export function useSettingsModal({
         if (updated.accountName) setSettings(prev => ({ ...prev, accountName: updated.accountName }));
         onSettingsUpdated();
       }
+      poeApi.getSessionHealth().then(h => setSessionHealth(h)).catch(() => {});
     } catch {
       setTestResult({ success: false, message: '連線請求失敗' });
     } finally {
@@ -133,7 +138,7 @@ export function useSettingsModal({
 
   return {
     settings, setSettings,
-    availableTabs, characters,
+    availableTabs, characters, sessionHealth,
     saving, loggingIn, loginError, testingConn, testResult,
     handleLogin, handleLogout, handleTestConnection, handleFetchStashTabs,
     handleSaveSettings, handleSelectAllTabs, handleClearAllTabs, handleSelectCurrencyTabs

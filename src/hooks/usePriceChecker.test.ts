@@ -267,4 +267,29 @@ describe('usePriceChecker Hook', () => {
     expect(writeTextMock).toHaveBeenCalledWith('@Player Hi, I want to buy your Headhunter');
     expect(result.current.copiedId).toBe('list-1');
   });
+
+  it('captures 403 and Cloudflare errors into authError and allows clearing', async () => {
+    vi.spyOn(poeApi, 'parseItem').mockResolvedValue(mockParsedItem);
+    vi.spyOn(poeApi, 'searchTrade').mockRejectedValueOnce(
+      new Error('[CLOUDFLARE_CHALLENGE] 遭遇官方 Cloudflare WAF / Turnstile 安全驗證 (403)')
+    );
+
+    const { result } = renderHook(() =>
+      usePriceChecker({ league: 'Settlers', onShowToast })
+    );
+
+    await act(async () => {
+      result.current.setRawText('Rarity: Unique\nHeadhunter\nLeather Belt');
+    });
+
+    await waitFor(() => {
+      expect(result.current.authError).toContain('CLOUDFLARE_CHALLENGE');
+      expect(onShowToast).toHaveBeenCalled();
+    });
+
+    act(() => {
+      result.current.clearAuthError();
+    });
+    expect(result.current.authError).toBeNull();
+  });
 });
