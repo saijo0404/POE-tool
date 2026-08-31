@@ -13,6 +13,9 @@
 - 建立根目錄版本歷史與發布記錄 [`CHANGELOG.md`](CHANGELOG.md) ([#38](https://github.com/saijo0404/POE-tool/issues/38))。
 - 修正 [`README.md`](README.md) 中 Windows 執行檔命名與建置輸出路徑說明不一致問題 (`POE_tool.exe` ➔ `poe-tool.exe`) ([#39](https://github.com/saijo0404/POE-tool/issues/39))。
 
+### 🧪 測試 (Testing)
+- 修復 `SettingsContext.test.tsx` 在非同步狀態載入時未被 React 19 `act(...)` 包裹之控制台警告 ([#50](https://github.com/saijo0404/POE-tool/issues/50))。
+
 ---
 
 ## [1.4.0] - 2026-08-30
