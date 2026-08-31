@@ -127,8 +127,8 @@
 
 ### 方式 A：Windows 玩家免安裝獨立執行檔 (推薦)
 
-1. 前往 GitHub [Releases](https://github.com/saijo0404/POE-tool/releases) 頁面下載最新版單一執行檔 `POE_tool.exe`。
-2. 雙擊執行 `POE_tool.exe`。
+1. 前往 GitHub [Releases](https://github.com/saijo0404/POE-tool/releases) 頁面下載最新版單一執行檔 `poe-tool.exe`（或免安裝可攜版壓縮檔 `poe-tool-*-windows-x64-portable.zip`）。
+2. 雙擊執行 `poe-tool.exe`。
 3. 點擊右上角 ⚙️ **「系統設定」** 完成基本設定即可開始使用！
 4. 可透過右上角按鈕將工具設為 **「📌 視窗置頂 (Always on Top)」**，方便在遊戲中隨時對照查價。
 
@@ -195,7 +195,8 @@ npm run build
 ```bash
 npm run tauri:build
 ```
-打包後的執行檔將位於 `src-tauri/target/release/POE_tool.exe`。
+打包後的執行檔將位於：
+👉 `src-tauri/target/release/poe-tool.exe`
 
 #### 2. 在 WSL (Linux / Ubuntu) 跨平台直接編譯 Windows `.exe`：
 
