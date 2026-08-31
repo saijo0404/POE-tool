@@ -18,6 +18,7 @@
 ## 📑 目錄 (Table of Contents)
 
 - [✨ 核心特色與功能 (Key Features)](#-核心特色與功能-key-features)
+- [🗺️ 產品發展路線圖 (Roadmap & Milestones)](ROADMAP.md)
 - [🏛️ 軟體架構與代碼品質規範 (Architecture & Quality)](#️-軟體架構與代碼品質規範-architecture--quality)
 - [🔒 隱私與安全性保證 (Privacy & Security)](#-隱私與安全性保證-privacy--security)
 - [🚀 快速開始使用 (Getting Started)](#-快速開始使用-getting-started)
@@ -282,6 +283,7 @@ POE_tool/
 ├── package.json                        # 前端開發與建置腳本
 ├── vite.config.ts                      # Vite 打包配置
 ├── tsconfig.json                       # TypeScript 配置
+├── ROADMAP.md                          # 產品發展路線圖與 GitHub Milestone
 ├── SECURITY.md                         # 安全性政策與隱私指南
 ├── LICENSE                             # MIT 開源授權
 └── README.md                           # 專案說明文件
