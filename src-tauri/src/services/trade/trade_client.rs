@@ -58,7 +58,7 @@ pub async fn execute_search_http(
                 .and_then(|s| s.parse::<u64>().ok())
                 .unwrap_or(5);
             set_rate_limit_block(retry_after);
-            last_err = format!("官方請求頻率受限 (429)，將於冷卻後重試");
+            last_err = "官方請求頻率受限 (429)，將於冷卻後重試".to_string();
             continue;
         }
 
