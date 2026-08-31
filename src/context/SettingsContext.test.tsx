@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { SettingsProvider } from './SettingsContext';
 import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
@@ -47,6 +47,10 @@ describe('SettingsContext', () => {
 
     const { result } = renderHook(() => useSettings(), { wrapper });
 
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
     expect(result.current.settings).toBeDefined();
     expect(result.current.activeLeague).toBeDefined();
   });
@@ -69,6 +73,10 @@ describe('SettingsContext', () => {
     );
 
     const { result } = renderHook(() => useSettings(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     await act(async () => {
       await result.current.updateSettings({ league: 'Settlers' });
@@ -101,6 +109,10 @@ describe('SettingsContext', () => {
     );
 
     const { result } = renderHook(() => useSettings(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     await act(async () => {
       await result.current.logout();
