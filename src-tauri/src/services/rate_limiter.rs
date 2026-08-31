@@ -61,9 +61,14 @@ pub fn set_rate_limit_block(seconds: u64) {
 }
 
 pub async fn acquire_channel_slot(channel: RequestChannel, has_auth: bool) -> Result<(), String> {
-    if is_trade_rate_limited() {
-        let sec = get_rate_limit_remaining_seconds();
-        return Err(format!("官方請求頻率受限，請於 {} 秒後再試。", sec));
+    let start = Instant::now();
+    while is_trade_rate_limited() {
+        let remaining = get_rate_limit_remaining_seconds();
+        if remaining == 0 || start.elapsed() > Duration::from_secs(60) {
+            break;
+        }
+        let wait_ms = (remaining * 1000).min(1000);
+        tokio::time::sleep(Duration::from_millis(wait_ms)).await;
     }
 
     let mutex: &Mutex<ChannelState> = match channel {
@@ -73,7 +78,6 @@ pub async fn acquire_channel_slot(channel: RequestChannel, has_auth: bool) -> Re
     };
 
     let mut state = mutex.lock().await;
-
     let base_delay = match channel {
         RequestChannel::Search => {
             if has_auth {
@@ -116,6 +120,14 @@ pub fn update_rate_limits_from_headers(
     channel: RequestChannel,
     headers: &reqwest::header::HeaderMap,
 ) {
+    if let Some(retry_val) = headers.get("retry-after") {
+        if let Ok(retry_str) = retry_val.to_str() {
+            if let Ok(sec) = retry_str.trim().parse::<u64>() {
+                set_rate_limit_block(sec);
+            }
+        }
+    }
+
     let limit_hdr = headers
         .get("x-rate-limit-account")
         .or_else(|| headers.get("x-rate-limit-ip"))
@@ -204,20 +216,19 @@ mod tests {
         assert!((1..=5).contains(&remaining));
     }
 
+    #[tokio::test]
+    async fn test_acquire_channel_slot_suspension() {
+        set_rate_limit_block(1);
+        let res = acquire_channel_slot(RequestChannel::Search, true).await;
+        assert!(res.is_ok());
+    }
+
     #[test]
     fn test_parse_and_apply_rate_limit_headers() {
         let channel = RequestChannel::Search;
-
-        // Standard normal header
         parse_and_apply_rate_limit(channel, "15:10:60,30:300:1800", "5:10:0,10:300:0");
-
-        // High utilization (> 70%)
         parse_and_apply_rate_limit(channel, "10:10:60", "8:10:0");
-
-        // Saturated (near limit)
         parse_and_apply_rate_limit(channel, "10:10:60", "10:10:0");
-
-        // Edge case: malformed or empty strings (no panic)
         parse_and_apply_rate_limit(channel, "", "");
         parse_and_apply_rate_limit(channel, "abc:xyz", "invalid");
         parse_and_apply_rate_limit(channel, "0:10:0", "0:0:0");

@@ -1,7 +1,9 @@
 pub mod listing_parser;
 pub mod price_estimator;
 pub mod query_builder;
+pub mod search_fallback;
 pub mod trade_client;
+pub mod trade_headers;
 pub mod trade_service;
 
 #[cfg(test)]
