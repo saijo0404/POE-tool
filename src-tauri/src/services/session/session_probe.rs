@@ -28,16 +28,17 @@ pub fn get_cached_session_health() -> SessionHealthInfo {
         AppSettings::default(),
     );
     let mut cached = get_cache_lock().read().unwrap().clone();
-    cached.has_poesessid = !settings.poesessid.trim().is_empty();
+    let has_poesessid_in_settings = !settings.poesessid.trim().is_empty();
+    cached.has_poesessid = has_poesessid_in_settings || cached.has_poesessid;
     cached.has_cf_clearance = settings
         .cf_clearance
         .as_ref()
         .map(|c| !c.trim().is_empty())
-        .unwrap_or(false);
+        .unwrap_or(cached.has_cf_clearance);
     if cached.account_name.is_none() && !settings.account_name.trim().is_empty() {
         cached.account_name = Some(settings.account_name.clone());
     }
-    if !cached.has_poesessid {
+    if !cached.has_poesessid && cached.state == SessionState::Valid {
         cached.state = SessionState::Unconfigured;
         cached.message = "尚未設定 POESESSID 官方憑證".to_string();
     }
@@ -62,7 +63,10 @@ pub fn update_session_health(
         cache.account_name = Some(settings.account_name.clone());
     }
     cache.last_checked_epoch_ms = get_current_epoch_ms();
-    cache.has_poesessid = !settings.poesessid.trim().is_empty();
+    cache.has_poesessid = !settings.poesessid.trim().is_empty()
+        || state == SessionState::Valid
+        || state == SessionState::Expired
+        || state == SessionState::CloudflareBlocked;
     cache.has_cf_clearance = settings
         .cf_clearance
         .as_ref()
