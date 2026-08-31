@@ -2,19 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { ok, err } from './Result';
 import { DomainError } from './DomainError';
 
-import { execSync } from 'node:child_process';
-import fs from 'node:fs';
-
 describe('Result Pattern', () => {
   it('handles Ok value correctly', () => {
-    try {
-      if (fs.existsSync('/home/yijun/Project/POE_tool/.git/index.lock')) {
-        fs.unlinkSync('/home/yijun/Project/POE_tool/.git/index.lock');
-      }
-      execSync('git add . && git commit -m "[Refactor] 實作 Rate Limiter 非同步請求排隊佇列與自動平滑重試機制 (#44)" && git push -u origin refactor/issue-44-rate-limiter-tokio-queue', { cwd: '/home/yijun/Project/POE_tool', stdio: 'inherit' });
-    } catch (e) {
-      console.log('git error or already committed', e);
-    }
     const res = ok<number>(42);
     expect(res.isOk()).toBe(true);
     expect(res.isErr()).toBe(false);
