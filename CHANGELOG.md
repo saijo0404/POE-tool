@@ -8,6 +8,9 @@
 
 ## [Unreleased]
 
+### ♻️ 重構 (Refactored)
+- 實作 Rate Limiter 非同步請求排隊佇列與自動平滑重試機制，遇 GGG 速率限制或 HTTP 429 時自動掛起冷卻並重試，避免直接拋錯失敗 ([#44](https://github.com/saijo0404/POE-tool/issues/44))。
+
 ### 📖 文件 (Documentation)
 - 建立產品發展路線圖 [`ROADMAP.md`](ROADMAP.md) 並配置 GitHub Milestone 連結 ([#37](https://github.com/saijo0404/POE-tool/issues/37))。
 - 建立根目錄版本歷史與發布記錄 [`CHANGELOG.md`](CHANGELOG.md) ([#38](https://github.com/saijo0404/POE-tool/issues/38))。
