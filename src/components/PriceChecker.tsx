@@ -2,6 +2,7 @@ import React from 'react';
 import { usePriceChecker, formatModText } from '../hooks/usePriceChecker';
 import { RecentSearchesBar } from './price/RecentSearchesBar';
 import { ItemInputPanel } from './price/ItemInputPanel';
+import { SessionAuthAlertBanner } from './price/SessionAuthAlertBanner';
 import { ParsedItemHeader } from './price/ParsedItemHeader';
 import { AffixFilterList } from './price/AffixFilterList';
 import { TradeSummaryCard } from './price/TradeSummaryCard';
@@ -67,6 +68,8 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
     searching,
     tradeResults,
     copiedId,
+    authError,
+    clearAuthError,
     recentSearches,
     handleSearchTrade,
     toggleMod,
@@ -84,6 +87,17 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
         onSelectSearch={handleSelectRecent}
         onClearSearches={clearRecentSearches}
       />
+
+      {authError && (
+        <SessionAuthAlertBanner
+          errorMessage={authError}
+          onDismiss={clearAuthError}
+          onReauthorized={() => {
+            clearAuthError();
+            handleSearchTrade();
+          }}
+        />
+      )}
 
       <ItemInputPanel
         rawText={rawText}

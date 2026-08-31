@@ -96,6 +96,8 @@ pub fn run() {
             commands::handle_auto_login_success,
             commands::logout_auth,
             commands::get_auth_status,
+            commands::check_session_health,
+            commands::get_session_health,
             // Hotkey & Clipboard Commands
             commands::read_clipboard,
             commands::get_latest_clipboard,

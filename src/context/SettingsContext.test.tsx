@@ -4,6 +4,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { SettingsProvider } from './SettingsContext';
 import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
+import type { SessionHealthInfo } from '../types/poe';
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -125,5 +126,42 @@ describe('SettingsContext', () => {
     const { result } = renderHook(() => useSettings());
     expect(result.current.settings.league).toBe('Auto');
     expect(result.current.divineRate).toBe(150);
+  });
+
+  it('checks session health and updates sessionHealth state', async () => {
+    vi.spyOn(poeApi, 'getSettings').mockResolvedValueOnce({
+      league: 'Settlers',
+      poesessid: 'sess123',
+      accountName: 'Tester',
+      autoSnapshotEnabled: true,
+      autoSnapshotIntervalMinutes: 60,
+      useDemoData: false
+    });
+    vi.spyOn(poeApi, 'checkSessionHealth').mockResolvedValueOnce({
+      state: 'valid',
+      message: '憑證有效',
+      accountName: 'Tester',
+      lastCheckedEpochMs: Date.now(),
+      hasPoesessid: true,
+      hasCfClearance: false
+    });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <SettingsProvider>{children}</SettingsProvider>
+    );
+
+    const { result } = renderHook(() => useSettings(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    let health: SessionHealthInfo | undefined;
+    await act(async () => {
+      health = await result.current.checkSessionHealth(true);
+    });
+
+    expect(health?.state).toBe('valid');
+    expect(result.current.sessionHealth?.state).toBe('valid');
   });
 });

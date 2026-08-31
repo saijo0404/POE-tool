@@ -5,6 +5,7 @@ pub mod logger;
 pub mod ninja;
 pub mod parser;
 pub mod rate_limiter;
+pub mod session;
 pub mod stash;
 pub mod storage;
 pub mod trade;

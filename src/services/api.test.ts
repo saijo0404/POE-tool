@@ -194,6 +194,11 @@ describe('poeApi service client', () => {
       vi.spyOn(axios, 'get').mockResolvedValueOnce({ data: { loggedIn: true, accountName: 'Player' } } as any);
       const authStatus = await poeApi.getAuthStatus();
       expect(authStatus?.loggedIn).toBe(true);
+
+      const sessionHealth = await poeApi.checkSessionHealth(true);
+      expect(sessionHealth?.state).toBe('valid');
+      const cachedHealth = await poeApi.getSessionHealth();
+      expect(cachedHealth?.state).toBe('valid');
     });
 
     it('getLogContents and getLogFilePath return empty string in web mode', async () => {
@@ -234,6 +239,8 @@ describe('poeApi service client', () => {
         if (cmd === 'login_auth') return { success: true };
         if (cmd === 'logout_auth') return true;
         if (cmd === 'get_auth_status') return { loggedIn: true, accountName: 'God' };
+        if (cmd === 'check_session_health') return { state: 'valid', message: 'OK' };
+        if (cmd === 'get_session_health') return { state: 'valid', message: 'OK' };
         if (cmd === 'get_log_contents') return 'Line 1\nLine 2';
         if (cmd === 'get_log_file_path') return '/logs/app.log';
         return null;
@@ -266,6 +273,8 @@ describe('poeApi service client', () => {
       expect(await poeApi.loginAuth()).toEqual({ success: true });
       expect(await poeApi.logoutAuth()).toEqual({ success: true });
       expect(await poeApi.getAuthStatus()).toEqual({ loggedIn: true, accountName: 'God' });
+      expect(await poeApi.checkSessionHealth(true)).toEqual({ state: 'valid', message: 'OK' });
+      expect(await poeApi.getSessionHealth()).toEqual({ state: 'valid', message: 'OK' });
       expect(await poeApi.getLogContents()).toBe('Line 1\nLine 2');
       expect(await poeApi.getLogFilePath()).toBe('/logs/app.log');
     });

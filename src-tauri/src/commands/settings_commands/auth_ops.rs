@@ -1,4 +1,5 @@
 use super::settings_ops::{get_settings, sanitize_poesessid};
+use crate::models::session::{SessionHealthInfo, SessionState};
 use crate::services::stash::fetch_user_characters;
 use crate::services::storage::{get_data_dir, write_json_atomic};
 use serde::{Deserialize, Serialize};
@@ -32,6 +33,16 @@ pub struct AuthStatusResult {
 }
 
 #[tauri::command]
+pub async fn check_session_health(force: Option<bool>) -> SessionHealthInfo {
+    crate::services::session::probe_session_health(force.unwrap_or(false)).await
+}
+
+#[tauri::command]
+pub fn get_session_health() -> SessionHealthInfo {
+    crate::services::session::get_cached_session_health()
+}
+
+#[tauri::command]
 pub async fn test_connection(
     poesessid: Option<String>,
     account_name: Option<String>,
@@ -45,6 +56,11 @@ pub async fn test_connection(
     }
 
     if current.poesessid.trim().is_empty() {
+        crate::services::session::update_session_health(
+            SessionState::Unconfigured,
+            "請先填入 POESESSID。".to_string(),
+            None,
+        );
         return Ok(ConnectionTestResult {
             success: false,
             message: "請先填入 POESESSID。".to_string(),
@@ -66,6 +82,7 @@ pub async fn test_connection(
                 }
             }
         }
+        crate::services::session::mark_session_valid(&current.account_name);
         return Ok(ConnectionTestResult {
             success: true,
             message: if !current.account_name.is_empty() {
@@ -82,6 +99,7 @@ pub async fn test_connection(
         });
     }
 
+    crate::services::session::mark_session_valid(&current.account_name);
     Ok(ConnectionTestResult {
         success: true,
         message: "連線測試完成！POESESSID 官方驗證有效。".to_string(),
@@ -96,6 +114,7 @@ pub async fn handle_auto_login_success(
     account_name: String,
     poesessid: Option<String>,
     cf_clearance: Option<String>,
+    user_agent: Option<String>,
     mut characters: Vec<Value>,
 ) -> Result<bool, String> {
     let mut settings = get_settings();
@@ -112,9 +131,16 @@ pub async fn handle_auto_login_success(
             settings.cf_clearance = Some(cf.trim().to_string());
         }
     }
+    if let Some(ua) = user_agent {
+        if !ua.trim().is_empty() {
+            settings.user_agent = Some(ua.trim().to_string());
+        }
+    }
 
     let path = get_data_dir().join("settings.json");
     let _ = write_json_atomic(&path, &settings);
+
+    crate::services::session::mark_session_valid(&settings.account_name);
 
     if characters.is_empty() {
         characters = fetch_user_characters().await.unwrap_or_default();
@@ -125,6 +151,8 @@ pub async fn handle_auto_login_success(
         json!({
             "accountName": settings.account_name,
             "poesessid": settings.poesessid,
+            "cfClearance": settings.cf_clearance,
+            "userAgent": settings.user_agent,
             "charactersCount": characters.len(),
             "characters": characters
         }),
@@ -138,8 +166,14 @@ pub fn logout_auth() -> Result<bool, String> {
     let mut settings = get_settings();
     settings.poesessid = String::new();
     settings.account_name = String::new();
+    settings.cf_clearance = None;
     let path = get_data_dir().join("settings.json");
     write_json_atomic(&path, &settings)?;
+    crate::services::session::update_session_health(
+        SessionState::Unconfigured,
+        "已登出官方帳號".to_string(),
+        None,
+    );
     Ok(true)
 }
 

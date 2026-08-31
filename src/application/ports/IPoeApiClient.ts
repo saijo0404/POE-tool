@@ -3,7 +3,8 @@ import type {
   CharacterInfo,
   ConnectionTestResult,
   LoginAuthResult,
-  AuthStatusResult
+  AuthStatusResult,
+  SessionHealthInfo
 } from '../../domain/settings/types';
 import type { ParsedItem } from '../../domain/item/types';
 import type {
@@ -31,6 +32,8 @@ export interface IPoeApiClient {
   loginAuth(): Promise<LoginAuthResult>;
   logoutAuth(): Promise<{ success: boolean }>;
   getAuthStatus(): Promise<AuthStatusResult>;
+  checkSessionHealth(force?: boolean): Promise<SessionHealthInfo>;
+  getSessionHealth(): Promise<SessionHealthInfo>;
 
   // Clipboard
   getLatestClipboard(): Promise<{ text: string | null; timestamp: number }>;

@@ -3,6 +3,7 @@ import type { AxiosRequestConfig } from 'axios';
 import type { IPoeApiClient } from '../../application/ports/IPoeApiClient';
 import type {
   AppSettings, CharacterInfo, ConnectionTestResult, LoginAuthResult, AuthStatusResult,
+  SessionHealthInfo,
   ParsedItem, TradeQueryRequest, TradeSearchResult, TravelToHideoutPayload,
   TravelToHideoutResult, NinjaPricesResult, BuildCostResult, WealthSnapshot,
   StashTabMeta, StashProgress
@@ -42,6 +43,26 @@ export class HttpFallbackClient implements IPoeApiClient {
   async logoutAuth(): Promise<{ success: boolean }> { return this.safePost<{ success: boolean }>('/api/auth/logout'); }
   async getAuthStatus(): Promise<AuthStatusResult> {
     return this.safeGet<AuthStatusResult>('/api/auth/status', undefined, { loggedIn: false, accountName: '' });
+  }
+  async checkSessionHealth(_force?: boolean): Promise<SessionHealthInfo> {
+    return {
+      state: 'valid',
+      message: 'Web 模擬環境連線正常',
+      accountName: 'DemoExile',
+      lastCheckedEpochMs: Date.now(),
+      hasPoesessid: true,
+      hasCfClearance: true
+    };
+  }
+  async getSessionHealth(): Promise<SessionHealthInfo> {
+    return {
+      state: 'valid',
+      message: 'Web 模擬環境連線正常',
+      accountName: 'DemoExile',
+      lastCheckedEpochMs: Date.now(),
+      hasPoesessid: true,
+      hasCfClearance: true
+    };
   }
   async getLatestClipboard(): Promise<{ text: string | null; timestamp: number }> {
     return this.safeGet<{ text: string | null; timestamp: number }>('/api/clipboard/latest', undefined, { text: null, timestamp: 0 });

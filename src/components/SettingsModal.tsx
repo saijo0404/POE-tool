@@ -20,7 +20,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const {
     settings, setSettings,
-    availableTabs, characters,
+    availableTabs, characters, sessionHealth,
     saving, loggingIn, loginError, testingConn, testResult,
     handleLogin, handleLogout, handleTestConnection, handleFetchStashTabs,
     handleSaveSettings, handleSelectAllTabs, handleClearAllTabs, handleSelectCurrencyTabs
@@ -59,6 +59,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           settings={settings}
           setSettings={setSettings}
           characters={characters}
+          sessionHealth={sessionHealth}
           loggingIn={loggingIn}
           loginError={loginError}
           testingConn={testingConn}

@@ -118,7 +118,19 @@ pub async fn fetch_listings_http(
         }
 
         if !status.is_success() {
-            return Ok((Vec::new(), Vec::new()));
+            let res_headers = fetch_res.headers().clone();
+            let body = fetch_res.text().await.unwrap_or_default();
+            let (state, msg) = crate::services::session::classify_http_trade_error(
+                status.as_u16(),
+                &res_headers,
+                &body,
+            );
+            if state == crate::models::session::SessionState::Expired {
+                crate::services::session::mark_session_expired(&msg);
+            } else if state == crate::models::session::SessionState::CloudflareBlocked {
+                crate::services::session::mark_cloudflare_blocked(&msg);
+            }
+            return Err(msg);
         }
 
         let fetch_data: Value = fetch_res.json().await.unwrap_or_default();

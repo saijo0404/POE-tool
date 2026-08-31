@@ -4,7 +4,8 @@ import type {
   CharacterInfo,
   ConnectionTestResult,
   LoginAuthResult,
-  AuthStatusResult
+  AuthStatusResult,
+  SessionHealthInfo
 } from '../../domain/settings/types';
 import type { ParsedItem } from '../../domain/item/types';
 import type {
@@ -57,6 +58,14 @@ export class TauriBridgeClient implements IPoeApiClient {
 
   async getAuthStatus(): Promise<AuthStatusResult> {
     return this.invoke<AuthStatusResult>('get_auth_status');
+  }
+
+  async checkSessionHealth(force?: boolean): Promise<SessionHealthInfo> {
+    return this.invoke<SessionHealthInfo>('check_session_health', { force });
+  }
+
+  async getSessionHealth(): Promise<SessionHealthInfo> {
+    return this.invoke<SessionHealthInfo>('get_session_health');
   }
 
   async getLatestClipboard(): Promise<{ text: string | null; timestamp: number }> {

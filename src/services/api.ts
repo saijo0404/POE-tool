@@ -4,7 +4,8 @@ import type {
   CharacterInfo,
   ConnectionTestResult,
   LoginAuthResult,
-  AuthStatusResult
+  AuthStatusResult,
+  SessionHealthInfo
 } from '../domain/settings/types';
 import type { ParsedItem } from '../domain/item/types';
 import type {
@@ -34,6 +35,10 @@ export const poeApi = {
   loginAuth: (): Promise<LoginAuthResult> => ApiClientFactory.getClient().loginAuth(),
   logoutAuth: (): Promise<{ success: boolean }> => ApiClientFactory.getClient().logoutAuth(),
   getAuthStatus: (): Promise<AuthStatusResult> => ApiClientFactory.getClient().getAuthStatus(),
+  checkSessionHealth: (force?: boolean): Promise<SessionHealthInfo> =>
+    ApiClientFactory.getClient().checkSessionHealth(force),
+  getSessionHealth: (): Promise<SessionHealthInfo> =>
+    ApiClientFactory.getClient().getSessionHealth(),
 
   // Clipboard
   getLatestClipboard: (): Promise<{ text: string | null; timestamp: number }> =>
