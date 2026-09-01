@@ -21,6 +21,22 @@
         "center": true,
         "resizable": true,
         "alwaysOnTop": false
+      },
+      {
+        "label": "overlay",
+        "title": "POE_tool Overlay",
+        "url": "overlay.html",
+        "width": 460,
+        "height": 620,
+        "minWidth": 360,
+        "minHeight": 280,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "visible": false,
+        "skipTaskbar": true,
+        "shadow": false,
+        "resizable": true
       }
     ],
     "security": {

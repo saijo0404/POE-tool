@@ -60,7 +60,14 @@ export interface IPoeApiClient {
   clearWealthSnapshots(): Promise<{ success: boolean }>;
   getWealthProgress(): Promise<StashProgress>;
 
+  // Overlay
+  getCursorPosition(): Promise<{ x: number; y: number }>;
+  showOverlayWindow(x?: number, y?: number, itemText?: string): Promise<void>;
+  hideOverlayWindow(): Promise<void>;
+  setOverlayClickThrough(enable: boolean): Promise<void>;
+
   // Logger
   getLogContents(lines?: number): Promise<string>;
   getLogFilePath(): Promise<string>;
 }
+

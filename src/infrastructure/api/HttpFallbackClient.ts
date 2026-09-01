@@ -114,6 +114,13 @@ export class HttpFallbackClient implements IPoeApiClient {
     const fallback: StashProgress = { active: false, currentTab: 0, totalTabs: 0, currentTabName: '', stage: 'idle' };
     return this.safeGet<StashProgress>('/api/wealth/progress', undefined, fallback);
   }
+  async getCursorPosition(): Promise<{ x: number; y: number }> {
+    return { x: 100, y: 100 };
+  }
+  async showOverlayWindow(_x?: number, _y?: number, _itemText?: string): Promise<void> {}
+  async hideOverlayWindow(): Promise<void> {}
+  async setOverlayClickThrough(_enable: boolean): Promise<void> {}
   async getLogContents(_lines?: number): Promise<string> { return ''; }
   async getLogFilePath(): Promise<string> { return ''; }
 }
+
