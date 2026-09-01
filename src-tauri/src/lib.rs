@@ -201,6 +201,23 @@ pub fn run() {
             // Start push-based clipboard listener service
             services::clipboard_listener::init_clipboard_listener(app.handle());
 
+            // Register Global Hotkeys (e.g. Ctrl+D / Alt+D for in-game Awakened price check)
+            use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
+            let shortcuts = ["ctrl+d", "alt+d"];
+            for sc_str in shortcuts {
+                if let Ok(sc) = sc_str.parse::<Shortcut>() {
+                    let app_h = app.handle().clone();
+                    let _ = app
+                        .global_shortcut()
+                        .on_shortcut(sc, move |_app, _shortcut, event| {
+                            if event.state == ShortcutState::Pressed {
+                                crate::app_log!("[GlobalShortcut] ⚡ Hotkey triggered: {}", sc_str);
+                                services::hotkey::trigger_in_game_price_check(&app_h);
+                            }
+                        });
+                }
+            }
+
             Ok(())
         })
         .build(tauri::generate_context!())

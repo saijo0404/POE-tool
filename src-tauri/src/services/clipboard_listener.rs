@@ -54,6 +54,20 @@ pub fn handle_clipboard_change(app: &tauri::AppHandle) {
         "[ClipboardListener] ⚡ Win32 Push: PoE item detected & pushed to frontend (length: {})",
         text.len()
     );
+
+    let settings = crate::services::storage::read_json_safe(
+        &crate::services::storage::get_data_dir().join("settings.json"),
+        crate::models::settings::AppSettings::default(),
+    );
+
+    if settings.overlay_enabled {
+        let _ = crate::commands::overlay_commands::show_overlay_window(
+            app.clone(),
+            None,
+            None,
+            Some(text),
+        );
+    }
 }
 
 #[cfg(target_os = "windows")]

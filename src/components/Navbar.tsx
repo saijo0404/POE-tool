@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
+import { poeApi } from '../services/api';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
 export type AppTabType = 'price' | 'wealth' | 'build' | 'acts' | 'atlas';
@@ -130,6 +131,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           type="button"
+          onClick={async () => {
+            try {
+              await poeApi.showOverlayWindow();
+            } catch {
+              // Ignore
+            }
+          }}
+          className="poe-button-secondary"
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '6px', fontSize: '0.86rem', color: 'var(--text-gold)', borderColor: 'rgba(200, 170, 110, 0.4)' }}
+          title="開啟遊戲內極簡懸浮查價小卡 (Ctrl+D)"
+        >
+          <Layers size={15} /> 懸浮小卡
+        </button>
+
+        <button
+          type="button"
           onClick={onOpenSettings}
           className="poe-button-secondary"
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '6px', fontSize: '0.86rem' }}
@@ -141,3 +158,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+
