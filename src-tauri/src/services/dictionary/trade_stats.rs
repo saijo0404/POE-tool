@@ -24,20 +24,28 @@ pub fn lookup_stat_with_context(
     let state = DICTIONARY_STATE.read().ok()?;
 
     if is_armour {
-        if let Some(entry) = state.stat_armour_local_map.get(&normalized) {
-            return Some(build_match_result(entry, primary_val));
+        if let Some(&idx) = state.stat_armour_local_map.get(&normalized) {
+            if let Some(entry) = state.stat_dict.get(idx as usize) {
+                return Some(build_match_result(entry, primary_val));
+            }
         }
     }
     if is_weapon {
-        if let Some(entry) = state.stat_weapon_local_map.get(&normalized) {
+        if let Some(&idx) = state.stat_weapon_local_map.get(&normalized) {
+            if let Some(entry) = state.stat_dict.get(idx as usize) {
+                return Some(build_match_result(entry, primary_val));
+            }
+        }
+    }
+    if let Some(&idx) = state.stat_pattern_map.get(&normalized) {
+        if let Some(entry) = state.stat_dict.get(idx as usize) {
             return Some(build_match_result(entry, primary_val));
         }
     }
-    if let Some(entry) = state.stat_pattern_map.get(&normalized) {
-        return Some(build_match_result(entry, primary_val));
-    }
-    if let Some(entry) = state.stat_local_map.get(&normalized) {
-        return Some(build_match_result(entry, primary_val));
+    if let Some(&idx) = state.stat_local_map.get(&normalized) {
+        if let Some(entry) = state.stat_dict.get(idx as usize) {
+            return Some(build_match_result(entry, primary_val));
+        }
     }
 
     fallback_substring_search(&state.stat_dict, &normalized, primary_val)

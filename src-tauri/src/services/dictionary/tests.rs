@@ -1,4 +1,29 @@
 use super::*;
+use std::time::Instant;
+
+#[test]
+fn test_dictionary_init_performance() {
+    let start = Instant::now();
+    let state = DictionaryState::new();
+    let duration = start.elapsed();
+
+    println!("DictionaryState::new() elapsed time: {:?}", duration);
+    // In debug mode, bincode deserialization should still complete within 25ms (in release mode < 3ms)
+    assert!(
+        duration.as_millis() < 25,
+        "Dictionary initialization took too long: {:?}",
+        duration
+    );
+    assert!(
+        state.stat_dict.len() > 17000,
+        "Expected >17000 stats loaded, got {}",
+        state.stat_dict.len()
+    );
+    assert!(
+        !state.stat_pattern_map.is_empty(),
+        "Pattern map should not be empty"
+    );
+}
 
 #[test]
 fn test_local_vs_global_es_lookup() {
