@@ -182,6 +182,9 @@ pub fn run() {
                 let _ = window.show();
             }
 
+            // Start push-based clipboard listener service
+            services::clipboard_listener::init_clipboard_listener(app.handle());
+
             Ok(())
         })
         .build(tauri::generate_context!())
