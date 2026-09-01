@@ -72,13 +72,14 @@ fn run_win32_listener() {
     use std::ptr::null_mut;
     use windows::core::PCWSTR;
     use windows::Win32::Foundation::{HINSTANCE, HWND, LPARAM, LRESULT, WPARAM};
+    use windows::Win32::Graphics::Gdi::HBRUSH;
     use windows::Win32::System::DataExchange::{
         AddClipboardFormatListener, RemoveClipboardFormatListener,
     };
     use windows::Win32::UI::WindowsAndMessaging::{
         CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, GetMessageW,
-        RegisterClassExW, TranslateMessage, HBRUSH, HCURSOR, HICON, HWND_MESSAGE, MSG,
-        WINDOW_EX_STYLE, WINDOW_STYLE, WM_CLIPBOARDUPDATE, WNDCLASSEXW, WNDCLASS_STYLES,
+        RegisterClassExW, TranslateMessage, HCURSOR, HICON, HWND_MESSAGE, MSG, WINDOW_EX_STYLE,
+        WINDOW_STYLE, WM_CLIPBOARDUPDATE, WNDCLASSEXW, WNDCLASS_STYLES,
     };
 
     unsafe extern "system" fn wndproc(
