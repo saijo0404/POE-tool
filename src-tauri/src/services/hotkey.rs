@@ -1,5 +1,17 @@
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
+/// Standard window titles associated with Path of Exile 1 (Windows desktop clients).
+pub const POE_WINDOW_TITLES: &[&str] = &[
+    "Path of Exile",
+    "PathOfExile",
+    "PathOfExileSteam",
+    "PathOfExile_x64",
+    "PathOfExile_x64Steam",
+    "PathOfExile_KG.exe",
+    "PathOfExile_x64_KG.exe",
+    "流亡黯道",
+];
+
 pub fn is_poe_item_text(text: &str) -> bool {
     let clean = text.trim();
     if clean.len() < 10 {
@@ -19,19 +31,8 @@ pub fn is_poe_active() -> bool {
         use windows::core::HSTRING;
         use windows::Win32::UI::WindowsAndMessaging::FindWindowW;
 
-        let titles = [
-            "Path of Exile",
-            "PathOfExile",
-            "PathOfExileSteam",
-            "Path of Exile 2",
-            "PathOfExile_x64",
-            "PathOfExile_x64Steam",
-            "PathOfExile_KG.exe",
-            "PathOfExile_x64_KG.exe",
-            "流亡黯道",
-        ];
-        for title in titles {
-            let h_title = HSTRING::from(title);
+        for title in POE_WINDOW_TITLES {
+            let h_title = HSTRING::from(*title);
             unsafe {
                 if let Ok(hwnd) = FindWindowW(None, &h_title) {
                     if !hwnd.0.is_null() {
@@ -64,21 +65,10 @@ pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Re
         };
         use windows::Win32::UI::WindowsAndMessaging::{FindWindowW, SetForegroundWindow};
 
-        let titles = [
-            "Path of Exile",
-            "PathOfExile",
-            "PathOfExileSteam",
-            "Path of Exile 2",
-            "PathOfExile_x64",
-            "PathOfExile_x64Steam",
-            "PathOfExile_KG.exe",
-            "PathOfExile_x64_KG.exe",
-            "流亡黯道",
-        ];
         let mut target_hwnd = windows::Win32::Foundation::HWND(std::ptr::null_mut());
 
-        for title in titles {
-            let h_title = HSTRING::from(title);
+        for title in POE_WINDOW_TITLES {
+            let h_title = HSTRING::from(*title);
             unsafe {
                 if let Ok(hwnd) = FindWindowW(None, &h_title) {
                     if !hwnd.0.is_null() {
@@ -253,5 +243,22 @@ mod tests {
             send_in_game_command(None, "  /hideout PlayerName  "),
             Ok(false)
         );
+    }
+
+    #[test]
+    fn test_poe_window_titles_focus_on_poe1() {
+        // Must contain all valid PoE 1 client titles
+        assert!(POE_WINDOW_TITLES.contains(&"Path of Exile"));
+        assert!(POE_WINDOW_TITLES.contains(&"PathOfExile"));
+        assert!(POE_WINDOW_TITLES.contains(&"PathOfExileSteam"));
+        assert!(POE_WINDOW_TITLES.contains(&"PathOfExile_x64"));
+        assert!(POE_WINDOW_TITLES.contains(&"PathOfExile_x64Steam"));
+        assert!(POE_WINDOW_TITLES.contains(&"PathOfExile_KG.exe"));
+        assert!(POE_WINDOW_TITLES.contains(&"PathOfExile_x64_KG.exe"));
+        assert!(POE_WINDOW_TITLES.contains(&"流亡黯道"));
+
+        // Must NOT contain unready PoE 2 title (#46)
+        assert!(!POE_WINDOW_TITLES.contains(&"Path of Exile 2"));
+        assert!(!POE_WINDOW_TITLES.contains(&"PathOfExile2"));
     }
 }
