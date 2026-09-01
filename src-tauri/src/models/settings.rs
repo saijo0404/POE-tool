@@ -23,6 +23,16 @@ pub struct AppSettings {
     pub selected_stash_tabs: Option<Vec<usize>>,
     #[serde(default = "default_max_tabs")]
     pub max_stash_tabs: Option<usize>,
+    #[serde(default = "default_true")]
+    pub overlay_enabled: bool,
+    #[serde(default = "default_overlay_opacity")]
+    pub overlay_opacity: f64,
+    #[serde(default)]
+    pub overlay_click_through: bool,
+    #[serde(default = "default_true")]
+    pub overlay_auto_close_on_blur: bool,
+    #[serde(default = "default_overlay_scale")]
+    pub overlay_scale: f64,
 }
 
 fn default_league() -> String {
@@ -40,6 +50,12 @@ fn default_hotkey() -> Option<String> {
 fn default_max_tabs() -> Option<usize> {
     Some(60)
 }
+fn default_overlay_opacity() -> f64 {
+    0.92
+}
+fn default_overlay_scale() -> f64 {
+    1.0
+}
 
 impl Default for AppSettings {
     fn default() -> Self {
@@ -56,6 +72,11 @@ impl Default for AppSettings {
             hotkey: default_hotkey(),
             selected_stash_tabs: None,
             max_stash_tabs: default_max_tabs(),
+            overlay_enabled: true,
+            overlay_opacity: default_overlay_opacity(),
+            overlay_click_through: false,
+            overlay_auto_close_on_blur: true,
+            overlay_scale: default_overlay_scale(),
         }
     }
 }

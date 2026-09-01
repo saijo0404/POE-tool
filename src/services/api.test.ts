@@ -243,6 +243,10 @@ describe('poeApi service client', () => {
         if (cmd === 'get_session_health') return { state: 'valid', message: 'OK' };
         if (cmd === 'get_log_contents') return 'Line 1\nLine 2';
         if (cmd === 'get_log_file_path') return '/logs/app.log';
+        if (cmd === 'get_cursor_position') return [500, 300];
+        if (cmd === 'show_overlay_window') return null;
+        if (cmd === 'hide_overlay_window') return null;
+        if (cmd === 'set_overlay_click_through') return null;
         return null;
       });
 
@@ -275,8 +279,13 @@ describe('poeApi service client', () => {
       expect(await poeApi.getAuthStatus()).toEqual({ loggedIn: true, accountName: 'God' });
       expect(await poeApi.checkSessionHealth(true)).toEqual({ state: 'valid', message: 'OK' });
       expect(await poeApi.getSessionHealth()).toEqual({ state: 'valid', message: 'OK' });
+      expect(await poeApi.getCursorPosition()).toEqual({ x: 500, y: 300 });
+      await poeApi.showOverlayWindow(500, 300, 'item');
+      await poeApi.hideOverlayWindow();
+      await poeApi.setOverlayClickThrough(true);
       expect(await poeApi.getLogContents()).toBe('Line 1\nLine 2');
       expect(await poeApi.getLogFilePath()).toBe('/logs/app.log');
     });
   });
 });
+

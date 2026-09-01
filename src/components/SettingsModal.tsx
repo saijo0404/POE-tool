@@ -2,6 +2,7 @@ import React from 'react';
 import { Settings as SettingsIcon, X, Check, RefreshCw } from 'lucide-react';
 import { useSettingsModal } from '../hooks/useSettingsModal';
 import { GeneralSettingsSection } from './settings/GeneralSettingsSection';
+import { OverlaySettingsSection } from './settings/OverlaySettingsSection';
 import { AccountAuthSection } from './settings/AccountAuthSection';
 import { StashTabSelector } from './settings/StashTabSelector';
 
@@ -72,6 +73,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <GeneralSettingsSection
           settings={settings}
           setSettings={setSettings}
+        />
+
+        <OverlaySettingsSection
+          settings={settings}
+          onChange={(key, val) => setSettings(prev => ({ ...prev, [key]: val }))}
         />
 
         <StashTabSelector

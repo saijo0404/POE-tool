@@ -148,6 +148,23 @@ export class TauriBridgeClient implements IPoeApiClient {
     return this.invoke<StashProgress>('get_stash_progress');
   }
 
+  async getCursorPosition(): Promise<{ x: number; y: number }> {
+    const res = await this.invoke<[number, number]>('get_cursor_position');
+    return { x: res?.[0] ?? 100, y: res?.[1] ?? 100 };
+  }
+
+  async showOverlayWindow(x?: number, y?: number, itemText?: string): Promise<void> {
+    return this.invoke<void>('show_overlay_window', { x, y, itemText });
+  }
+
+  async hideOverlayWindow(): Promise<void> {
+    return this.invoke<void>('hide_overlay_window');
+  }
+
+  async setOverlayClickThrough(enable: boolean): Promise<void> {
+    return this.invoke<void>('set_overlay_click_through', { enable });
+  }
+
   async getLogContents(lines?: number): Promise<string> {
     return this.invoke<string>('get_log_contents', { lines });
   }
@@ -156,3 +173,4 @@ export class TauriBridgeClient implements IPoeApiClient {
     return this.invoke<string>('get_log_file_path');
   }
 }
+

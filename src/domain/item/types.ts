@@ -7,6 +7,7 @@ export interface ParsedItemMod {
   text: string;
   englishText: string;
   type: ModType;
+  tier?: number;
   value?: number;
   minValue?: number;
   maxValue?: number;

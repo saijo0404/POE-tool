@@ -82,6 +82,16 @@ export const poeApi = {
   getWealthProgress: (): Promise<StashProgress> =>
     ApiClientFactory.getClient().getWealthProgress(),
 
+  // Overlay
+  getCursorPosition: (): Promise<{ x: number; y: number }> =>
+    ApiClientFactory.getClient().getCursorPosition(),
+  showOverlayWindow: (x?: number, y?: number, itemText?: string): Promise<void> =>
+    ApiClientFactory.getClient().showOverlayWindow(x, y, itemText),
+  hideOverlayWindow: (): Promise<void> =>
+    ApiClientFactory.getClient().hideOverlayWindow(),
+  setOverlayClickThrough: (enable: boolean): Promise<void> =>
+    ApiClientFactory.getClient().setOverlayClickThrough(enable),
+
   // Logger
   getLogContents: (lines?: number): Promise<string> =>
     ApiClientFactory.getClient().getLogContents(lines),
@@ -90,3 +100,4 @@ export const poeApi = {
 };
 
 export default poeApi;
+

@@ -102,6 +102,11 @@ pub fn run() {
             commands::read_clipboard,
             commands::get_latest_clipboard,
             commands::trigger_in_game_command,
+            // Overlay Commands
+            commands::get_cursor_position,
+            commands::show_overlay_window,
+            commands::hide_overlay_window,
+            commands::set_overlay_click_through,
         ])
         .setup(|app| {
             // Build Tray Menu
@@ -180,6 +185,17 @@ pub fn run() {
                     }
                 });
                 let _ = window.show();
+            }
+
+            // Handle overlay window lifecycle (prevent destruction, hide on close request)
+            if let Some(overlay_win) = app.get_webview_window("overlay") {
+                let overlay_clone = overlay_win.clone();
+                overlay_win.on_window_event(move |event| {
+                    if let WindowEvent::CloseRequested { api, .. } = event {
+                        api.prevent_close();
+                        let _ = overlay_clone.hide();
+                    }
+                });
             }
 
             // Start push-based clipboard listener service

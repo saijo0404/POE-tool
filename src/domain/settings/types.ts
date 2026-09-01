@@ -11,6 +11,11 @@ export interface AppSettings {
   hotkey?: string;
   selectedStashTabs?: number[];
   maxStashTabs?: number;
+  overlayEnabled?: boolean;
+  overlayOpacity?: number;
+  overlayClickThrough?: boolean;
+  overlayAutoCloseOnBlur?: boolean;
+  overlayScale?: number;
 }
 
 export interface CharacterInfo {
