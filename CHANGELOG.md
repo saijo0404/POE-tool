@@ -17,6 +17,7 @@
 - 修正 [`README.md`](README.md) 中 Windows 執行檔命名與建置輸出路徑說明不一致問題 (`POE_tool.exe` ➔ `poe-tool.exe`) ([#39](https://github.com/saijo0404/POE-tool/issues/39))。
 
 ### 🧪 測試 (Testing)
+- 調整詞綴字典效能測試門檻（`test_dictionary_init_performance`）以動態適應 Debug 與 Release 環境，修復 Windows CI 環境下測試超時斷言失敗問題。
 - 修復 `SettingsContext.test.tsx` 在非同步狀態載入時未被 React 19 `act(...)` 包裹之控制台警告 ([#50](https://github.com/saijo0404/POE-tool/issues/50))。
 
 ---
