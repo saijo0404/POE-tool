@@ -173,6 +173,61 @@ pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Re
     Ok(false)
 }
 
+pub fn trigger_in_game_copy() {
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::UI::Input::KeyboardAndMouse::{
+            SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, VK_C, VK_CONTROL,
+        };
+        let make_key = |vk, flags| INPUT {
+            r#type: INPUT_KEYBOARD,
+            Anonymous: windows::Win32::UI::Input::KeyboardAndMouse::INPUT_0 {
+                ki: KEYBDINPUT {
+                    wVk: vk,
+                    wScan: 0,
+                    dwFlags: flags,
+                    time: 0,
+                    dwExtraInfo: 0,
+                },
+            },
+        };
+        let inputs = vec![
+            make_key(
+                VK_CONTROL,
+                windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+            ),
+            make_key(
+                VK_C,
+                windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+            ),
+            make_key(VK_C, KEYEVENTF_KEYUP),
+            make_key(VK_CONTROL, KEYEVENTF_KEYUP),
+        ];
+        unsafe {
+            let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
+        }
+    }
+}
+
+pub fn trigger_in_game_price_check(app: &tauri::AppHandle) {
+    trigger_in_game_copy();
+
+    let app_clone = app.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        let text = app_clone.clipboard().read_text().unwrap_or_default();
+        let is_poe = is_poe_item_text(&text);
+        let item_payload = if is_poe { Some(text) } else { None };
+
+        let _ = crate::commands::overlay_commands::show_overlay_window(
+            app_clone,
+            None,
+            None,
+            item_payload,
+        );
+    });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -81,6 +81,11 @@ export function useOverlayPrice() {
       ];
       setMods(initialMods);
       executeSearch(parsed, initialMods);
+      try {
+        await poeApi.showOverlayWindow(undefined, undefined, trimmed);
+      } catch {
+        // Ignore in web fallback
+      }
     } catch {
       // Parse error
     }

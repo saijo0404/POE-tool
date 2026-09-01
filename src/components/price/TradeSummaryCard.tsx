@@ -1,6 +1,7 @@
 import React from 'react';
-import { ShoppingBag, ExternalLink, RefreshCw, Zap, Search } from 'lucide-react';
+import { ShoppingBag, ExternalLink, RefreshCw, Zap, Search, Layers } from 'lucide-react';
 import type { TradeSearchResult } from '../../types/poe';
+import { poeApi } from '../../services/api';
 
 interface TradeSummaryCardProps {
   tradeResults: TradeSearchResult | null;
@@ -91,6 +92,22 @@ export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await poeApi.showOverlayWindow();
+              } catch {
+                // Ignore
+              }
+            }}
+            className="poe-btn"
+            style={{ fontSize: '0.85rem', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-gold)', background: 'rgba(200, 170, 110, 0.1)' }}
+            title="開啟遊戲內極簡懸浮查價小卡"
+          >
+            <Layers size={15} /> 懸浮卡片
+          </button>
+
           <button
             onClick={onRefreshSearch}
             disabled={searching}
