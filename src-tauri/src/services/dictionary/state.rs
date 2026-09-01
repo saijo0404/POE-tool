@@ -1,4 +1,6 @@
-use super::patterns::{entry_priority, normalize_pattern};
+use super::patterns::{
+    check_stat_is_armour, check_stat_is_weapon, entry_priority, normalize_pattern, strip_local_tags,
+};
 use crate::services::storage::{get_data_dir, read_json_safe};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -20,15 +22,26 @@ pub struct StatMatchResult {
     pub max_value: Option<f64>,
 }
 
-static EMBEDDED_ITEM_DICT_JSON: &str = include_str!("../../../../data/item_dictionary.json");
-static EMBEDDED_STAT_DICT_JSON: &str = include_str!("../../../../data/stat_dictionary.json");
+#[derive(Serialize, Deserialize)]
+pub struct PrecomputedStatCache {
+    pub stat_dict: Vec<StatDictionaryEntry>,
+    pub stat_pattern_map: HashMap<String, u32>,
+    pub stat_armour_local_map: HashMap<String, u32>,
+    pub stat_weapon_local_map: HashMap<String, u32>,
+    pub stat_local_map: HashMap<String, u32>,
+}
+
+static PRECOMPUTED_STAT_BIN: &[u8] =
+    include_bytes!(concat!(env!("OUT_DIR"), "/stat_cache.bincode"));
+static PRECOMPUTED_ITEM_BIN: &[u8] =
+    include_bytes!(concat!(env!("OUT_DIR"), "/item_cache.bincode"));
 
 pub struct DictionaryState {
     pub stat_dict: Vec<StatDictionaryEntry>,
-    pub stat_pattern_map: HashMap<String, StatDictionaryEntry>,
-    pub stat_armour_local_map: HashMap<String, StatDictionaryEntry>,
-    pub stat_weapon_local_map: HashMap<String, StatDictionaryEntry>,
-    pub stat_local_map: HashMap<String, StatDictionaryEntry>,
+    pub stat_pattern_map: HashMap<String, u32>,
+    pub stat_armour_local_map: HashMap<String, u32>,
+    pub stat_weapon_local_map: HashMap<String, u32>,
+    pub stat_local_map: HashMap<String, u32>,
     pub item_dict: HashMap<String, String>,
 }
 
@@ -53,79 +66,83 @@ impl DictionaryState {
     }
 
     pub fn init(&mut self) {
-        let mut stats: Vec<StatDictionaryEntry> =
-            serde_json::from_str(EMBEDDED_STAT_DICT_JSON).unwrap_or_default();
-        if let Ok(embedded_items) =
-            serde_json::from_str::<HashMap<String, String>>(EMBEDDED_ITEM_DICT_JSON)
-        {
-            for (k, v) in embedded_items {
-                self.item_dict.insert(k, v);
-            }
-        }
+        self.load_precomputed_stat_cache();
+        self.load_precomputed_item_cache();
+        self.load_custom_user_overrides();
+    }
 
+    fn load_precomputed_stat_cache(&mut self) {
+        if let Ok(cache) = bincode::deserialize::<PrecomputedStatCache>(PRECOMPUTED_STAT_BIN) {
+            self.stat_dict = cache.stat_dict;
+            self.stat_pattern_map = cache.stat_pattern_map;
+            self.stat_armour_local_map = cache.stat_armour_local_map;
+            self.stat_weapon_local_map = cache.stat_weapon_local_map;
+            self.stat_local_map = cache.stat_local_map;
+        }
+    }
+
+    fn load_precomputed_item_cache(&mut self) {
+        if let Ok(items) = bincode::deserialize::<HashMap<String, String>>(PRECOMPUTED_ITEM_BIN) {
+            self.item_dict = items;
+        }
         for (k, v) in super::base_types::get_common_item_map() {
             self.item_dict.insert(k, v);
         }
+    }
 
+    fn load_custom_user_overrides(&mut self) {
         let data_dir = get_data_dir();
-        let stat_path = data_dir.join("stat_dictionary.json");
-        let item_path = data_dir.join("item_dictionary.json");
+        let custom_stat_path = data_dir.join("custom_stat_dictionary.json");
+        let custom_item_path = data_dir.join("custom_item_dictionary.json");
 
-        if stat_path.exists() {
-            let loaded_stats: Vec<StatDictionaryEntry> = read_json_safe(&stat_path, Vec::new());
+        if custom_stat_path.exists() {
+            let loaded_stats: Vec<StatDictionaryEntry> =
+                read_json_safe(&custom_stat_path, Vec::new());
             if !loaded_stats.is_empty() {
-                stats.extend(loaded_stats);
+                self.stat_dict.extend(loaded_stats);
+                self.rebuild_stat_indexes();
             }
         }
-        self.stat_dict = stats;
-        self.rebuild_stat_indexes();
 
-        if item_path.exists() {
-            let loaded_items: HashMap<String, String> = read_json_safe(&item_path, HashMap::new());
+        if custom_item_path.exists() {
+            let loaded_items: HashMap<String, String> =
+                read_json_safe(&custom_item_path, HashMap::new());
             for (k, v) in loaded_items {
                 self.item_dict.insert(k, v);
             }
         }
     }
 
-    fn rebuild_stat_indexes(&mut self) {
+    pub fn rebuild_stat_indexes(&mut self) {
         self.stat_pattern_map.clear();
         self.stat_armour_local_map.clear();
         self.stat_weapon_local_map.clear();
         self.stat_local_map.clear();
 
         let entries = self.stat_dict.clone();
-        for entry in &entries {
+        for (idx, entry) in entries.iter().enumerate() {
+            let idx = idx as u32;
             let is_local = entry.en_text.contains("(Local)")
                 || entry.en_text.contains("(local)")
                 || entry.zh_text.contains("(部分)")
                 || entry.zh_text.contains("(局部)");
-            let is_armour = check_stat_is_armour(entry);
-            let is_weapon = check_stat_is_weapon(entry);
+            let is_armour = check_stat_is_armour(&entry.en_text, &entry.zh_text);
+            let is_weapon = check_stat_is_weapon(&entry.en_text, &entry.zh_text);
 
-            let clean_zh = entry
-                .zh_text
-                .replace("(部分)", "")
-                .replace("(局部)", "")
-                .replace("(Local)", "")
-                .replace("(local)", "");
-            let clean_en = entry
-                .en_text
-                .replace("(Local)", "")
-                .replace("(local)", "")
-                .replace("(部分)", "")
-                .replace("(局部)", "");
+            let clean_zh = strip_local_tags(&entry.zh_text);
+            let clean_en = strip_local_tags(&entry.en_text);
 
             if is_local {
-                self.index_local_entry(entry, &clean_zh, &clean_en, is_armour, is_weapon);
+                self.index_local_entry(idx, entry, &clean_zh, &clean_en, is_armour, is_weapon);
             } else {
-                self.index_global_entry(entry);
+                self.index_global_entry(idx, entry);
             }
         }
     }
 
     fn index_local_entry(
         &mut self,
+        idx: u32,
         entry: &StatDictionaryEntry,
         clean_zh: &str,
         clean_en: &str,
@@ -135,103 +152,61 @@ impl DictionaryState {
         let prio = entry_priority(&entry.id);
         if !clean_zh.is_empty() {
             let zh_p = normalize_pattern(clean_zh);
-            if is_armour
-                && self
-                    .stat_armour_local_map
-                    .get(&zh_p)
-                    .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_armour_local_map
-                    .insert(zh_p.clone(), entry.clone());
-            }
-            if is_weapon
-                && self
-                    .stat_weapon_local_map
-                    .get(&zh_p)
-                    .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_weapon_local_map
-                    .insert(zh_p.clone(), entry.clone());
-            }
-            if self
-                .stat_local_map
-                .get(&zh_p)
-                .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_local_map.insert(zh_p, entry.clone());
-            }
+            self.insert_local_pattern(&zh_p, idx, prio, is_armour, is_weapon);
         }
         if !clean_en.is_empty() {
             let en_p = normalize_pattern(clean_en);
-            if is_armour
-                && self
-                    .stat_armour_local_map
-                    .get(&en_p)
-                    .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_armour_local_map
-                    .insert(en_p.clone(), entry.clone());
-            }
-            if is_weapon
-                && self
-                    .stat_weapon_local_map
-                    .get(&en_p)
-                    .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_weapon_local_map
-                    .insert(en_p.clone(), entry.clone());
-            }
-            if self
-                .stat_local_map
-                .get(&en_p)
-                .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_local_map.insert(en_p, entry.clone());
-            }
+            self.insert_local_pattern(&en_p, idx, prio, is_armour, is_weapon);
         }
     }
 
-    fn index_global_entry(&mut self, entry: &StatDictionaryEntry) {
+    fn insert_local_pattern(
+        &mut self,
+        pattern: &str,
+        idx: u32,
+        prio: i32,
+        is_armour: bool,
+        is_weapon: bool,
+    ) {
+        if is_armour
+            && is_higher_priority(&self.stat_armour_local_map, &self.stat_dict, pattern, prio)
+        {
+            self.stat_armour_local_map.insert(pattern.to_string(), idx);
+        }
+        if is_weapon
+            && is_higher_priority(&self.stat_weapon_local_map, &self.stat_dict, pattern, prio)
+        {
+            self.stat_weapon_local_map.insert(pattern.to_string(), idx);
+        }
+        if is_higher_priority(&self.stat_local_map, &self.stat_dict, pattern, prio) {
+            self.stat_local_map.insert(pattern.to_string(), idx);
+        }
+    }
+
+    fn index_global_entry(&mut self, idx: u32, entry: &StatDictionaryEntry) {
         let prio = entry_priority(&entry.id);
         if !entry.zh_text.is_empty() {
             let zh_p = normalize_pattern(&entry.zh_text);
-            if self
-                .stat_pattern_map
-                .get(&zh_p)
-                .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_pattern_map.insert(zh_p, entry.clone());
+            if is_higher_priority(&self.stat_pattern_map, &self.stat_dict, &zh_p, prio) {
+                self.stat_pattern_map.insert(zh_p, idx);
             }
         }
         if !entry.en_text.is_empty() {
             let en_p = normalize_pattern(&entry.en_text);
-            if self
-                .stat_pattern_map
-                .get(&en_p)
-                .is_none_or(|e| prio > entry_priority(&e.id))
-            {
-                self.stat_pattern_map.insert(en_p, entry.clone());
+            if is_higher_priority(&self.stat_pattern_map, &self.stat_dict, &en_p, prio) {
+                self.stat_pattern_map.insert(en_p, idx);
             }
         }
     }
 }
 
-fn check_stat_is_armour(entry: &StatDictionaryEntry) -> bool {
-    entry.en_text.contains("Energy Shield")
-        || entry.en_text.contains("Armour")
-        || entry.en_text.contains("Evasion")
-        || entry.zh_text.contains("能量護盾")
-        || entry.zh_text.contains("護甲")
-        || entry.zh_text.contains("閃避")
-}
-
-fn check_stat_is_weapon(entry: &StatDictionaryEntry) -> bool {
-    entry.en_text.contains("Physical Damage")
-        || entry.en_text.contains("Attack Speed")
-        || entry.en_text.contains("Critical Strike Chance")
-        || entry.en_text.contains("Accuracy")
-        || entry.zh_text.contains("物理傷害")
-        || entry.zh_text.contains("攻擊速度")
-        || entry.zh_text.contains("暴擊率")
-        || entry.zh_text.contains("命中")
+fn is_higher_priority(
+    map: &HashMap<String, u32>,
+    stat_dict: &[StatDictionaryEntry],
+    key: &str,
+    prio: i32,
+) -> bool {
+    map.get(key)
+        .map(|&old_idx| prio > entry_priority(&stat_dict[old_idx as usize].id))
+        .unwrap_or(true)
 }
