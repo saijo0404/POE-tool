@@ -70,3 +70,61 @@ fn test_base_type_lookups() {
         Some("Waystone".to_string())
     );
 }
+
+#[test]
+fn test_fallback_substring_matching() {
+    // Exact pattern: "+# 最大生命" / "+# to maximum Life"
+    // Unmatched noisy text that requires fallback substring search
+    let noisy_zh = "前綴 增加了 50 最大生命 於裝備上";
+    let matched = lookup_stat_by_text(noisy_zh);
+    assert!(
+        matched.is_some(),
+        "Fallback substring search should match noisy zh stat"
+    );
+    let res = matched.unwrap();
+    assert_eq!(res.id, "explicit.stat_3299347043");
+
+    let noisy_en = "Prefix Grants 50 to maximum Life On item";
+    let matched_en = lookup_stat_by_text(noisy_en);
+    assert!(
+        matched_en.is_some(),
+        "Fallback substring search should match noisy en stat"
+    );
+    let res_en = matched_en.unwrap();
+    assert_eq!(res_en.id, "explicit.stat_3299347043");
+
+    let non_matching = "完全不存在的無效描述文字句子 XYZ123456";
+    assert!(lookup_stat_by_text(non_matching).is_none());
+}
+
+#[test]
+fn test_unmatched_stat_lookup_performance() {
+    let unpatterned_queries = [
+        "這是一條完全不存在於字典的詞綴",
+        "This is an unknown affix line with no matching stats 12345",
+        "特殊詞綴 造成 100% 額外混沌傷害 隨機附魔",
+        "Another random flavour text without any pattern match",
+    ];
+
+    let start = Instant::now();
+    for _ in 0..100 {
+        for query in &unpatterned_queries {
+            let _ = lookup_stat_by_text(query);
+        }
+    }
+    let elapsed = start.elapsed();
+    let total_queries = 100 * unpatterned_queries.len();
+    let avg_us = elapsed.as_micros() as f64 / total_queries as f64;
+
+    println!(
+        "Completed {} fallback lookups in {:?}, avg {:.2} µs/query",
+        total_queries, elapsed, avg_us
+    );
+
+    // Ensure average lookup is well under 1ms (1000 µs), usually < 50 µs
+    assert!(
+        avg_us < 1000.0,
+        "Fallback search took too long: {:.2} µs/query (expected < 1000 µs)",
+        avg_us
+    );
+}

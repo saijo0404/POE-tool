@@ -1,5 +1,5 @@
 use super::patterns::{normalize_pattern, NUM_RE};
-use super::state::{StatDictionaryEntry, StatMatchResult};
+use super::state::{DictionaryState, StatDictionaryEntry, StatMatchResult};
 use super::DICTIONARY_STATE;
 
 pub fn lookup_stat_with_context(
@@ -48,7 +48,7 @@ pub fn lookup_stat_with_context(
         }
     }
 
-    fallback_substring_search(&state.stat_dict, &normalized, primary_val)
+    fallback_substring_search(&state, &normalized, primary_val)
 }
 
 fn build_match_result(entry: &StatDictionaryEntry, primary_val: Option<f64>) -> StatMatchResult {
@@ -66,23 +66,15 @@ fn build_match_result(entry: &StatDictionaryEntry, primary_val: Option<f64>) -> 
 }
 
 fn fallback_substring_search(
-    stats: &[StatDictionaryEntry],
+    state: &DictionaryState,
     normalized: &str,
     primary_val: Option<f64>,
 ) -> Option<StatMatchResult> {
-    for entry in stats {
-        let zh_clean = normalize_pattern(&entry.zh_text).replace('#', "");
-        let en_clean = normalize_pattern(&entry.en_text).replace('#', "");
-        let zh_trim = zh_clean.trim();
-        let en_trim = en_clean.trim();
-
-        if (!zh_trim.is_empty() && normalized.contains(zh_trim))
-            || (!en_trim.is_empty() && normalized.contains(en_trim))
-        {
-            return Some(build_match_result(entry, primary_val));
-        }
-    }
-    None
+    let stat_idx = state
+        .stat_ac_matcher
+        .find_best_match(normalized, &state.stat_dict)?;
+    let entry = state.stat_dict.get(stat_idx)?;
+    Some(build_match_result(entry, primary_val))
 }
 
 pub fn lookup_stat_by_text(clean_line: &str) -> Option<StatMatchResult> {

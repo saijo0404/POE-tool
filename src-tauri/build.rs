@@ -19,6 +19,8 @@ struct PrecomputedStatCache {
     pub stat_armour_local_map: HashMap<String, u32>,
     pub stat_weapon_local_map: HashMap<String, u32>,
     pub stat_local_map: HashMap<String, u32>,
+    pub ac_patterns: Vec<String>,
+    pub ac_pattern_to_stat: Vec<u32>,
 }
 
 fn main() {
@@ -74,6 +76,19 @@ fn build_stat_cache(out_path: &Path) {
     let mut stat_armour_local_map: HashMap<String, u32> = HashMap::new();
     let mut stat_weapon_local_map: HashMap<String, u32> = HashMap::new();
     let mut stat_local_map: HashMap<String, u32> = HashMap::new();
+    let mut ac_pattern_map: HashMap<String, (u32, i32)> = HashMap::new();
+
+    let mut insert_ac_pattern = |pattern: String, stat_idx: u32, prio: i32| {
+        let trimmed = pattern.trim().to_string();
+        if is_valid_stat_pattern(&trimmed) {
+            match ac_pattern_map.get(&trimmed) {
+                Some(&(_, old_prio)) if prio <= old_prio => {}
+                _ => {
+                    ac_pattern_map.insert(trimmed, (stat_idx, prio));
+                }
+            }
+        }
+    };
 
     for (idx, entry) in stats.iter().enumerate() {
         let idx = idx as u32;
@@ -104,8 +119,9 @@ fn build_stat_cache(out_path: &Path) {
                     stat_weapon_local_map.insert(zh_p.clone(), idx);
                 }
                 if should_replace(&stat_local_map, &zh_p) {
-                    stat_local_map.insert(zh_p, idx);
+                    stat_local_map.insert(zh_p.clone(), idx);
                 }
+                insert_ac_pattern(zh_p.replace('#', ""), idx, prio);
             }
             if !clean_en.is_empty() {
                 let en_p = normalize(&clean_en);
@@ -116,23 +132,33 @@ fn build_stat_cache(out_path: &Path) {
                     stat_weapon_local_map.insert(en_p.clone(), idx);
                 }
                 if should_replace(&stat_local_map, &en_p) {
-                    stat_local_map.insert(en_p, idx);
+                    stat_local_map.insert(en_p.clone(), idx);
                 }
+                insert_ac_pattern(en_p.replace('#', ""), idx, prio);
             }
         } else {
             if !entry.zh_text.is_empty() {
                 let zh_p = normalize(&entry.zh_text);
                 if should_replace(&stat_pattern_map, &zh_p) {
-                    stat_pattern_map.insert(zh_p, idx);
+                    stat_pattern_map.insert(zh_p.clone(), idx);
                 }
+                insert_ac_pattern(zh_p.replace('#', ""), idx, prio);
             }
             if !entry.en_text.is_empty() {
                 let en_p = normalize(&entry.en_text);
                 if should_replace(&stat_pattern_map, &en_p) {
-                    stat_pattern_map.insert(en_p, idx);
+                    stat_pattern_map.insert(en_p.clone(), idx);
                 }
+                insert_ac_pattern(en_p.replace('#', ""), idx, prio);
             }
         }
+    }
+
+    let mut ac_patterns = Vec::with_capacity(ac_pattern_map.len());
+    let mut ac_pattern_to_stat = Vec::with_capacity(ac_pattern_map.len());
+    for (pat, (stat_idx, _)) in ac_pattern_map {
+        ac_patterns.push(pat);
+        ac_pattern_to_stat.push(stat_idx);
     }
 
     let cache = PrecomputedStatCache {
@@ -141,6 +167,8 @@ fn build_stat_cache(out_path: &Path) {
         stat_armour_local_map,
         stat_weapon_local_map,
         stat_local_map,
+        ac_patterns,
+        ac_pattern_to_stat,
     };
 
     let encoded = bincode::serialize(&cache).expect("Failed to serialize stat cache");
@@ -194,4 +222,33 @@ fn build_item_cache(out_path: &Path) {
     out_file
         .write_all(&encoded)
         .expect("Failed to write item_cache.bincode");
+}
+
+fn is_valid_stat_pattern(s: &str) -> bool {
+    let trimmed = s.trim();
+    if trimmed.is_empty() {
+        return false;
+    }
+
+    let cjk_count = trimmed
+        .chars()
+        .filter(|c| ('\u{4e00}'..='\u{9fff}').contains(c))
+        .count();
+    if cjk_count >= 2 {
+        return true;
+    }
+
+    let alpha_count = trimmed.chars().filter(|c| c.is_ascii_alphabetic()).count();
+    if alpha_count >= 3 {
+        let lower = trimmed.to_lowercase();
+        let stop_words = [
+            "the", "and", "for", "with", "from", "that", "this", "into", "item", "when", "have",
+            "been", "were", "they",
+        ];
+        if !stop_words.contains(&lower.as_str()) {
+            return true;
+        }
+    }
+
+    false
 }
