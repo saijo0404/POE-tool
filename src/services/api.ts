@@ -91,6 +91,8 @@ export const poeApi = {
     ApiClientFactory.getClient().hideOverlayWindow(),
   setOverlayClickThrough: (enable: boolean): Promise<void> =>
     ApiClientFactory.getClient().setOverlayClickThrough(enable),
+  getPendingOverlayItem: (): Promise<string | null> =>
+    ApiClientFactory.getClient().getPendingOverlayItem(),
 
   // Logger
   getLogContents: (lines?: number): Promise<string> =>

@@ -65,6 +65,7 @@ export interface IPoeApiClient {
   showOverlayWindow(x?: number, y?: number, itemText?: string): Promise<void>;
   hideOverlayWindow(): Promise<void>;
   setOverlayClickThrough(enable: boolean): Promise<void>;
+  getPendingOverlayItem(): Promise<string | null>;
 
   // Logger
   getLogContents(lines?: number): Promise<string>;

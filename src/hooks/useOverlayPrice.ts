@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { ParsedItem, ParsedItemMod, TradeSearchResult, TradeListing } from '../types/poe';
 import { poeApi } from '../services/api';
 import { isTauri } from '../utils/tauri';
@@ -19,6 +19,9 @@ export function useOverlayPrice() {
 
   const autoClose = settings.overlayAutoCloseOnBlur ?? true;
 
+  const activeLeagueRef = useRef(activeLeague);
+  activeLeagueRef.current = activeLeague;
+
   const handleCloseOverlay = useCallback(async () => {
     try {
       await poeApi.hideOverlayWindow();
@@ -29,10 +32,11 @@ export function useOverlayPrice() {
 
   const executeSearch = useCallback(async (item: ParsedItem, targetMods: ParsedItemMod[]) => {
     setSearching(true);
+    setTradeResults(null);
     try {
       const activeMods = targetMods.filter(m => m.enabled);
       const res = await poeApi.searchTrade({
-        league: activeLeague || 'Standard',
+        league: activeLeagueRef.current || 'Standard',
         tradeStatus: 'instant',
         name: item.name,
         baseType: item.baseType,
@@ -42,17 +46,20 @@ export function useOverlayPrice() {
         fetchOffset: 0
       });
       setTradeResults(res);
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[Overlay] searchTrade error:', err);
+      setTradeResults(null);
     } finally {
       setSearching(false);
     }
-  }, [activeLeague]);
+  }, []);
 
   const loadAndParseItem = useCallback(async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
     setRawText(trimmed);
+    setTradeResults(null);
+    setSearching(true);
     try {
       const parsed = await poeApi.parseItem(trimmed);
       setParsedItem(parsed);
@@ -80,17 +87,25 @@ export function useOverlayPrice() {
         }))
       ];
       setMods(initialMods);
-      executeSearch(parsed, initialMods);
-      try {
-        await poeApi.showOverlayWindow(undefined, undefined, trimmed);
-      } catch {
-        // Ignore in web fallback
-      }
-    } catch {
-      // Parse error
+      await executeSearch(parsed, initialMods);
+    } catch (err) {
+      console.error('[Overlay] parseItem error:', err);
+      setSearching(false);
     }
   }, [executeSearch]);
 
+  const loadAndParseItemRef = useRef(loadAndParseItem);
+  loadAndParseItemRef.current = loadAndParseItem;
+
+  // Register global JS hook for direct zero-latency invocation from Rust
+  useEffect(() => {
+    (window as unknown as { __POE_LOAD_ITEM?: (text: string) => void }).__POE_LOAD_ITEM = (text: string) => {
+      loadAndParseItemRef.current(text);
+    };
+    return () => {
+      delete (window as unknown as { __POE_LOAD_ITEM?: (text: string) => void }).__POE_LOAD_ITEM;
+    };
+  }, []);
 
   // Esc key and Window Blur listener
   useEffect(() => {
@@ -115,29 +130,46 @@ export function useOverlayPrice() {
     };
   }, [autoClose, pinned, handleCloseOverlay]);
 
-  // Listen to Tauri events for new item queries
+  // Listen to Tauri events and focus checks for new item queries
   useEffect(() => {
     if (!isTauri()) return;
     let unmounted = false;
     let unlistens: Array<() => void> = [];
 
+    const checkPendingOrClipboard = () => {
+      poeApi.getPendingOverlayItem().then(item => {
+        if (item && !unmounted) {
+          loadAndParseItemRef.current(item);
+        }
+      }).catch(() => {});
+    };
+
+    checkPendingOrClipboard();
+
+    const handleFocus = () => {
+      checkPendingOrClipboard();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
     import('@tauri-apps/api/event').then(({ listen }) => {
       if (unmounted) return;
       listen<string>('overlay-show-item', (ev) => {
-        if (ev.payload) loadAndParseItem(ev.payload);
+        if (ev.payload) loadAndParseItemRef.current(ev.payload);
       }).then(u => unlistens.push(u));
 
       listen<{ text?: string }>('poe-item-copied', (ev) => {
         const t = typeof ev.payload === 'string' ? ev.payload : ev.payload?.text;
-        if (t) loadAndParseItem(t);
+        if (t) loadAndParseItemRef.current(t);
       }).then(u => unlistens.push(u));
     });
 
     return () => {
       unmounted = true;
+      window.removeEventListener('focus', handleFocus);
       unlistens.forEach(u => u());
     };
-  }, [loadAndParseItem]);
+  }, []);
 
   const toggleMod = useCallback((idx: number) => {
     setMods(prev => {

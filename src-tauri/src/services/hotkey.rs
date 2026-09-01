@@ -214,17 +214,16 @@ pub fn trigger_in_game_price_check(app: &tauri::AppHandle) {
 
     let app_clone = app.clone();
     std::thread::spawn(move || {
-        std::thread::sleep(std::time::Duration::from_millis(50));
+        std::thread::sleep(std::time::Duration::from_millis(80));
         let text = app_clone.clipboard().read_text().unwrap_or_default();
-        let is_poe = is_poe_item_text(&text);
-        let item_payload = if is_poe { Some(text) } else { None };
-
-        let _ = crate::commands::overlay_commands::show_overlay_window(
-            app_clone,
-            None,
-            None,
-            item_payload,
-        );
+        if is_poe_item_text(&text) {
+            let _ = crate::commands::overlay_commands::show_overlay_window(
+                app_clone,
+                None,
+                None,
+                Some(text),
+            );
+        }
     });
 }
 

@@ -107,6 +107,7 @@ pub fn run() {
             commands::show_overlay_window,
             commands::hide_overlay_window,
             commands::set_overlay_click_through,
+            commands::get_pending_overlay_item,
         ])
         .setup(|app| {
             // Build Tray Menu

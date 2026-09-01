@@ -7,12 +7,14 @@ interface TradeSummaryCardProps {
   tradeResults: TradeSearchResult | null;
   searching: boolean;
   onRefreshSearch: () => void;
+  rawText?: string;
 }
 
 export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
   tradeResults,
   searching,
-  onRefreshSearch
+  onRefreshSearch,
+  rawText
 }) => {
   // If actively searching and results haven't arrived yet
   if (searching && !tradeResults) {
@@ -96,7 +98,7 @@ export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
             type="button"
             onClick={async () => {
               try {
-                await poeApi.showOverlayWindow();
+                await poeApi.showOverlayWindow(undefined, undefined, rawText);
               } catch {
                 // Ignore
               }

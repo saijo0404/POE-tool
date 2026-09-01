@@ -32,10 +32,6 @@ pub fn handle_clipboard_change(app: &tauri::AppHandle) {
         Err(poisoned) => poisoned.into_inner(),
     };
 
-    if lock.trim() == text.trim() {
-        return;
-    }
-
     *lock = text.clone();
     drop(lock);
 

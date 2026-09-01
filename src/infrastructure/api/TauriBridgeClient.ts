@@ -165,6 +165,10 @@ export class TauriBridgeClient implements IPoeApiClient {
     return this.invoke<void>('set_overlay_click_through', { enable });
   }
 
+  async getPendingOverlayItem(): Promise<string | null> {
+    return this.invoke<string | null>('get_pending_overlay_item');
+  }
+
   async getLogContents(lines?: number): Promise<string> {
     return this.invoke<string>('get_log_contents', { lines });
   }

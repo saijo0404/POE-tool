@@ -247,6 +247,7 @@ describe('poeApi service client', () => {
         if (cmd === 'show_overlay_window') return null;
         if (cmd === 'hide_overlay_window') return null;
         if (cmd === 'set_overlay_click_through') return null;
+        if (cmd === 'get_pending_overlay_item') return 'item';
         return null;
       });
 
@@ -283,6 +284,7 @@ describe('poeApi service client', () => {
       await poeApi.showOverlayWindow(500, 300, 'item');
       await poeApi.hideOverlayWindow();
       await poeApi.setOverlayClickThrough(true);
+      expect(await poeApi.getPendingOverlayItem()).toBe('item');
       expect(await poeApi.getLogContents()).toBe('Line 1\nLine 2');
       expect(await poeApi.getLogFilePath()).toBe('/logs/app.log');
     });

@@ -112,6 +112,7 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
           tradeResults={tradeResults}
           searching={searching}
           onRefreshSearch={handleSearchTrade}
+          rawText={rawText}
         />
       )}
 

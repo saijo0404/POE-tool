@@ -120,6 +120,7 @@ export class HttpFallbackClient implements IPoeApiClient {
   async showOverlayWindow(_x?: number, _y?: number, _itemText?: string): Promise<void> {}
   async hideOverlayWindow(): Promise<void> {}
   async setOverlayClickThrough(_enable: boolean): Promise<void> {}
+  async getPendingOverlayItem(): Promise<string | null> { return Promise.resolve(null); }
   async getLogContents(_lines?: number): Promise<string> { return ''; }
   async getLogFilePath(): Promise<string> { return ''; }
 }

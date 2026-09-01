@@ -45,6 +45,17 @@ pub fn calculate_safe_bounds(
     (target_x.clamp(0, max_x), target_y.clamp(0, max_y))
 }
 
+static PENDING_OVERLAY_ITEM: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+
+#[tauri::command]
+pub fn get_pending_overlay_item() -> Result<Option<String>, String> {
+    let mut lock = match PENDING_OVERLAY_ITEM.lock() {
+        Ok(l) => l,
+        Err(p) => p.into_inner(),
+    };
+    Ok(lock.take())
+}
+
 #[tauri::command]
 pub fn get_cursor_position() -> Result<(i32, i32), String> {
     Ok(get_system_cursor_pos())
@@ -90,7 +101,21 @@ pub fn show_overlay_window(
 
     if let Some(text) = item_text {
         if !text.trim().is_empty() {
-            let _ = app.emit("overlay-show-item", text);
+            let mut lock = match PENDING_OVERLAY_ITEM.lock() {
+                Ok(l) => l,
+                Err(p) => p.into_inner(),
+            };
+            *lock = Some(text.clone());
+            drop(lock);
+
+            let _ = app.emit("overlay-show-item", text.clone());
+
+            let json_text = serde_json::to_string(&text).unwrap_or_default();
+            let script = format!(
+                "if (window.__POE_LOAD_ITEM) {{ window.__POE_LOAD_ITEM({}); }}",
+                json_text
+            );
+            let _ = window.eval(&script);
         }
     }
 

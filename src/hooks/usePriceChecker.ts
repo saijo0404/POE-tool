@@ -43,6 +43,7 @@ export function usePriceChecker({
 
   const lastSyncedKeyRef = useRef<string>('');
   const lastParsedRawTextRef = useRef<string>('');
+  const lastExternalTextRef = useRef<string>('');
   const resetFiltersRef = useRef(filters.resetFilters);
   resetFiltersRef.current = filters.resetFilters;
 
@@ -53,8 +54,11 @@ export function usePriceChecker({
   }, [league, selectedLeague]);
 
   useEffect(() => {
-    if (externalText && externalText !== rawText) setRawText(externalText);
-  }, [externalText, rawText]);
+    if (externalText && externalText.trim() !== lastExternalTextRef.current.trim()) {
+      lastExternalTextRef.current = externalText.trim();
+      setRawText(externalText);
+    }
+  }, [externalText]);
 
   const executeTradeSearch = useCallback(async (
     targetItem: ParsedItem | null,
