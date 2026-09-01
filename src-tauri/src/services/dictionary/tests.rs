@@ -100,11 +100,14 @@ fn test_fallback_substring_matching() {
 #[test]
 fn test_unmatched_stat_lookup_performance() {
     let unpatterned_queries = [
-        "這是一條完全不存在於字典的詞綴",
+        "這是一條完全不存在於字典的無效文字",
         "This is an unknown affix line with no matching stats 12345",
-        "特殊詞綴 造成 100% 額外混沌傷害 隨機附魔",
+        "無效詞綴 造成 100% 額外混沌傷害 隨機附魔",
         "Another random flavour text without any pattern match",
     ];
+
+    // Warm up the matcher OnceLock before measuring steady-state per-query search latency
+    let _ = lookup_stat_by_text("warmup query string");
 
     let start = Instant::now();
     for _ in 0..100 {
@@ -121,10 +124,16 @@ fn test_unmatched_stat_lookup_performance() {
         total_queries, elapsed, avg_us
     );
 
-    // Ensure average lookup is well under 1ms (1000 µs), usually < 50 µs
+    // In unoptimized debug mode on CI runners, ensure average lookup is well under 1ms (1000 µs), release mode is < 100 µs
+    let max_allowed_us = if cfg!(debug_assertions) {
+        1000.0
+    } else {
+        100.0
+    };
     assert!(
-        avg_us < 1000.0,
-        "Fallback search took too long: {:.2} µs/query (expected < 1000 µs)",
-        avg_us
+        avg_us < max_allowed_us,
+        "Fallback search took too long: {:.2} µs/query (expected < {} µs)",
+        avg_us,
+        max_allowed_us
     );
 }
