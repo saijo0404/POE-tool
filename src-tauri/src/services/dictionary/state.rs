@@ -1,6 +1,7 @@
 use super::patterns::{
     check_stat_is_armour, check_stat_is_weapon, entry_priority, normalize_pattern, strip_local_tags,
 };
+use super::stat_matcher::StatAcMatcher;
 use crate::services::storage::{get_data_dir, read_json_safe};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -29,6 +30,8 @@ pub struct PrecomputedStatCache {
     pub stat_armour_local_map: HashMap<String, u32>,
     pub stat_weapon_local_map: HashMap<String, u32>,
     pub stat_local_map: HashMap<String, u32>,
+    pub ac_patterns: Vec<String>,
+    pub ac_pattern_to_stat: Vec<u32>,
 }
 
 static PRECOMPUTED_STAT_BIN: &[u8] =
@@ -43,6 +46,7 @@ pub struct DictionaryState {
     pub stat_weapon_local_map: HashMap<String, u32>,
     pub stat_local_map: HashMap<String, u32>,
     pub item_dict: HashMap<String, String>,
+    pub stat_ac_matcher: StatAcMatcher,
 }
 
 impl Default for DictionaryState {
@@ -60,6 +64,7 @@ impl DictionaryState {
             stat_weapon_local_map: HashMap::new(),
             stat_local_map: HashMap::new(),
             item_dict: HashMap::new(),
+            stat_ac_matcher: StatAcMatcher::default(),
         };
         state.init();
         state
@@ -78,6 +83,8 @@ impl DictionaryState {
             self.stat_armour_local_map = cache.stat_armour_local_map;
             self.stat_weapon_local_map = cache.stat_weapon_local_map;
             self.stat_local_map = cache.stat_local_map;
+            self.stat_ac_matcher =
+                StatAcMatcher::from_precomputed(cache.ac_patterns, cache.ac_pattern_to_stat);
         }
     }
 
@@ -128,7 +135,6 @@ impl DictionaryState {
                 || entry.zh_text.contains("(局部)");
             let is_armour = check_stat_is_armour(&entry.en_text, &entry.zh_text);
             let is_weapon = check_stat_is_weapon(&entry.en_text, &entry.zh_text);
-
             let clean_zh = strip_local_tags(&entry.zh_text);
             let clean_en = strip_local_tags(&entry.en_text);
 
@@ -138,6 +144,7 @@ impl DictionaryState {
                 self.index_global_entry(idx, entry);
             }
         }
+        self.stat_ac_matcher = StatAcMatcher::build_from_stats(&self.stat_dict);
     }
 
     fn index_local_entry(

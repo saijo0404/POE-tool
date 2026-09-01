@@ -1,5 +1,6 @@
 pub mod base_types;
 pub mod patterns;
+pub mod stat_matcher;
 pub mod state;
 pub mod trade_stats;
 
