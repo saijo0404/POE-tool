@@ -66,6 +66,7 @@ export interface WealthFilterState {
   minValueChaos: number;
   ignoredTabNames: string[];
   selectedCategory: string;
+  bulkMultiplier?: number;
 }
 
 export interface FilteredWealthData {
@@ -74,5 +75,7 @@ export interface FilteredWealthData {
   tabSummaries: StashTabSummary[];
   topItems: StashItem[];
   allItems: StashItem[];
+  bulkMultiplier: number;
 }
+
 

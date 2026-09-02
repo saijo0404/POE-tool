@@ -19,6 +19,8 @@ interface TabBreakdownProps {
   onChangeMinValueChaos?: (val: number) => void;
   selectedCategory?: string;
   onChangeCategory?: (cat: string) => void;
+  bulkMultiplier?: number;
+  onChangeBulkMultiplier?: (mult: number) => void;
   onResetFilters?: () => void;
 }
 
@@ -33,6 +35,8 @@ export const TabBreakdown: React.FC<TabBreakdownProps> = ({
   onChangeMinValueChaos,
   selectedCategory = 'ALL',
   onChangeCategory,
+  bulkMultiplier = 1.0,
+  onChangeBulkMultiplier,
   onResetFilters
 }) => {
   const [selectedTab, setSelectedTab] = useState<string>('ALL');
@@ -40,7 +44,11 @@ export const TabBreakdown: React.FC<TabBreakdownProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const activeIgnored = ignoredTabs.length > 0 ? ignoredTabs : ignoredTabNames;
-  const isFilterActive = minValueChaos > 0 || activeIgnored.length > 0 || selectedCategory !== 'ALL';
+  const isFilterActive =
+    minValueChaos > 0 ||
+    activeIgnored.length > 0 ||
+    selectedCategory !== 'ALL' ||
+    bulkMultiplier !== 1.0;
 
   const baseItems = useMemo(() => {
     const rawList = selectedTab === 'ALL' ? (allItems.length > 0 ? allItems : topItems) : allItems.filter(i => i.tabName === selectedTab);
@@ -121,6 +129,8 @@ export const TabBreakdown: React.FC<TabBreakdownProps> = ({
         onChangeCategory={onChangeCategory}
         minValueChaos={minValueChaos}
         onChangeMinValueChaos={onChangeMinValueChaos}
+        bulkMultiplier={bulkMultiplier}
+        onChangeBulkMultiplier={onChangeBulkMultiplier}
         isFilterActive={isFilterActive}
         onResetFilters={onResetFilters}
       />

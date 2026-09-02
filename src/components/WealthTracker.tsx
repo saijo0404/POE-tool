@@ -24,6 +24,7 @@ export const WealthTracker: React.FC<WealthTrackerProps> = ({ league, onShowToas
     handleToggleIgnoreTab,
     handleChangeMinValueChaos,
     handleChangeCategory,
+    handleChangeBulkMultiplier,
     handleResetFilters,
     handleExportCSV,
     handleCopyDiscordSummary
@@ -38,6 +39,8 @@ export const WealthTracker: React.FC<WealthTrackerProps> = ({ league, onShowToas
         snapshotting={snapshotting}
         progress={progress}
         snapshotsCount={snapshots.length}
+        bulkMultiplier={filterState.bulkMultiplier || 1.0}
+        onChangeBulkMultiplier={handleChangeBulkMultiplier}
         onCreateSnapshot={handleCreateSnapshot}
         onClearHistory={handleClearHistory}
         onExportCSV={handleExportCSV}
@@ -59,6 +62,8 @@ export const WealthTracker: React.FC<WealthTrackerProps> = ({ league, onShowToas
         onChangeMinValueChaos={handleChangeMinValueChaos}
         selectedCategory={filterState.selectedCategory || 'ALL'}
         onChangeCategory={handleChangeCategory}
+        bulkMultiplier={filterState.bulkMultiplier || 1.0}
+        onChangeBulkMultiplier={handleChangeBulkMultiplier}
         onResetFilters={handleResetFilters}
       />
     </div>

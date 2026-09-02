@@ -115,6 +115,18 @@ pub async fn fetch_item_overview(
             }
             if !variant.is_empty() {
                 rates.insert(format!("{} ({})", name, variant), chaos_val);
+                rates.insert(format!("{}:{}", name, variant), chaos_val);
+            }
+            if let Some(lvl) = line["levelRequired"]
+                .as_i64()
+                .or_else(|| line["itemLevel"].as_i64())
+            {
+                rates.insert(format!("{} (ilvl {})", name, lvl), chaos_val);
+            }
+            if let (Some(g_lvl), Some(g_q)) =
+                (line["gemLevel"].as_i64(), line["gemQuality"].as_i64())
+            {
+                rates.insert(format!("{} ({}/{})", name, g_lvl, g_q), chaos_val);
             }
             rates
                 .entry(name.clone())

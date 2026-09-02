@@ -196,6 +196,7 @@ async fn fetch_all_ninja_categories(
         "UniqueJewel",
         "SkillGem",
         "ClusterJewel",
+        "BaseType",
     ];
     for cat in item_types {
         fetch_item_overview(client, active_league, cat, rates).await;
