@@ -8,17 +8,48 @@
 
 ## [Unreleased]
 
-### ♻️ 重構 (Refactored)
-- 實作 Rate Limiter 非同步請求排隊佇列與自動平滑重試機制，遇 GGG 速率限制或 HTTP 429 時自動掛起冷卻並重試，避免直接拋錯失敗 ([#44](https://github.com/saijo0404/POE-tool/issues/44))。
+---
 
-### 📖 文件 (Documentation)
-- 建立產品發展路線圖 [`ROADMAP.md`](ROADMAP.md) 並配置 GitHub Milestone 連結 ([#37](https://github.com/saijo0404/POE-tool/issues/37))。
-- 建立根目錄版本歷史與發布記錄 [`CHANGELOG.md`](CHANGELOG.md) ([#38](https://github.com/saijo0404/POE-tool/issues/38))。
-- 修正 [`README.md`](README.md) 中 Windows 執行檔命名與建置輸出路徑說明不一致問題 (`POE_tool.exe` ➔ `poe-tool.exe`) ([#39](https://github.com/saijo0404/POE-tool/issues/39))。
+## [1.5.0] - 2026-09-02
+
+### ✨ 新增 (Added)
+- **遊戲內極簡半透明懸浮查價視窗 (Awakened-style Floating Overlay)**：
+  - 支援無邊框置頂、全螢幕遊戲視窗點擊穿透 (Click-through)、滑鼠懸停啟用與全域快捷鍵 (`Ctrl+D` / `Ctrl+W`) 呼出關閉 ([#41](https://github.com/saijo0404/POE-tool/issues/41), [#62](https://github.com/saijo0404/POE-tool/pull/62), [#63](https://github.com/saijo0404/POE-tool/pull/63))。
+  - 支援滑鼠游標自動貼齊與邊界防溢出計算，不遮蔽遊戲內物品屬性欄。
+- **刷圖收益即時追蹤與結算器 (Mapping Session & Profit Tracker)**：
+  - 監聽 `Client.txt` 遊戲日誌自動識別進出地圖事件與歷程計時 ([#51](https://github.com/saijo0404/POE-tool/issues/51), [#70](https://github.com/saijo0404/POE-tool/pull/70))。
+  - 進出圖前後自動結算背包與倉庫物品資產差額，即時精算單場利潤、累計收益與神聖石時薪（Divine/hr）。
+  - 支援音效提醒、自訂投資成本扣除與 Markdown/CSV 收益報表匯出。
+- **地圖危險詞綴警示與安全 Regex 產生器 (Map Dangerous Mod Warning & Regex)**：
+  - 依據玩家流派特性（物理/元素反傷、無法回復、降最大抗性、無法偷取）自動將危險詞綴標記為紅色高警示 ([#52](https://github.com/saijo0404/POE-tool/issues/52), [#71](https://github.com/saijo0404/POE-tool/pull/71))。
+  - 一鍵生成安全地圖過濾正則表達式（Regex），支援直接貼入遊戲倉庫或市集搜尋欄快速高亮安全地圖。
+- **稀有裝備 Pseudo 偽屬性合併與智慧篩選**：
+  - 智慧聚合「總元素抗性」、「總生命/魔力」等核心複合數值，並預設勾選最具市場價值的核心 2~3 條關鍵詞綴 ([#47](https://github.com/saijo0404/POE-tool/issues/47), [#67](https://github.com/saijo0404/POE-tool/pull/67))。
+  - 支援數值區間浮動微調（$\pm 10\% \sim 20\%$）與自訂詞綴條件增刪。
+- **倉庫大宗出售 (Bulk Sale) 溢價估值模型**：
+  - 倉庫資產估值支援自訂各類物資（甲蟲、精髓、命運卡、通貨）之大宗出售打包溢價倍率 ([#48](https://github.com/saijo0404/POE-tool/issues/48), [#68](https://github.com/saijo0404/POE-tool/pull/68))。
+  - 支援特殊高價值未鑑定基底物與勢力基底定價。
+- **Cloudflare WAF / Turnstile 驗證適應性與 Session 存活探針**：
+  - 完善 Webview 輔助驗證流程，加入心跳偵測與過期提醒，改善官方 Cloudflare 防護阻擋問題 ([#45](https://github.com/saijo0404/POE-tool/issues/45), [#60](https://github.com/saijo0404/POE-tool/pull/60))。
+
+### ⚡ 效能 (Performance)
+- **Win32 事件驅動剪貼簿推送機制 (Win32 Push vs Poll)**：使用 Win32 `AddClipboardFormatListener` 取代前端定時輪詢，背景待機 CPU 佔用降至 0% ([#40](https://github.com/saijo0404/POE-tool/issues/40), [#61](https://github.com/saijo0404/POE-tool/pull/61))。
+- **3.2MB 靜態詞綴字典載入優化**：針對字典 JSON 實作二進制預先序列化與記憶體快取，冷啟動反序列化時間由 250ms 縮減至 < 20ms ([#42](https://github.com/saijo0404/POE-tool/issues/42), [#64](https://github.com/saijo0404/POE-tool/pull/64))。
+- **未匹配詞綴子字串 Aho-Corasick 演算法**：將 $O(N)$ 線性搜尋改建為 Aho-Corasick 多模式匹配機，未命中比對延遲壓至 < 0.5ms ([#43](https://github.com/saijo0404/POE-tool/issues/43), [#65](https://github.com/saijo0404/POE-tool/pull/65))。
+
+### ♻️ 重構 (Refactored)
+- **Rate Limiter 非同步請求排隊佇列與自動平滑重試**：於 Rust 端透過 Tokio 實作排隊佇列，遇到 GGG 429 速率限制時自動指數退避並依序重送 ([#44](https://github.com/saijo0404/POE-tool/issues/44), [#59](https://github.com/saijo0404/POE-tool/pull/59))。
+- **代碼庫專注度提升**：移除目前未成熟的 PoE 2 關聯代碼，專注維護 PoE 1 當季版本的絕對穩定 ([#46](https://github.com/saijo0404/POE-tool/issues/46), [#66](https://github.com/saijo0404/POE-tool/pull/66))。
+- **React Fast Refresh 規範修復**：分離常數與元件導出，消除開發模式熱重載警告 ([#49](https://github.com/saijo0404/POE-tool/issues/49), [#69](https://github.com/saijo0404/POE-tool/pull/69))。
 
 ### 🧪 測試 (Testing)
 - 調整詞綴字典效能測試門檻（`test_dictionary_init_performance`）以動態適應 Debug 與 Release 環境，修復 Windows CI 環境下測試超時斷言失敗問題。
-- 修復 `SettingsContext.test.tsx` 在非同步狀態載入時未被 React 19 `act(...)` 包裹之控制台警告 ([#50](https://github.com/saijo0404/POE-tool/issues/50))。
+- 修復 `SettingsContext.test.tsx` 在非同步狀態載入時未被 React 19 `act(...)` 包裹之控制台警告 ([#50](https://github.com/saijo0404/POE-tool/issues/50), [#58](https://github.com/saijo0404/POE-tool/pull/58))。
+
+### 📖 文件 (Documentation)
+- 建立產品發展路線圖 [`ROADMAP.md`](ROADMAP.md) 並配置 GitHub Milestone 連結 ([#37](https://github.com/saijo0404/POE-tool/issues/37), [#55](https://github.com/saijo0404/POE-tool/pull/55))。
+- 建立根目錄版本歷史與發布記錄 [`CHANGELOG.md`](CHANGELOG.md) ([#38](https://github.com/saijo0404/POE-tool/issues/38), [#56](https://github.com/saijo0404/POE-tool/pull/56))。
+- 修正 [`README.md`](README.md) 中 Windows 執行檔命名與建置輸出路徑說明不一致問題 (`POE_tool.exe` ➔ `poe-tool.exe`) ([#39](https://github.com/saijo0404/POE-tool/issues/39), [#57](https://github.com/saijo0404/POE-tool/pull/57))。
 
 ---
 
@@ -111,7 +142,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/saijo0404/POE-tool/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/saijo0404/POE-tool/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/saijo0404/POE-tool/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/saijo0404/POE-tool/compare/v1.1.0...v1.2.0

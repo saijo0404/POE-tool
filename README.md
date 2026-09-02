@@ -7,7 +7,7 @@
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B%20Strict-blue.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0%2B-646cff.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tests](https://img.shields.io/badge/Tests-271%20Passed-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-393%20Passed-success.svg)]()
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20Clean%20Code-purple.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
@@ -34,25 +34,36 @@
 
 ## ✨ 核心特色與功能 (Key Features)
 
-### 1. ⚔️ 遊戲內極速查價 (Instant In-Game Price Checker)
+### 1. ⚔️ 遊戲內極速查價與極簡懸浮窗 (Instant Price Checker & Floating Overlay)
+- **Awakened-style 遊戲內極簡懸浮查價視窗**：
+  支援無邊框置頂、滑鼠游標自動對齊貼齊、全螢幕點擊穿透 (Click-through) 與全域快捷鍵 (`Ctrl+D` / `Ctrl+W`) 瞬間呼出與關閉。
 - **100% 繁體中文台服詞綴精準對照**：
   內建 17,600+ 詞綴與 5,100+ 物品中英雙向字典，不管是基底名稱（如 `後悔石` ➔ `Orb of Regret`、`撤銷石` ➔ `Orb of Unmaking`、`罪魔邪冠` ➔ `Hubris Circlet`）或是各類數值區間，均能毫秒級精準對譯並直接向官方市集查詢。
-- **遊戲內 `Ctrl+C` 自動捕捉**：
-  在遊戲中對著任意裝備按下 `Ctrl+C` 複製，工具即時透過剪貼簿自動解析物品屬性，一秒呈現市集即時刊登、官方現貨底價與中位數行情。
-- **Win32 原生遊戲指令發送 (< 1ms)**：
-  點擊「前往藏身處 (Travel to Hideout - F5)」或快速密語時，Rust 端透過 Win32 原生 `SendInput` 與安全的剪貼簿注入管線，瞬間完成視窗切換與指令發送，徹底消除傳統腳本冷啟動與輸入遺失問題。
-- **官方 API 智慧多通道節流 (Rate-Limiting)**：
-  Rust 核心內建 Tokio 多通道狀態機，自動解析 GGG Rate-Limit 標頭並智慧退避，確保高頻查價不遭遇 HTTP 429 封鎖。
+- **稀有裝備 Pseudo 偽屬性智慧合併與詞綴篩選**：
+  自動聚合「總元素抗性」、「總生命/魔力」等複合數值，預設勾選最具市場價值的 2~3 條核心詞綴，並支援數值區間浮動微調 ($\pm 10\% \sim 20\%$)。
+- **Win32 事件驅動剪貼簿推送與原生遊戲指令 (< 1ms)**：
+  使用 Win32 `AddClipboardFormatListener` 取代定時輪詢，背景待機 CPU 佔用降至 0%。點擊「前往藏身處 (F5)」透過 Win32 `SendInput` 瞬間完成視窗切換與指令發送。
+- **官方 API 智慧 Rate Limiter 佇列重試**：
+  Rust 核心內建 Tokio 非同步請求佇列，遇到 GGG 429 速率限制自動指數退避並平滑重試，絕不中斷查價。
 
-### 2. 💰 倉庫資產與財富追蹤 (Wealth Tracker & Stash Breakdown)
-- **真實資產即時估值（支援繁中字典轉換）**：
-  對接官方 Stash API 與 poe.ninja / GGG 官方貨幣交易所即時現貨匯率，繁中物品自動轉換中英字典，精準計算倉庫頁與角色身上的通貨、碎片、星團珠寶、命運卡、聖甲蟲、精髓、地圖與傳奇裝備之 Chaos / Divine 總淨值。
+### 2. 📊 刷圖收益即時追蹤與結算器 (Mapping Session & Profit Tracker)
+- **遊戲日誌自動監聽**：透過 `Client.txt` 自動偵測進出地圖事件與刷圖計時。
+- **背包/倉庫自動差異比對**：進出圖前後自動計算物品資產淨變化，精確結算單場地圖利潤、累計收益、成本扣除與神聖石時薪（Divine/hr）。
+- **音效提示與報表匯出**：支援客製化收益音效、一鍵匯出 Markdown 與 CSV 刷圖歷程明細。
+
+### 3. ⚠️ 地圖危險詞綴警示與市集/倉庫安全 Regex (Map Dangerous Mod Warning & Regex)
+- **流派危險詞綴自動警示**：依據玩家流派特性（物理/元素反傷、無法回復生命魔力、降最大抗性、無法偷取等），自動高亮標記紅色高危險詞綴。
+- **安全 Regex 一鍵生成**：一鍵複製安全地圖過濾正則表達式，直接在遊戲倉庫或官方市集貼上，快速篩選出 100% 安全的地圖。
+
+### 4. 💰 倉庫資產與財富追蹤 (Wealth Tracker & Stash Breakdown)
+- **真實資產即時估值（支援繁中字典轉換與大宗溢價）**：
+  對接官方 Stash API 與 poe.ninja / GGG 官方貨幣交易所即時現貨匯率，繁中物品自動轉換中英字典，精準計算倉庫頁與角色身上的通貨、碎片、星團珠寶、命運卡、聖甲蟲、精髓、地圖與傳奇裝備之 Chaos / Divine 總淨值，並支援**大宗出售 (Bulk Sale) 打包溢價倍率**與特殊未鑑定基底估值。
 - **分類佔比、自選分頁與門檻過濾**：
   支援勾選特定倉庫頁面、設定最低價值門檻（過濾微量垃圾物），並提供前 20 大高價值物品清單與各頁面排行。
 - **自動資產快照、趨勢圖表與社群分享**：
   支援自訂背景排程週期（如每 60 分鐘）自動記錄資產快照，透過視覺化折線圖直觀追蹤財富增長動態，並支援一鍵匯出 **CSV 歷程報表** 與 **Discord 格式摘要**。
 
-### 3. 🧮 流派造價計算器 (Build Cost Calculator - 支援 PoB 代碼與 ninja 解析)
+### 5. 🧮 流派造價計算器 (Build Cost Calculator - 支援 PoB 代碼與 ninja 解析)
 - **多來源一鍵解析配置**：
   - **Path of Building (PoB) 原始代碼**：直接貼上 PoB 匯出的 **Raw Base64 壓縮碼** 或 **原始 XML**，Rust 核心在記憶體中進行 Base64 解碼與 zlib inflate 解壓縮。
   - **線上網址**：支援直接貼入 `pobb.in` 或 `poe.ninja` 角色流派網址。
@@ -62,7 +73,7 @@
 - **流派造價報表複製**：
   一鍵產出完整 Markdown 格式的部位造價報表，方便社群分享與配置評估。
 
-### 4. 🗺️ 輿圖天賦規劃器與刷圖成本精算 (Atlas Strategy & Planner)
+### 6. 🗺️ 輿圖天賦規劃器與刷圖成本精算 (Atlas Strategy & Planner)
 - **內建完整 860+ 節點輿圖天賦樹**：
   100% 繁體中文對齊官方天賦樹拓撲，支援 138 點上限防呆、智能最短路徑尋路、屬性總結面板與官方/PoEPlanner Base64 天賦編解碼。
 - **自訂策略分級與聖甲蟲/工藝配置**：
@@ -70,11 +81,11 @@
 - **即時物價連動與批次採購清單**：
   連動 poe.ninja 即時物價與神聖石匯率，精算單場成本、淨利潤、ROI 與時薪估計，並提供一鍵複製批次備料採購清單與市集精確搜尋關鍵字。
 
-### 5. 📖 章節拓荒全指引 (Act Leveling Guide)
+### 7. 📖 章節拓荒全指引 (Act Leveling Guide)
 - **Act 1 ~ Act 10 最佳主線路線**：完整任務流程、被動技能點、昇華試煉與天賦拓荒節奏，採模組化章節架構維護。
 - **職業寶石獎勵過濾與迷你浮窗模式**：支援職業專屬寶石過濾與懸浮置頂半透明迷你模式。
 
-### 6. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
+### 8. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
 - 前後端完全透過 **Tauri 2.0 記憶體 IPC** 直接通訊（延遲 < 0.05ms），不再需要本機 HTTP 開 port 或 Node.js 伺服器中介。
 - 記憶體佔用極低（僅約 35MB~60MB），啟動速度 < 0.2 秒。
 
@@ -172,13 +183,13 @@ npm run tauri:dev
 
 ## 🛠️ 建置與測試指南 (Build & Testing)
 
-### 執行完整測試套件 (271 Tests Passed)
+### 執行完整測試套件 (393 Tests Passed)
 
 ```bash
-# 1. 執行前端 Vitest 單元測試 (49 Test Suites, 232 Tests)
+# 1. 執行前端 Vitest 單元測試 (75 Test Suites, 336 Tests)
 npm test
 
-# 2. 執行後端 Rust Cargo 單元測試 (39 Tests)
+# 2. 執行後端 Rust Cargo 單元測試 (57 Tests)
 cargo test --manifest-path src-tauri/Cargo.toml
 
 # 3. 執行前端型別檢查與代碼品質檢驗
