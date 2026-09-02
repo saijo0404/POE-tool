@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
-export type AppTabType = 'price' | 'wealth' | 'build' | 'acts' | 'atlas';
+export type AppTabType = 'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas';
 
 interface NavbarProps {
   activeTab: AppTabType;
@@ -98,6 +98,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
         >
           <TrendingUp size={15} /> 每小時資產估算
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('mapping')}
+          className={activeTab === 'mapping' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
+        >
+          <Swords size={15} /> 刷圖收益追蹤
         </button>
 
         <button
