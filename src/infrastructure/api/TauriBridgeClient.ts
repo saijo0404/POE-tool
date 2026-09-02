@@ -117,6 +117,10 @@ export class TauriBridgeClient implements IPoeApiClient {
     return this.invoke<void>('open_atlas_tree_window', { url, title });
   }
 
+  async triggerInGameCommand(command: string): Promise<boolean> {
+    return this.invoke<boolean>('trigger_in_game_command', { command });
+  }
+
   async getNinjaPrices(league?: string, refresh?: boolean): Promise<NinjaPricesResult> {
     return this.invoke<NinjaPricesResult>('get_ninja_prices', { league, refresh });
   }

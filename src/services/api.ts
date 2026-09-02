@@ -63,6 +63,8 @@ export const poeApi = {
     ApiClientFactory.getClient().openExternalUrl(url),
   openAtlasTreeWindow: (url: string, title?: string): Promise<void> =>
     ApiClientFactory.getClient().openAtlasTreeWindow(url, title),
+  triggerInGameCommand: (command: string): Promise<boolean> =>
+    ApiClientFactory.getClient().triggerInGameCommand(command),
 
   // Ninja & Build Calculator
   getNinjaPrices: (league?: string, refresh?: boolean): Promise<NinjaPricesResult> =>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert, MessageSquare } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
@@ -12,6 +12,7 @@ interface NavbarProps {
   activeTab: AppTabType;
   setActiveTab: (tab: AppTabType) => void;
   onOpenSettings: () => void;
+  onOpenTradeWhisper?: () => void;
   league?: string;
   divineRate?: number;
   accountName?: string;
@@ -21,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onOpenSettings,
+  onOpenTradeWhisper,
   league: propLeague,
   divineRate: propDivineRate,
   accountName: propAccountName
@@ -146,6 +148,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
+
+        <button
+          type="button"
+          onClick={onOpenTradeWhisper}
+          className="poe-button-secondary"
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '6px', fontSize: '0.86rem', color: '#2ecc71', borderColor: 'rgba(46, 204, 113, 0.4)' }}
+          title="開啟交易密語助理與快捷回覆模擬器"
+        >
+          <MessageSquare size={15} /> 密語助理
+        </button>
 
         <button
           type="button"

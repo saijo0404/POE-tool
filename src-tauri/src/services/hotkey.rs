@@ -50,9 +50,20 @@ pub fn is_poe_active() -> bool {
     }
 }
 
+pub fn is_valid_in_game_command(command: &str) -> bool {
+    let sanitized = command.trim();
+    if sanitized.is_empty() {
+        return false;
+    }
+    sanitized.lines().all(|line| {
+        let l = line.trim();
+        l.starts_with('/') || l.starts_with('@')
+    })
+}
+
 pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Result<bool, String> {
     let sanitized = command.trim();
-    if !sanitized.starts_with('/') {
+    if !is_valid_in_game_command(sanitized) {
         return Ok(false);
     }
 
@@ -82,10 +93,7 @@ pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Re
         if !target_hwnd.0.is_null() {
             // 1. 讀取並暫存使用者原本的剪貼簿內容以利後續還原
             let prev_clipboard = if let Some(app_handle) = app {
-                let prev = app_handle.clipboard().read_text().ok();
-                // 2. 將目標遊戲指令寫入系統剪貼簿
-                let _ = app_handle.clipboard().write_text(sanitized.to_string());
-                prev
+                app_handle.clipboard().read_text().ok()
             } else {
                 None
             };
@@ -107,42 +115,58 @@ pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Re
                     },
                 };
 
-                // Enter down + up (開啟聊天室)
-                let mut inputs = vec![
-                    make_key(
-                        VK_RETURN,
-                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
-                    ),
-                    make_key(VK_RETURN, KEYEVENTF_KEYUP),
-                ];
-                let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
-                std::thread::sleep(std::time::Duration::from_millis(25));
+                let lines: Vec<&str> = sanitized
+                    .lines()
+                    .map(|l| l.trim())
+                    .filter(|l| !l.is_empty())
+                    .collect();
 
-                // Ctrl+V down + up (貼上指令)
-                inputs = vec![
-                    make_key(
-                        VK_CONTROL,
-                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
-                    ),
-                    make_key(
-                        VK_V,
-                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
-                    ),
-                    make_key(VK_V, KEYEVENTF_KEYUP),
-                    make_key(VK_CONTROL, KEYEVENTF_KEYUP),
-                ];
-                let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
-                std::thread::sleep(std::time::Duration::from_millis(25));
+                for (idx, line) in lines.iter().enumerate() {
+                    if let Some(app_handle) = app {
+                        let _ = app_handle.clipboard().write_text(line.to_string());
+                    }
 
-                // Enter down + up (發送指令)
-                inputs = vec![
-                    make_key(
-                        VK_RETURN,
-                        windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
-                    ),
-                    make_key(VK_RETURN, KEYEVENTF_KEYUP),
-                ];
-                let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
+                    // Enter down + up (開啟聊天室)
+                    let mut inputs = vec![
+                        make_key(
+                            VK_RETURN,
+                            windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                        ),
+                        make_key(VK_RETURN, KEYEVENTF_KEYUP),
+                    ];
+                    let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
+                    std::thread::sleep(std::time::Duration::from_millis(25));
+
+                    // Ctrl+V down + up (貼上指令)
+                    inputs = vec![
+                        make_key(
+                            VK_CONTROL,
+                            windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                        ),
+                        make_key(
+                            VK_V,
+                            windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                        ),
+                        make_key(VK_V, KEYEVENTF_KEYUP),
+                        make_key(VK_CONTROL, KEYEVENTF_KEYUP),
+                    ];
+                    let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
+                    std::thread::sleep(std::time::Duration::from_millis(25));
+
+                    // Enter down + up (發送指令)
+                    inputs = vec![
+                        make_key(
+                            VK_RETURN,
+                            windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS(0),
+                        ),
+                        make_key(VK_RETURN, KEYEVENTF_KEYUP),
+                    ];
+                    let _ = SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
+
+                    if idx + 1 < lines.len() {
+                        std::thread::sleep(std::time::Duration::from_millis(35));
+                    }
+                }
 
                 // 3. 等待遊戲端聊天輸入緩衝完成後，自動將原剪貼簿內容寫回
                 if let (Some(app_handle), Some(prev_text)) = (app, prev_clipboard) {
@@ -234,7 +258,7 @@ mod tests {
 
     #[test]
     fn test_send_in_game_command_validation() {
-        // Command must start with '/'
+        // Command must start with '/' or '@'
         assert_eq!(send_in_game_command(None, "invalid_cmd"), Ok(false));
         assert_eq!(send_in_game_command(None, "   "), Ok(false));
         // Valid format returns Ok(false) in non-windows / test environment when game is not found
@@ -243,6 +267,18 @@ mod tests {
             send_in_game_command(None, "  /hideout PlayerName  "),
             Ok(false)
         );
+        assert_eq!(
+            send_in_game_command(None, "@Player 正在刷圖中，請稍候 1 分鐘！"),
+            Ok(false)
+        );
+        assert_eq!(
+            send_in_game_command(None, "@Player ty gl!\n/kick Player"),
+            Ok(false)
+        );
+        assert!(is_valid_in_game_command("/invite Player"));
+        assert!(is_valid_in_game_command("@Player ty gl!"));
+        assert!(is_valid_in_game_command("@Player ty gl!\n/kick Player"));
+        assert!(!is_valid_in_game_command("not_a_command"));
     }
 
     #[test]

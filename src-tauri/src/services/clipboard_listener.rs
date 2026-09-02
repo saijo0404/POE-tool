@@ -14,6 +14,19 @@ pub struct PoeItemCopiedPayload {
 static LAST_EMITTED_TEXT: Mutex<String> = Mutex::new(String::new());
 static APP_HANDLE: OnceLock<tauri::AppHandle> = OnceLock::new();
 
+pub fn is_poe_trade_whisper(text: &str) -> bool {
+    let clean = text.trim();
+    if !clean.starts_with("@From") && !clean.starts_with("@來自") && !clean.starts_with("@来自")
+    {
+        return false;
+    }
+    clean.contains("buy your")
+        || clean.contains("想購買")
+        || clean.contains("想购买")
+        || clean.contains("想要購買")
+        || clean.contains("想要购买")
+}
+
 pub fn handle_clipboard_change(app: &tauri::AppHandle) {
     let text = match app.clipboard().read_text() {
         Ok(t) if !t.trim().is_empty() => t,
@@ -23,7 +36,10 @@ pub fn handle_clipboard_change(app: &tauri::AppHandle) {
         }
     };
 
-    if !is_poe_item_text(&text) {
+    let is_item = is_poe_item_text(&text);
+    let is_whisper = is_poe_trade_whisper(&text);
+
+    if !is_item && !is_whisper {
         return;
     }
 
@@ -31,6 +47,10 @@ pub fn handle_clipboard_change(app: &tauri::AppHandle) {
         Ok(l) => l,
         Err(poisoned) => poisoned.into_inner(),
     };
+
+    if *lock == text {
+        return;
+    }
 
     *lock = text.clone();
     drop(lock);
@@ -45,24 +65,39 @@ pub fn handle_clipboard_change(app: &tauri::AppHandle) {
         timestamp: now,
     };
 
-    let _ = app.emit("poe-item-copied", payload);
-    crate::app_log!(
-        "[ClipboardListener] ⚡ Win32 Push: PoE item detected & pushed to frontend (length: {})",
-        text.len()
-    );
-
     let settings = crate::services::storage::read_json_safe(
         &crate::services::storage::get_data_dir().join("settings.json"),
         crate::models::settings::AppSettings::default(),
     );
 
-    if settings.overlay_enabled {
-        let _ = crate::commands::overlay_commands::show_overlay_window(
-            app.clone(),
-            None,
-            None,
-            Some(text),
+    if is_whisper {
+        let _ = app.emit("poe-trade-whisper", payload);
+        crate::app_log!(
+            "[ClipboardListener] 💬 Win32 Push: Trade whisper detected & pushed to frontend (length: {})",
+            text.len()
         );
+        if settings.overlay_enabled {
+            let _ = crate::commands::overlay_commands::show_overlay_window(
+                app.clone(),
+                None,
+                None,
+                None,
+            );
+        }
+    } else {
+        let _ = app.emit("poe-item-copied", payload);
+        crate::app_log!(
+            "[ClipboardListener] ⚡ Win32 Push: PoE item detected & pushed to frontend (length: {})",
+            text.len()
+        );
+        if settings.overlay_enabled {
+            let _ = crate::commands::overlay_commands::show_overlay_window(
+                app.clone(),
+                None,
+                None,
+                Some(text),
+            );
+        }
     }
 }
 
@@ -215,5 +250,16 @@ mod tests {
         *lock = "initial".to_string();
         assert_eq!(*lock, "initial");
         *lock = String::new();
+    }
+
+    #[test]
+    fn test_is_poe_trade_whisper() {
+        assert!(is_poe_trade_whisper(
+            "@From Buyer: Hi, I would like to buy your Mageblood"
+        ));
+        assert!(is_poe_trade_whisper("@來自 買家: 你好，我想購買 獵首"));
+        assert!(is_poe_trade_whisper("@来自 買家: 你好，我想购买 崇高石"));
+        assert!(!is_poe_trade_whisper("@From Friend: Hey how are you?"));
+        assert!(!is_poe_trade_whisper("Just normal text"));
     }
 }

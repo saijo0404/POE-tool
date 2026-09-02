@@ -34,6 +34,7 @@ pub struct AppSettings {
     #[serde(default = "default_overlay_scale")]
     pub overlay_scale: f64,
     pub map_danger_config: Option<serde_json::Value>,
+    pub client_log_path: Option<String>,
 }
 
 fn default_league() -> String {
@@ -79,6 +80,7 @@ impl Default for AppSettings {
             overlay_auto_close_on_blur: true,
             overlay_scale: default_overlay_scale(),
             map_danger_config: None,
+            client_log_path: None,
         }
     }
 }

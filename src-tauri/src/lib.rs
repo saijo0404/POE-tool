@@ -202,6 +202,9 @@ pub fn run() {
             // Start push-based clipboard listener service
             services::clipboard_listener::init_clipboard_listener(app.handle());
 
+            // Start Client.txt log watcher service
+            services::client_log_watcher::init_client_log_watcher(app.handle());
+
             // Register Global Hotkeys (e.g. Ctrl+D / Alt+D for in-game Awakened price check)
             use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
             let shortcuts = ["ctrl+d", "alt+d"];

@@ -48,6 +48,7 @@ export interface IPoeApiClient {
   createTradeSearchUrl(league: string, queryJson: string): Promise<string>;
   openExternalUrl(url: string): Promise<void>;
   openAtlasTreeWindow(url: string, title?: string): Promise<void>;
+  triggerInGameCommand(command: string): Promise<boolean>;
 
   // Ninja & Build Calculator
   getNinjaPrices(league?: string, refresh?: boolean): Promise<NinjaPricesResult>;
