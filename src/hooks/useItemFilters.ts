@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
 import type { ParsedItem, ParsedItemMod } from '../types/poe';
+import { buildSmartDefaultMods, applyRollPercentage } from '../domain/trade/smartModFilter';
 
 export interface UseItemFiltersProps {
   initialMods?: ParsedItemMod[];
   initialLinksMin?: number;
   initialCorrupted?: boolean;
   initialItemLevelMin?: number;
+  initialRollPercentage?: number;
 }
 
 export function useItemFilters(initial?: UseItemFiltersProps) {
@@ -13,6 +15,7 @@ export function useItemFilters(initial?: UseItemFiltersProps) {
   const [linksMin, setLinksMin] = useState<number | undefined>(initial?.initialLinksMin);
   const [corruptedFilter, setCorruptedFilter] = useState<boolean | undefined>(initial?.initialCorrupted);
   const [itemLevelMin, setItemLevelMin] = useState<number | undefined>(initial?.initialItemLevelMin);
+  const [rollPercentage, setRollPercentageState] = useState<number>(initial?.initialRollPercentage ?? 80);
 
   const setModEnabled = useCallback((id: string, enabled: boolean) => {
     setMods(prev => prev.map(m => (m.id === id ? { ...m, enabled } : m)));
@@ -24,6 +27,11 @@ export function useItemFilters(initial?: UseItemFiltersProps) {
 
   const setModMaxValue = useCallback((id: string, maxValue?: number) => {
     setMods(prev => prev.map(m => (m.id === id ? { ...m, maxValue } : m)));
+  }, []);
+
+  const setRollPercentage = useCallback((percentage: number) => {
+    setRollPercentageState(percentage);
+    setMods(prev => applyRollPercentage(prev, percentage));
   }, []);
 
   const resetFilters = useCallback((parsed: ParsedItem | null) => {
@@ -42,10 +50,10 @@ export function useItemFilters(initial?: UseItemFiltersProps) {
     const isCraftingBase = parsed.rarity === 'Normal' || parsed.rarity === 'Magic';
     setItemLevelMin(isCraftingBase ? parsed.itemLevel : undefined);
 
-    const initialActive = buildInitialMods(parsed);
+    const initialActive = buildSmartDefaultMods(parsed, rollPercentage);
     setMods(initialActive);
     return initialActive.filter(m => m.enabled);
-  }, []);
+  }, [rollPercentage]);
 
   return {
     mods,
@@ -56,6 +64,8 @@ export function useItemFilters(initial?: UseItemFiltersProps) {
     setCorruptedFilter,
     itemLevelMin,
     setItemLevelMin,
+    rollPercentage,
+    setRollPercentage,
     setModEnabled,
     setModMinValue,
     setModMaxValue,
@@ -68,23 +78,4 @@ function calculateAutoLinks(sockets?: string): number | undefined {
   if (sockets.includes('W-W-W-W-W-W') || sockets.split('-').length === 6) return 6;
   if (sockets.split('-').length === 5) return 5;
   return undefined;
-}
-
-function buildInitialMods(parsed: ParsedItem): ParsedItemMod[] {
-  const isUnique = parsed.rarity === 'Unique';
-  const implicits = (parsed.implicits || []).map(m => ({
-    ...m,
-    enabled: false,
-    minValue: m.minValue ?? m.value,
-    maxValue: m.maxValue
-  }));
-
-  const explicits = (parsed.explicits || []).map((m, idx) => ({
-    ...m,
-    enabled: isUnique ? idx < 2 : true,
-    minValue: m.minValue ?? m.value,
-    maxValue: m.maxValue
-  }));
-
-  return [...implicits, ...explicits];
 }

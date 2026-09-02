@@ -92,6 +92,26 @@ pub fn lookup_stat_for_weapon(clean_line: &str) -> Option<StatMatchResult> {
 pub fn get_default_stat_dict() -> Vec<StatDictionaryEntry> {
     vec![
         StatDictionaryEntry {
+            id: "pseudo.pseudo_total_elemental_resistance".to_string(),
+            zh_text: "+#% 總元素抗性 (Pseudo)".to_string(),
+            en_text: "+#% total Elemental Resistance".to_string(),
+        },
+        StatDictionaryEntry {
+            id: "pseudo.pseudo_total_resistance".to_string(),
+            zh_text: "+#% 總抗性 (Pseudo)".to_string(),
+            en_text: "+#% total Resistance".to_string(),
+        },
+        StatDictionaryEntry {
+            id: "pseudo.pseudo_total_life".to_string(),
+            zh_text: "+# 總生命 (Pseudo)".to_string(),
+            en_text: "+# to total maximum Life".to_string(),
+        },
+        StatDictionaryEntry {
+            id: "pseudo.pseudo_total_energy_shield".to_string(),
+            zh_text: "+# 總能量護盾 (Pseudo)".to_string(),
+            en_text: "+# to total maximum Energy Shield".to_string(),
+        },
+        StatDictionaryEntry {
             id: "explicit.stat_3299347043".to_string(),
             zh_text: "+# 最大生命".to_string(),
             en_text: "+# to maximum Life".to_string(),

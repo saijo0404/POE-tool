@@ -176,9 +176,12 @@ fn parse_pob_or_stream_item(clean_text: &str, is_zh: bool, language: &str) -> Pa
     let mut explicits = Vec::new();
     let mut remaining_implicits = total_implicits_count;
     let mut pending_mod_type: Option<ModType> = None;
+    let mut pending_tier: Option<i64> = None;
 
     for line in mod_candidates {
-        if is_pure_tag_line(line, &mut pending_mod_type) || is_ignorable_line(line) {
+        if is_pure_tag_line(line, &mut pending_mod_type, &mut pending_tier)
+            || is_ignorable_line(line)
+        {
             continue;
         }
 
@@ -196,7 +199,8 @@ fn parse_pob_or_stream_item(clean_text: &str, is_zh: bool, language: &str) -> Pa
             }
         }
 
-        if let Some(m) = parse_single_mod_line(line, mod_type, is_armour, is_weapon) {
+        let tier = pending_tier.take();
+        if let Some(m) = parse_single_mod_line(line, mod_type, is_armour, is_weapon, tier) {
             if m.mod_type == ModType::Implicit {
                 implicits.push(m);
             } else {
@@ -273,10 +277,13 @@ fn parse_section_lines(
     explicits: &mut Vec<crate::models::item::ParsedItemMod>,
 ) {
     let mut pending_mod_type: Option<ModType> = None;
+    let mut pending_tier: Option<i64> = None;
 
     for line in lines {
         let trimmed = line.trim();
-        if is_pure_tag_line(trimmed, &mut pending_mod_type) || is_ignorable_line(trimmed) {
+        if is_pure_tag_line(trimmed, &mut pending_mod_type, &mut pending_tier)
+            || is_ignorable_line(trimmed)
+        {
             continue;
         }
 
@@ -290,7 +297,8 @@ fn parse_section_lines(
         }
 
         let is_implicit = mod_type == ModType::Implicit;
-        if let Some(m) = parse_single_mod_line(trimmed, mod_type, is_armour, is_weapon) {
+        let tier = pending_tier.take();
+        if let Some(m) = parse_single_mod_line(trimmed, mod_type, is_armour, is_weapon, tier) {
             if is_implicit {
                 implicits.push(m);
             } else {
@@ -300,9 +308,18 @@ fn parse_section_lines(
     }
 }
 
-fn is_pure_tag_line(line: &str, pending: &mut Option<ModType>) -> bool {
+fn is_pure_tag_line(
+    line: &str,
+    pending: &mut Option<ModType>,
+    pending_tier: &mut Option<i64>,
+) -> bool {
     let lower = line.to_lowercase();
     if line.starts_with('{') && line.ends_with('}') {
+        if let Some(c) = mod_parser::TIER_EXTRACT_RE.captures(line) {
+            if let Ok(t) = c[1].parse::<i64>() {
+                *pending_tier = Some(t);
+            }
+        }
         if lower.contains("fractured") || line.contains("已分裂") || line.contains("分裂") {
             *pending = Some(ModType::Fractured);
             return true;

@@ -65,6 +65,7 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
     linksMin, setLinksMin,
     corruptedFilter, setCorruptedFilter,
     itemLevelMin, setItemLevelMin,
+    rollPercentage, setRollPercentage,
     searching,
     tradeResults,
     copiedId,
@@ -133,6 +134,8 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
             setCorruptedFilter={setCorruptedFilter}
             itemLevelMin={itemLevelMin}
             setItemLevelMin={setItemLevelMin}
+            rollPercentage={rollPercentage}
+            setRollPercentage={setRollPercentage}
             onToggleMod={(idx) => {
               const target = mods[idx];
               if (target) toggleMod(target.id, !target.enabled);

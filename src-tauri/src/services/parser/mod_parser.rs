@@ -9,6 +9,7 @@ lazy_static! {
     pub static ref ROLL_RANGE_RE: Regex = Regex::new(r"\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").unwrap();
     pub static ref POB_RANGE_TAG_RE: Regex = Regex::new(r"\{range:([0-9.]+)\}").unwrap();
     pub static ref VALUE_EXTRACT_RE: Regex = Regex::new(r"[-+]?\d+(?:\.\d+)?").unwrap();
+    pub static ref TIER_EXTRACT_RE: Regex = Regex::new(r"(?i)(?:階層|Tier)[:：]\s*(\d+)").unwrap();
     static ref TAGS_CLEAN_RE: Regex = Regex::new(r"(?i)\s*\{[^}]+\}\s*|\s*\((?:fractured|crafted|enchant|implicit|local|部分|已分裂|分裂|工藝|附魔|固定詞綴)\)\s*").unwrap();
     static ref POB_PLUS_RANGE_RE: Regex = Regex::new(r"^\+\s*\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)").unwrap();
     static ref POB_PERCENT_RANGE_RE: Regex = Regex::new(r"(?:^|\s)\([+-]?\d+(?:\.\d+)?(?:--?[+-]?\d+(?:\.\d+)?)?\)\s*%").unwrap();
@@ -141,11 +142,18 @@ pub fn parse_single_mod_line(
     mod_type: ModType,
     is_armour: bool,
     is_weapon: bool,
+    tier: Option<i64>,
 ) -> Option<ParsedItemMod> {
     let clean = line.trim();
     if clean.is_empty() {
         return None;
     }
+
+    let effective_tier = tier.or_else(|| {
+        TIER_EXTRACT_RE
+            .captures(clean)
+            .and_then(|c| c[1].parse::<i64>().ok())
+    });
 
     let (cleaned_line, val, range_min, range_max) = clean_mod_line_and_extract_values(clean);
     if is_skippable_flavor(&cleaned_line, val) {
@@ -169,6 +177,7 @@ pub fn parse_single_mod_line(
             text: cleaned_line.to_string(),
             english_text: matched.en_text,
             mod_type,
+            tier: effective_tier,
             value: actual_val,
             min_value: effective_min,
             max_value: range_max.or(matched.max_value),
@@ -182,6 +191,7 @@ pub fn parse_single_mod_line(
         text: cleaned_line.to_string(),
         english_text: cleaned_line.to_string(),
         mod_type,
+        tier: effective_tier,
         value: val,
         min_value: effective_min,
         max_value: range_max.or_else(|| val.map(|v| (v * 1.15).ceil())),

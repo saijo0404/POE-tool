@@ -198,4 +198,57 @@ describe('AffixFilterList Component', () => {
     rerender(<AffixFilterList {...defaultProps} onSearchTrade={onSearchTrade} searching={true} />);
     expect(screen.getByRole('button', { name: /查詢中\.\.\./i })).toBeDisabled();
   });
+
+  it('renders pseudo stats category and roll percentage slider', () => {
+    const setRollPercentage = vi.fn();
+    const pseudoMods: ParsedItemMod[] = [
+      {
+        id: 'pseudo.pseudo_total_elemental_resistance',
+        text: '+#% 總元素抗性 (Pseudo)',
+        englishText: '+#% total Elemental Resistance',
+        type: 'pseudo',
+        value: 90,
+        minValue: 72,
+        enabled: true,
+      },
+      {
+        id: 'explicit.stat_1',
+        text: '30% increased Movement Speed',
+        englishText: '30% increased Movement Speed',
+        type: 'explicit',
+        tier: 1,
+        value: 30,
+        minValue: 24,
+        enabled: true,
+      }
+    ];
+
+    render(
+      <AffixFilterList
+        {...defaultProps}
+        mods={pseudoMods}
+        rollPercentage={80}
+        setRollPercentage={setRollPercentage}
+      />
+    );
+
+    // Pseudo group
+    expect(screen.getByText(/偽屬性 \(Pseudo Stats - 總抗\/總生命\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+#% 總元素抗性 \(Pseudo\)/i)).toBeInTheDocument();
+
+    // Tier badge
+    expect(screen.getByText('T1')).toBeInTheDocument();
+
+    // Roll percentage slider and preset button
+    expect(screen.getByText(/數值門檻 \(Roll %\):/i)).toBeInTheDocument();
+    expect(screen.getAllByText('80%').length).toBeGreaterThanOrEqual(1);
+
+    const preset90Btn = screen.getByRole('button', { name: '90%' });
+    fireEvent.click(preset90Btn);
+    expect(setRollPercentage).toHaveBeenCalledWith(90);
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: '75' } });
+    expect(setRollPercentage).toHaveBeenCalledWith(75);
+  });
 });

@@ -43,9 +43,39 @@ export const ModFilterRow: React.FC<ModFilterRowProps> = ({
           style={{ width: '16px', height: '16px', accentColor: 'var(--text-gold)', cursor: 'pointer' }}
         />
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
-          <span style={{ fontSize: '0.88rem', color: mod.enabled ? 'var(--text-bright)' : 'var(--text-muted)', wordBreak: 'break-word', fontWeight: mod.enabled ? 500 : 400 }}>
-            {formatModText(mod)}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            {mod.tier !== undefined && (
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  padding: '1px 5px',
+                  borderRadius: '3px',
+                  fontWeight: 700,
+                  background: mod.tier <= 1
+                    ? 'rgba(234, 179, 8, 0.25)'
+                    : mod.tier === 2
+                    ? 'rgba(56, 189, 248, 0.2)'
+                    : 'rgba(255, 255, 255, 0.08)',
+                  color: mod.tier <= 1
+                    ? '#facc15'
+                    : mod.tier === 2
+                    ? '#38bdf8'
+                    : 'var(--text-muted)',
+                  border: mod.tier <= 1
+                    ? '1px solid rgba(234, 179, 8, 0.4)'
+                    : mod.tier === 2
+                    ? '1px solid rgba(56, 189, 248, 0.3)'
+                    : '1px solid rgba(255, 255, 255, 0.1)'
+                }}
+                title={`詞綴階層 Tier ${mod.tier}`}
+              >
+                T{mod.tier}
+              </span>
+            )}
+            <span style={{ fontSize: '0.88rem', color: mod.enabled ? 'var(--text-bright)' : 'var(--text-muted)', wordBreak: 'break-word', fontWeight: mod.enabled ? 500 : 400 }}>
+              {formatModText(mod)}
+            </span>
+          </div>
           {mod.englishText && mod.englishText !== mod.text && (
             <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', wordBreak: 'break-word' }}>
               {mod.englishText}
