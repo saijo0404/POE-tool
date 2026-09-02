@@ -9,6 +9,7 @@ import { AppStateProvider } from './context/AppStateProvider';
 
 // Dynamic Lazy-Loaded Modules for Chunk Optimization
 const WealthTracker = lazy(() => import('./components/WealthTracker'));
+const MappingTracker = lazy(() => import('./components/mapping/MappingTracker'));
 const BuildCalculator = lazy(() => import('./components/BuildCalculator'));
 const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
 const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
@@ -23,7 +24,7 @@ const LoadingFallback: React.FC = () => (
 
 export const App: React.FC = () => {
   const { settings, activeLeague, divineRate, refreshSettings, refreshDivineRate } = useSettings();
-  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'build' | 'acts' | 'atlas'>('price');
+  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas'>('price');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [pastedText, setPastedText] = useState<string>('');
@@ -143,6 +144,8 @@ export const App: React.FC = () => {
                   <ActLevelingGuide onShowToast={showToast} />
                 ) : activeTab === 'atlas' ? (
                   <AtlasStrategyHub league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
+                ) : activeTab === 'mapping' ? (
+                  <MappingTracker league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
                 ) : (
                   <WealthTracker league={activeLeague} onShowToast={showToast} />
                 )}

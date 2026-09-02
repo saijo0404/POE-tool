@@ -1,0 +1,114 @@
+import React, { useState } from 'react';
+import { useMappingTracker } from '../../hooks/useMappingTracker';
+import { MappingHeaderBar } from './MappingHeaderBar';
+import { MappingSummaryCard } from './MappingSummaryCard';
+import { MappingTimerCard } from './MappingTimerCard';
+import { MappingTabSelector } from './MappingTabSelector';
+import { MappingProfitChart } from './MappingProfitChart';
+import { MappingRunsTable } from './MappingRunsTable';
+import { MappingInvestmentModal } from './MappingInvestmentModal';
+
+interface MappingTrackerProps {
+  league: string;
+  divineRate?: number;
+  onShowToast: (msg: string) => void;
+}
+
+export const MappingTracker: React.FC<MappingTrackerProps> = ({
+  league,
+  divineRate = 150,
+  onShowToast
+}) => {
+  const [isInvestmentModalOpen, setIsInvestmentModalOpen] = useState<boolean>(false);
+
+  const {
+    sessions,
+    activeSession,
+    activeSessionId,
+    setActiveSessionId,
+    timerState,
+    snapshotting,
+    snapshotA,
+    availableTabs,
+    stats,
+    handleStartMap,
+    handlePauseMap,
+    handleResumeMap,
+    handleResetTimer,
+    handleTakeSnapshotA,
+    handleFinishAndSettle,
+    handleDeleteRun,
+    handleClearRuns,
+    handleUpdateInvestment,
+    handleUpdateSelectedTabs,
+    handleCreateSession,
+    handleExportDiscord,
+    handleExportCsv
+  } = useMappingTracker({ league, divineRate, onShowToast });
+
+  return (
+    <div
+      style={{
+        padding: '20px',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px'
+      }}
+    >
+      {/* Top Header & Session Management */}
+      <MappingHeaderBar
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onSelectSession={setActiveSessionId}
+        onCreateSession={handleCreateSession}
+        onExportDiscord={handleExportDiscord}
+        onExportCsv={handleExportCsv}
+        onClearRuns={handleClearRuns}
+        onOpenInvestmentModal={() => setIsInvestmentModalOpen(true)}
+      />
+
+      {/* KPI Metrics Summary */}
+      <MappingSummaryCard stats={stats} />
+
+      {/* Timer & Live Settle Card */}
+      <MappingTimerCard
+        timerState={timerState}
+        snapshotting={snapshotting}
+        snapshotA={snapshotA}
+        strategyName={activeSession.strategyName}
+        onStartMap={handleStartMap}
+        onPauseMap={handlePauseMap}
+        onResumeMap={handleResumeMap}
+        onResetTimer={handleResetTimer}
+        onTakeSnapshotA={handleTakeSnapshotA}
+        onFinishAndSettle={handleFinishAndSettle}
+      />
+
+      {/* Dump Tab Configuration */}
+      <MappingTabSelector
+        availableTabs={availableTabs}
+        selectedTabs={activeSession.selectedTabNames}
+        onUpdateSelectedTabs={handleUpdateSelectedTabs}
+      />
+
+      {/* Cumulative Profit Chart */}
+      <MappingProfitChart runs={activeSession.runs} />
+
+      {/* Completed Runs History & Drop Items */}
+      <MappingRunsTable runs={activeSession.runs} onDeleteRun={handleDeleteRun} />
+
+      {/* Investment Cost Configuration Modal */}
+      <MappingInvestmentModal
+        isOpen={isInvestmentModalOpen}
+        investment={activeSession.defaultInvestment}
+        divineRate={divineRate}
+        onClose={() => setIsInvestmentModalOpen(false)}
+        onSave={handleUpdateInvestment}
+      />
+    </div>
+  );
+};
+
+export default MappingTracker;
