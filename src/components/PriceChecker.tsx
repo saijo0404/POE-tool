@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { AlertOctagon } from 'lucide-react';
 import { usePriceChecker, formatModText } from '../hooks/usePriceChecker';
+import { useSettings } from '../hooks/useSettings';
+import { evaluateMapDanger } from '../domain/mapMod/dangerEvaluator';
+import { DEFAULT_MAP_DANGER_CONFIG } from '../domain/mapMod/dangerPresets';
 import { RecentSearchesBar } from './price/RecentSearchesBar';
 import { ItemInputPanel } from './price/ItemInputPanel';
 import { SessionAuthAlertBanner } from './price/SessionAuthAlertBanner';
@@ -81,6 +85,13 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
     clearRecentSearches
   } = usePriceChecker({ league, onShowToast, externalText });
 
+  const { settings } = useSettings();
+  const dangerEvaluation = useMemo(() => {
+    if (!parsedItem) return null;
+    const cfg = settings.mapDangerConfig || DEFAULT_MAP_DANGER_CONFIG;
+    return evaluateMapDanger(parsedItem, cfg);
+  }, [parsedItem, settings.mapDangerConfig]);
+
   return (
     <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <RecentSearchesBar
@@ -107,6 +118,43 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
         onSearchTrade={handleSearchTrade}
         searching={searching}
       />
+
+      {dangerEvaluation?.hasDanger && (
+        <div
+          style={{
+            background: 'rgba(229, 80, 57, 0.18)',
+            border: '1px solid rgba(229, 80, 57, 0.6)',
+            borderRadius: '6px',
+            padding: '12px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            boxShadow: '0 0 16px rgba(229, 80, 57, 0.2)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ff7675', fontWeight: 'bold' }}>
+            <AlertOctagon size={18} color="#ff7675" />
+            <span>⚠️ 致命地圖警報：此地圖包含 {dangerEvaluation.matchedDangerMods.length + dangerEvaluation.matchedCustomKeywords.length} 個流派危險詞綴！</span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
+            {dangerEvaluation.matchedDangerMods.map((m, idx) => (
+              <span
+                key={idx}
+                style={{
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  fontSize: '0.78rem',
+                  color: '#ff7675',
+                  border: '1px solid rgba(229, 80, 57, 0.4)'
+                }}
+              >
+                ❌ {m.def.nameZh} ({m.def.nameEn}): <code>{m.matchedLine}</code>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {parsedItem && (
         <TradeSummaryCard

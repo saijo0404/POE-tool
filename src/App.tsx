@@ -7,12 +7,17 @@ import { useClipboardSync } from './hooks/useClipboardSync';
 import { useSettings } from './hooks/useSettings';
 import { AppStateProvider } from './context/AppStateProvider';
 
+import { evaluateMapDanger } from './domain/mapMod/dangerEvaluator';
+import { DEFAULT_MAP_DANGER_CONFIG } from './domain/mapMod/dangerPresets';
+import { playDangerAlertSound } from './application/audio/alertSound';
+
 // Dynamic Lazy-Loaded Modules for Chunk Optimization
 const WealthTracker = lazy(() => import('./components/WealthTracker'));
 const MappingTracker = lazy(() => import('./components/mapping/MappingTracker'));
 const BuildCalculator = lazy(() => import('./components/BuildCalculator'));
 const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
 const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
+const MapModHub = lazy(() => import('./components/MapModHub'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 
 const LoadingFallback: React.FC = () => (
@@ -24,7 +29,7 @@ const LoadingFallback: React.FC = () => (
 
 export const App: React.FC = () => {
   const { settings, activeLeague, divineRate, refreshSettings, refreshDivineRate } = useSettings();
-  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas'>('price');
+  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod'>('price');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [pastedText, setPastedText] = useState<string>('');
@@ -53,8 +58,18 @@ export const App: React.FC = () => {
     lastPastedTextRef.current = text.trim();
     setActiveTab('price');
     setPastedText(text);
-    showToast('🎮 遊戲中按 Ctrl+C：已自動帶入裝備並完成即時查價！');
-  }, [showToast]);
+
+    const cfg = settings.mapDangerConfig || DEFAULT_MAP_DANGER_CONFIG;
+    const dangerRes = evaluateMapDanger(text, cfg);
+    if (dangerRes.isMap && dangerRes.hasDanger) {
+      if (cfg.soundAlertEnabled) {
+        playDangerAlertSound();
+      }
+      showToast(`⚠️ 致命地圖警報：此地圖包含 ${dangerRes.matchedDangerMods.length + dangerRes.matchedCustomKeywords.length} 個流派危險詞綴！`);
+    } else {
+      showToast('🎮 遊戲中按 Ctrl+C：已自動帶入裝備並完成即時查價！');
+    }
+  }, [showToast, settings.mapDangerConfig]);
 
   // Hook for in-game Ctrl+C clipboard polling without browser focus
   useClipboardSync({
@@ -146,6 +161,8 @@ export const App: React.FC = () => {
                   <AtlasStrategyHub league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
                 ) : activeTab === 'mapping' ? (
                   <MappingTracker league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
+                ) : activeTab === 'mapmod' ? (
+                  <MapModHub onShowToast={showToast} />
                 ) : (
                   <WealthTracker league={activeLeague} onShowToast={showToast} />
                 )}

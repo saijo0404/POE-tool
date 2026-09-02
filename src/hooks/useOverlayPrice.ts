@@ -4,6 +4,10 @@ import { poeApi } from '../services/api';
 import { isTauri } from '../utils/tauri';
 import { useSettings } from './useSettings';
 import { buildSmartDefaultMods } from '../domain/trade/smartModFilter';
+import { evaluateMapDanger } from '../domain/mapMod/dangerEvaluator';
+import { DEFAULT_MAP_DANGER_CONFIG } from '../domain/mapMod/dangerPresets';
+import { playDangerAlertSound } from '../application/audio/alertSound';
+import type { MapDangerEvaluation } from '../domain/mapMod/types';
 
 export function useOverlayPrice() {
   const { settings, activeLeague } = useSettings();
@@ -17,6 +21,8 @@ export function useOverlayPrice() {
   const [opacity, setOpacity] = useState<number>(settings.overlayOpacity ?? 0.92);
   const [scale, setScale] = useState<number>(settings.overlayScale ?? 1.0);
   const [clickThrough, setClickThrough] = useState<boolean>(settings.overlayClickThrough ?? false);
+
+  const [dangerEvaluation, setDangerEvaluation] = useState<MapDangerEvaluation | null>(null);
 
   const autoClose = settings.overlayAutoCloseOnBlur ?? true;
 
@@ -64,6 +70,14 @@ export function useOverlayPrice() {
     try {
       const parsed = await poeApi.parseItem(trimmed);
       setParsedItem(parsed);
+
+      const cfg = settings.mapDangerConfig || DEFAULT_MAP_DANGER_CONFIG;
+      const evalRes = evaluateMapDanger(parsed, cfg);
+      setDangerEvaluation(evalRes);
+      if (evalRes.isMap && evalRes.hasDanger && cfg.soundAlertEnabled) {
+        playDangerAlertSound();
+      }
+
       const initialMods: ParsedItemMod[] = buildSmartDefaultMods(parsed, 80);
       setMods(initialMods);
       await executeSearch(parsed, initialMods);
@@ -71,7 +85,7 @@ export function useOverlayPrice() {
       console.error('[Overlay] parseItem error:', err);
       setSearching(false);
     }
-  }, [executeSearch]);
+  }, [executeSearch, settings.mapDangerConfig]);
 
   const loadAndParseItemRef = useRef(loadAndParseItem);
   loadAndParseItemRef.current = loadAndParseItem;
@@ -205,6 +219,7 @@ export function useOverlayPrice() {
     rawText, parsedItem, mods, tradeResults, searching, copiedId,
     pinned, setPinned, opacity, setOpacity, scale, setScale,
     clickThrough, handleToggleClickThrough,
+    dangerEvaluation,
     handleCloseOverlay, handleSearchTrade: () => parsedItem && executeSearch(parsedItem, mods),
     toggleMod, handleCopyWhisper, handleTravelToHideout, handleOpenOfficialTrade,
     loadAndParseItem

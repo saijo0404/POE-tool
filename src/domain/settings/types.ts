@@ -16,6 +16,7 @@ export interface AppSettings {
   overlayClickThrough?: boolean;
   overlayAutoCloseOnBlur?: boolean;
   overlayScale?: number;
+  mapDangerConfig?: import('../mapMod/types').MapDangerConfig;
 }
 
 export interface CharacterInfo {

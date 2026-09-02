@@ -6,6 +6,7 @@ export * from '../domain/build/types';
 export * from '../domain/acts/types';
 export * from '../domain/atlas/types';
 export * from '../domain/mapping/types';
+export * from '../domain/mapMod/types';
 export * from '../domain/errors/DomainError';
 export * from '../domain/errors/Result';
 
