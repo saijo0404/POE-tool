@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertOctagon } from 'lucide-react';
 import { useOverlayPrice } from '../hooks/useOverlayPrice';
 import { OverlayHeader } from './overlay/OverlayHeader';
 import { OverlayPriceSummary } from './overlay/OverlayPriceSummary';
@@ -10,7 +11,7 @@ export const OverlayApp: React.FC = () => {
   const {
     parsedItem, mods, tradeResults, searching, copiedId,
     pinned, setPinned, opacity, setOpacity, scale, setScale,
-    clickThrough, handleToggleClickThrough,
+    clickThrough, handleToggleClickThrough, dangerEvaluation,
     handleCloseOverlay, handleSearchTrade, toggleMod,
     handleCopyWhisper, handleTravelToHideout, handleOpenOfficialTrade
   } = useOverlayPrice();
@@ -55,6 +56,23 @@ export const OverlayApp: React.FC = () => {
               onOpenOfficialTrade={handleOpenOfficialTrade}
             />
 
+            {dangerEvaluation?.hasDanger && (
+              <div style={{
+                background: 'rgba(229, 80, 57, 0.28)',
+                borderBottom: '1px solid rgba(229, 80, 57, 0.6)',
+                padding: '6px 10px',
+                color: '#ff7675',
+                fontSize: '0.78rem',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <AlertOctagon size={16} color="#ff7675" />
+                <span>⚠️ 警告：此地圖包含 {dangerEvaluation.matchedDangerMods.length + dangerEvaluation.matchedCustomKeywords.length} 個流派致命詞綴！</span>
+              </div>
+            )}
+
             <OverlayPriceSummary
               tradeResults={tradeResults}
               searching={searching}
@@ -64,6 +82,7 @@ export const OverlayApp: React.FC = () => {
             <OverlayModList
               mods={mods}
               onToggleMod={toggleMod}
+              dangerEvaluation={dangerEvaluation}
             />
 
             <OverlayQuickListings

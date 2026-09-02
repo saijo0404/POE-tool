@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
-export type AppTabType = 'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas';
+export type AppTabType = 'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod';
 
 interface NavbarProps {
   activeTab: AppTabType;
@@ -134,6 +134,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
         >
           <Compass size={15} /> 輿圖天賦策略
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('mapmod')}
+          className={activeTab === 'mapmod' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
+        >
+          <ShieldAlert size={15} /> 地圖過濾 / Regex
         </button>
 
         <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
