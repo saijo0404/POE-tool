@@ -17,6 +17,7 @@ export interface AppSettings {
   overlayAutoCloseOnBlur?: boolean;
   overlayScale?: number;
   mapDangerConfig?: import('../mapMod/types').MapDangerConfig;
+  clientLogPath?: string;
 }
 
 export interface CharacterInfo {

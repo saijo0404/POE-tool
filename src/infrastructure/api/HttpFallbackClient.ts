@@ -94,6 +94,12 @@ export class HttpFallbackClient implements IPoeApiClient {
   async openAtlasTreeWindow(url: string, _title?: string): Promise<void> {
     if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener,noreferrer');
   }
+  async triggerInGameCommand(command: string): Promise<boolean> {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(command);
+    }
+    return false;
+  }
   async getNinjaPrices(league?: string, refresh?: boolean): Promise<NinjaPricesResult> {
     return this.safeGet<NinjaPricesResult>('/api/ninja/prices', { params: { league, refresh: refresh ? 'true' : undefined } });
   }

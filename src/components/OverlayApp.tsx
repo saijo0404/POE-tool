@@ -6,6 +6,8 @@ import { OverlayPriceSummary } from './overlay/OverlayPriceSummary';
 import { OverlayModList } from './overlay/OverlayModList';
 import { OverlayQuickListings } from './overlay/OverlayQuickListings';
 import { OverlayControlsBar } from './overlay/OverlayControlsBar';
+import { useTradeWhisper } from '../hooks/useTradeWhisper';
+import { TradeWhisperCard } from './whisper/TradeWhisperCard';
 
 export const OverlayApp: React.FC = () => {
   const {
@@ -15,6 +17,14 @@ export const OverlayApp: React.FC = () => {
     handleCloseOverlay, handleSearchTrade, toggleMod,
     handleCopyWhisper, handleTravelToHideout, handleOpenOfficialTrade
   } = useOverlayPrice();
+
+  const {
+    whispers,
+    activeWhisper,
+    setActiveWhisperId,
+    handleAction: handleWhisperAction,
+    dismissWhisper
+  } = useTradeWhisper();
 
   return (
     <div style={{
@@ -45,6 +55,42 @@ export const OverlayApp: React.FC = () => {
           transition: 'transform 0.1s ease, opacity 0.1s ease'
         }}
       >
+        {/* Trade Whisper Floating Assistant Section */}
+        {whispers.length > 0 && activeWhisper && (
+          <div style={{ padding: '8px 8px 0 8px' }}>
+            {whispers.length > 1 && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.72rem', color: '#c8aa6e' }}>
+                <span>💬 待處理密語 ({whispers.findIndex(w => w.id === activeWhisper.id) + 1}/{whispers.length})</span>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {whispers.map((w, idx) => (
+                    <button
+                      key={w.id}
+                      type="button"
+                      onClick={() => setActiveWhisperId(w.id)}
+                      style={{
+                        padding: '1px 5px',
+                        borderRadius: '3px',
+                        border: '1px solid rgba(200, 170, 110, 0.4)',
+                        background: w.id === activeWhisper.id ? 'rgba(200, 170, 110, 0.3)' : 'transparent',
+                        color: w.id === activeWhisper.id ? '#f3d179' : '#8c94a4',
+                        cursor: 'pointer',
+                        fontSize: '0.68rem'
+                      }}
+                    >
+                      #{idx + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <TradeWhisperCard
+              whisper={activeWhisper}
+              onAction={handleWhisperAction}
+              onDismiss={dismissWhisper}
+            />
+          </div>
+        )}
+
         {parsedItem ? (
           <>
             <OverlayHeader
@@ -92,7 +138,7 @@ export const OverlayApp: React.FC = () => {
               onTravelToHideout={handleTravelToHideout}
             />
           </>
-        ) : (
+        ) : whispers.length === 0 ? (
           <div style={{
             padding: '24px 16px',
             textAlign: 'center',
@@ -107,7 +153,7 @@ export const OverlayApp: React.FC = () => {
               在遊戲中將滑鼠移至裝備上方並按下複製鍵即可即時查價
             </div>
           </div>
-        )}
+        ) : null}
 
         <OverlayControlsBar
           opacity={opacity}

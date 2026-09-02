@@ -248,6 +248,7 @@ describe('poeApi service client', () => {
         if (cmd === 'hide_overlay_window') return null;
         if (cmd === 'set_overlay_click_through') return null;
         if (cmd === 'get_pending_overlay_item') return 'item';
+        if (cmd === 'trigger_in_game_command') return true;
         return null;
       });
 
@@ -287,6 +288,7 @@ describe('poeApi service client', () => {
       expect(await poeApi.getPendingOverlayItem()).toBe('item');
       expect(await poeApi.getLogContents()).toBe('Line 1\nLine 2');
       expect(await poeApi.getLogFilePath()).toBe('/logs/app.log');
+      expect(await poeApi.triggerInGameCommand('/hideout')).toBe(true);
     });
   });
 });

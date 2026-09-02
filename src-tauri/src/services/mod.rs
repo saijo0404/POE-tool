@@ -1,4 +1,5 @@
 pub mod build_calc;
+pub mod client_log_watcher;
 pub mod clipboard_listener;
 pub mod dictionary;
 pub mod hotkey;

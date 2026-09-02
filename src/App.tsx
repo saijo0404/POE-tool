@@ -19,6 +19,9 @@ const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
 const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
 const MapModHub = lazy(() => import('./components/MapModHub'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
+const TradeWhisperModal = lazy(() =>
+  import('./components/whisper/TradeWhisperModal').then(m => ({ default: m.TradeWhisperModal }))
+);
 
 const LoadingFallback: React.FC = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: 'var(--text-gold)', gap: '10px' }}>
@@ -32,6 +35,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod'>('price');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isWhisperOpen, setIsWhisperOpen] = useState<boolean>(false);
   const [pastedText, setPastedText] = useState<string>('');
 
   const hotkey = settings.hotkey || 'ctrl+c+d';
@@ -108,15 +112,8 @@ export const App: React.FC = () => {
         e.preventDefault();
         setActiveTab('price');
         try {
-          // Attempt reading via server backend OS clipboard first, fallback to browser clipboard API
           const serverRes = await poeApi.readClipboard();
-          if (serverRes?.text) {
-            setPastedText(serverRes.text);
-            showToast(`快捷鍵觸發 (${hotkey.toUpperCase()})：已自動讀取裝備並完成查價！`);
-            return;
-          }
-
-          const text = await navigator.clipboard.readText();
+          const text = serverRes?.text || (await navigator.clipboard.readText().catch(() => ''));
           if (text) {
             setPastedText(text);
             showToast(`快捷鍵觸發 (${hotkey.toUpperCase()})：已自動讀取裝備並完成查價！`);
@@ -146,6 +143,7 @@ export const App: React.FC = () => {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenTradeWhisper={() => setIsWhisperOpen(true)}
           />
 
           <main style={{ flex: 1 }}>
@@ -177,6 +175,13 @@ export const App: React.FC = () => {
                 onClose={() => setIsSettingsOpen(false)}
                 onShowToast={showToast}
                 onSettingsUpdated={handleSettingsUpdated}
+              />
+            )}
+            {isWhisperOpen && (
+              <TradeWhisperModal
+                isOpen={isWhisperOpen}
+                onClose={() => setIsWhisperOpen(false)}
+                onShowToast={showToast}
               />
             )}
           </Suspense>
