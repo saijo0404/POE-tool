@@ -19,9 +19,7 @@ const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
 const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
 const MapModHub = lazy(() => import('./components/MapModHub'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
-const TradeWhisperModal = lazy(() =>
-  import('./components/whisper/TradeWhisperModal').then(m => ({ default: m.TradeWhisperModal }))
-);
+const TradeWhisperModal = lazy(() => import('./components/whisper/TradeWhisperModal').then(m => ({ default: m.TradeWhisperModal })));
 
 const LoadingFallback: React.FC = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: 'var(--text-gold)', gap: '10px' }}>
@@ -169,21 +167,8 @@ export const App: React.FC = () => {
           </main>
 
           <Suspense fallback={null}>
-            {isSettingsOpen && (
-              <SettingsModal
-                isOpen={isSettingsOpen}
-                onClose={() => setIsSettingsOpen(false)}
-                onShowToast={showToast}
-                onSettingsUpdated={handleSettingsUpdated}
-              />
-            )}
-            {isWhisperOpen && (
-              <TradeWhisperModal
-                isOpen={isWhisperOpen}
-                onClose={() => setIsWhisperOpen(false)}
-                onShowToast={showToast}
-              />
-            )}
+            {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} onShowToast={showToast} onSettingsUpdated={handleSettingsUpdated} />}
+            {isWhisperOpen && <TradeWhisperModal isOpen={isWhisperOpen} onClose={() => setIsWhisperOpen(false)} onShowToast={showToast} />}
           </Suspense>
 
           {/* Global Toast Notification */}
