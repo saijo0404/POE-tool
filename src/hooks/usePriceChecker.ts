@@ -161,6 +161,7 @@ export function usePriceChecker({
     linksMin: filters.linksMin, setLinksMin: filters.setLinksMin,
     corruptedFilter: filters.corruptedFilter, setCorruptedFilter: filters.setCorruptedFilter,
     itemLevelMin: filters.itemLevelMin, setItemLevelMin: filters.setItemLevelMin,
+    rollPercentage: filters.rollPercentage, setRollPercentage: filters.setRollPercentage,
     searching, tradeResults, copiedId, authError, clearAuthError: () => setAuthError(null),
     recentSearches, clearRecentSearches,
     handleSearchTrade: () => executeTradeSearch(parsedItem, filters.mods, filters.linksMin, filters.corruptedFilter, filters.itemLevelMin),

@@ -3,6 +3,7 @@ import type { ParsedItem, ParsedItemMod, TradeSearchResult, TradeListing } from 
 import { poeApi } from '../services/api';
 import { isTauri } from '../utils/tauri';
 import { useSettings } from './useSettings';
+import { buildSmartDefaultMods } from '../domain/trade/smartModFilter';
 
 export function useOverlayPrice() {
   const { settings, activeLeague } = useSettings();
@@ -63,29 +64,7 @@ export function useOverlayPrice() {
     try {
       const parsed = await poeApi.parseItem(trimmed);
       setParsedItem(parsed);
-      const initialMods: ParsedItemMod[] = [
-        ...parsed.implicits.map((m, i) => ({
-          id: `implicit.${i}`,
-          text: m.text,
-          englishText: m.englishText || m.text,
-          type: 'implicit' as const,
-          value: m.value,
-          minValue: m.minValue,
-          maxValue: m.maxValue,
-          enabled: false
-        })),
-        ...parsed.explicits.map((m, i) => ({
-          id: `explicit.${i}`,
-          text: m.text,
-          englishText: m.englishText || m.text,
-          type: 'explicit' as const,
-          tier: m.tier,
-          value: m.value,
-          minValue: m.minValue,
-          maxValue: m.maxValue,
-          enabled: parsed.rarity === 'Rare'
-        }))
-      ];
+      const initialMods: ParsedItemMod[] = buildSmartDefaultMods(parsed, 80);
       setMods(initialMods);
       await executeSearch(parsed, initialMods);
     } catch (err) {

@@ -292,4 +292,51 @@ describe('usePriceChecker Hook', () => {
     });
     expect(result.current.authError).toBeNull();
   });
+
+  it('generates pseudo stats and adjusts min values when rollPercentage is changed', async () => {
+    const mockRareItem: ParsedItem = {
+      name: '暴怒 避難所',
+      baseType: '罪魔邪冠',
+      rarity: 'Rare',
+      language: 'zh',
+      rawText: 'Rarity: Rare\n罪魔邪冠',
+      implicits: [],
+      explicits: [
+        { id: 'explicit.fire', text: '+30% 火焰抗性', englishText: '+30% to Fire Resistance', value: 30, type: 'explicit', tier: 4, enabled: false },
+        { id: 'explicit.cold', text: '+30% 冰冷抗性', englishText: '+30% to Cold Resistance', value: 30, type: 'explicit', tier: 4, enabled: false },
+        { id: 'explicit.ms', text: '增加 30% 移動速度', englishText: '30% increased Movement Speed', value: 30, type: 'explicit', tier: 1, enabled: true },
+      ]
+    };
+
+    vi.spyOn(poeApi, 'parseItem').mockResolvedValue(mockRareItem);
+    vi.spyOn(poeApi, 'searchTrade').mockResolvedValue(mockTradeResult);
+
+    const { result } = renderHook(() =>
+      usePriceChecker({ league: 'Settlers', onShowToast })
+    );
+
+    await act(async () => {
+      result.current.setRawText('Rarity: Rare\n罪魔邪冠');
+    });
+
+    await waitFor(() => {
+      expect(result.current.parsedItem).toEqual(mockRareItem);
+    });
+
+    // Pseudo total ele res should be generated (+60% res) and enabled
+    const pseudoEle = result.current.mods.find(m => m.id === 'pseudo.pseudo_total_elemental_resistance');
+    expect(pseudoEle).toBeDefined();
+    expect(pseudoEle?.enabled).toBe(true);
+    expect(pseudoEle?.value).toBe(60);
+    expect(pseudoEle?.minValue).toBe(48); // 60 * 0.8 = 48
+
+    // Adjust rollPercentage to 90%
+    act(() => {
+      result.current.setRollPercentage(90);
+    });
+
+    expect(result.current.rollPercentage).toBe(90);
+    const updatedPseudo = result.current.mods.find(m => m.id === 'pseudo.pseudo_total_elemental_resistance');
+    expect(updatedPseudo?.minValue).toBe(54); // 60 * 0.9 = 54
+  });
 });

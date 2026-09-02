@@ -19,6 +19,8 @@ pub struct ParsedItemMod {
     pub english_text: String,
     #[serde(rename = "type")]
     pub mod_type: ModType,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tier: Option<i64>,
     pub value: Option<f64>,
     pub min_value: Option<f64>,
     pub max_value: Option<f64>,
