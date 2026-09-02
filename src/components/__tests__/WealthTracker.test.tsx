@@ -121,7 +121,7 @@ describe('WealthTracker Component', () => {
     await act(async () => {
       fireEvent.click(exportBtn);
     });
-    expect(onShowToast).toHaveBeenCalledWith('已成功匯出資產歷程 CSV 報表！');
+    expect(onShowToast).toHaveBeenCalledWith(expect.stringContaining('已成功匯出資產歷程 CSV 報表'));
     expect(clickSpy).toHaveBeenCalled();
 
     const clearBtn = screen.getByTitle('重置快照紀錄');
@@ -153,7 +153,9 @@ describe('WealthTracker Component', () => {
     expect(writeTextMock).toHaveBeenCalled();
     const copiedText = writeTextMock.mock.calls[0][0];
     expect(copiedText).toContain('Path of Exile 資產統計報表');
+    expect(copiedText).toContain('計價基準');
     expect(copiedText).toContain('76.25 Divine');
-    expect(onShowToast).toHaveBeenCalledWith('已複製 Discord 格式資產摘要！可直接在聊天室貼上分享');
+    expect(onShowToast).toHaveBeenCalledWith(expect.stringContaining('已複製 Discord 格式資產摘要'));
   });
 });
+

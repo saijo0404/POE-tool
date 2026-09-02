@@ -70,7 +70,8 @@ export const defaultBuildCalculatorState: BuildCalculatorCacheState = {
 export const defaultWealthFilterState: WealthFilterState = {
   minValueChaos: 0,
   ignoredTabNames: [],
-  selectedCategory: 'ALL'
+  selectedCategory: 'ALL',
+  bulkMultiplier: 1.0
 };
 
 export const AppStateContext = createContext<AppStateContextType | undefined>(undefined);

@@ -8,7 +8,8 @@ import { computeFilteredWealthData } from '../utils/wealthCalculator';
 export const DEFAULT_WEALTH_FILTER: WealthFilterState = {
   minValueChaos: 0,
   ignoredTabNames: [],
-  selectedCategory: 'ALL'
+  selectedCategory: 'ALL',
+  bulkMultiplier: 1.0
 };
 
 export function useWealthTracker({
@@ -23,7 +24,6 @@ export function useWealthTracker({
   const [snapshotting, setSnapshotting] = useState<boolean>(false);
   const [progress, setProgress] = useState<StashProgress | null>(null);
   const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
 
   const filterState = appState?.wealthFilterState || DEFAULT_WEALTH_FILTER;
   const setCachedSnapshots = appState?.setCachedSnapshots;
@@ -90,9 +90,13 @@ export function useWealthTracker({
     if (appState?.updateWealthFilterState) appState.updateWealthFilterState({ selectedCategory: cat });
   }, [appState]);
 
+  const handleChangeBulkMultiplier = useCallback((mult: number) => {
+    if (appState?.updateWealthFilterState) appState.updateWealthFilterState({ bulkMultiplier: mult });
+  }, [appState]);
+
   const handleResetFilters = useCallback(() => {
     if (appState?.updateWealthFilterState) {
-      appState.updateWealthFilterState({ minValueChaos: 0, ignoredTabNames: [], selectedCategory: 'ALL' });
+      appState.updateWealthFilterState({ minValueChaos: 0, ignoredTabNames: [], selectedCategory: 'ALL', bulkMultiplier: 1.0 });
     }
   }, [appState]);
 
@@ -102,17 +106,28 @@ export function useWealthTracker({
     return computeFilteredWealthData(latestSnapshot, filterState);
   }, [latestSnapshot, filterState]);
 
-  const isFilterActive = (filterState.minValueChaos && filterState.minValueChaos > 0) || (filterState.ignoredTabNames && filterState.ignoredTabNames.length > 0) || (filterState.selectedCategory && filterState.selectedCategory !== 'ALL');
+  const isFilterActive =
+    (filterState.minValueChaos && filterState.minValueChaos > 0) ||
+    (filterState.ignoredTabNames && filterState.ignoredTabNames.length > 0) ||
+    (filterState.selectedCategory && filterState.selectedCategory !== 'ALL') ||
+    (filterState.bulkMultiplier && filterState.bulkMultiplier !== 1.0);
+
   const displayTotalChaos = isFilterActive ? filteredData.totalChaos : (latestSnapshot?.totalChaos || 0);
   const displayTotalDivine = isFilterActive ? filteredData.totalDivine : (latestSnapshot?.totalDivine || 0);
 
   const handleExportCSV = useCallback(() => {
-    exportWealthHistoryCsv(snapshots, league, onShowToast);
-  }, [snapshots, league, onShowToast]);
+    exportWealthHistoryCsv(snapshots, league, onShowToast, filterState.bulkMultiplier || 1.0);
+  }, [snapshots, league, onShowToast, filterState.bulkMultiplier]);
 
   const handleCopyDiscordSummary = useCallback(() => {
-    copyDiscordWealthSummary(latestSnapshot, filteredData.totalDivine, filteredData.totalChaos, onShowToast);
-  }, [latestSnapshot, filteredData, onShowToast]);
+    copyDiscordWealthSummary(
+      latestSnapshot,
+      filteredData.totalDivine,
+      filteredData.totalChaos,
+      onShowToast,
+      filterState.bulkMultiplier || 1.0
+    );
+  }, [latestSnapshot, filteredData, onShowToast, filterState.bulkMultiplier]);
 
   return {
     snapshots,
@@ -128,11 +143,13 @@ export function useWealthTracker({
     handleToggleIgnoreTab,
     handleChangeMinValueChaos,
     handleChangeCategory,
+    handleChangeBulkMultiplier,
     handleResetFilters,
     handleExportCSV,
     handleCopyDiscordSummary
   };
 }
+
 
 function useAppStateSafe() {
   try { return useAppState(); } catch { return null; }

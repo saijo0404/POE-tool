@@ -26,6 +26,8 @@ interface TabCategoryFilterProps {
   onChangeCategory?: (cat: string) => void;
   minValueChaos: number;
   onChangeMinValueChaos?: (val: number) => void;
+  bulkMultiplier?: number;
+  onChangeBulkMultiplier?: (mult: number) => void;
   isFilterActive: boolean;
   onResetFilters?: () => void;
 }
@@ -35,6 +37,8 @@ export const TabCategoryFilter: React.FC<TabCategoryFilterProps> = ({
   onChangeCategory,
   minValueChaos,
   onChangeMinValueChaos,
+  bulkMultiplier = 1.0,
+  onChangeBulkMultiplier,
   isFilterActive,
   onResetFilters
 }) => {
@@ -54,6 +58,26 @@ export const TabCategoryFilter: React.FC<TabCategoryFilterProps> = ({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {onChangeBulkMultiplier && (
+          <select
+            className="poe-input"
+            value={bulkMultiplier}
+            onChange={e => onChangeBulkMultiplier(Number(e.target.value))}
+            style={{
+              padding: '3px 8px',
+              fontSize: '0.78rem',
+              background: bulkMultiplier > 1.0 ? 'rgba(56, 189, 248, 0.15)' : '#121214',
+              color: bulkMultiplier > 1.0 ? '#38bdf8' : 'var(--text-bright)',
+              borderColor: bulkMultiplier > 1.0 ? 'rgba(56, 189, 248, 0.4)' : undefined
+            }}
+            title="大宗出售溢價乘數 (Bulk Multiplier)"
+          >
+            <option value={1.0}>1.0x 零售 (Retail)</option>
+            <option value={1.2}>1.2x 批發 (+20%)</option>
+            <option value={1.4}>1.4x 頂配 (+40%)</option>
+          </select>
+        )}
+
         {onChangeMinValueChaos && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Filter size={13} color="var(--text-gold)" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, RefreshCw, Clock, Coins, Trash2, Download, Share2 } from 'lucide-react';
+import { TrendingUp, RefreshCw, Clock, Coins, Trash2, Download, Share2, Boxes } from 'lucide-react';
 import type { WealthSnapshot, StashProgress } from '../../types/poe';
 import { getImageUrl } from '../../utils/image';
 
@@ -10,6 +10,8 @@ interface WealthHeaderCardProps {
   snapshotting: boolean;
   progress: StashProgress | null;
   snapshotsCount: number;
+  bulkMultiplier?: number;
+  onChangeBulkMultiplier?: (mult: number) => void;
   onCreateSnapshot: () => void;
   onClearHistory: () => void;
   onExportCSV: () => void;
@@ -23,6 +25,8 @@ export const WealthHeaderCard: React.FC<WealthHeaderCardProps> = ({
   snapshotting,
   progress,
   snapshotsCount,
+  bulkMultiplier = 1.0,
+  onChangeBulkMultiplier,
   onCreateSnapshot,
   onClearHistory,
   onExportCSV,
@@ -147,6 +151,36 @@ export const WealthHeaderCard: React.FC<WealthHeaderCardProps> = ({
             1 : {latestSnapshot?.chaosRate ?? 150}
           </div>
         </div>
+      </div>
+
+      <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.86rem', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+            <Boxes size={16} /> 大宗出售溢價 (Bulk Multiplier):
+          </span>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {[
+              { value: 1.0, label: '1.0x 零售 (Retail)' },
+              { value: 1.2, label: '1.2x 批發 (+20%)' },
+              { value: 1.4, label: '1.4x 頂配大宗 (+40%)' }
+            ].map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => onChangeBulkMultiplier?.(opt.value)}
+                className={bulkMultiplier === opt.value ? 'poe-button' : 'poe-button-secondary'}
+                style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '4px' }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {bulkMultiplier > 1.0 && (
+          <div style={{ fontSize: '0.8rem', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.25)', padding: '4px 10px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>📦 大宗估值模式生效中：通貨、甲蟲、精髓、命運卡、地圖等大宗商品以 <strong>{bulkMultiplier}x</strong> 溢價計價</span>
+          </div>
+        )}
       </div>
     </div>
   );
