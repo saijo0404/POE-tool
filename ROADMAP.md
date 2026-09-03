@@ -36,7 +36,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | :--- | :--- | :---: | :--- |
 | 🟢 **v1.5.0** | **穩定性與效能重構** *(Stability & Core Optimization)* | ✅ 已完成 (待發布) | [Milestone v1.5.0](https://github.com/saijo0404/POE-tool/milestone/1) |
 | 🟢 **v1.6.0** | **查價與使用者體驗躍升** *(UX & In-Game Overlay)* | ✅ 已完成 (待發布) | [Milestone v1.6.0](https://github.com/saijo0404/POE-tool/milestone/2) |
-| 🟡 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | 🚀 進行中 (60%) | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
+| 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已達成 (待發布) | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
 | 📋 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | 📋 規劃中 | 追蹤 Faustus 黑市交易所、即時套利與高階物價走勢 |
 | 📋 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | 📋 規劃中 | 裝備 T1~T12 階級評鑑、工藝潛力分、社群輿圖分享 |
 | 🔭 **v2.3.0** | **跨平台支援與離線資料庫快照** *(Linux/Proton & Offline DB)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
@@ -59,10 +59,10 @@ gantt
     稀有裝備 Pseudo 偽屬性與智慧篩選 (#47/#67) :done,    m2_2, 2026-08-30, 2026-09-02
     倉庫大宗溢價與特殊基底估值 (#48/#68)      :done,    m2_3, 2026-08-30, 2026-09-02
     地圖危險詞綴警示與安全 Regex 產生器 (#52)  :done,    m2_4, 2026-09-01, 2026-09-02
-    section v2.0.0 進階生態 (衝刺中)
+    section v2.0.0 進階生態 (已完成)
     刷圖收益即時追蹤與結算器 (#51/#70)        :done,    m3_1, 2026-09-01, 2026-09-02
-    交易密語懸浮助理與藏身處快捷操作 (#53)     :active,  m3_2, 2026-09-03, 2026-09-20
-    裝備工藝模擬與成本期望精算器 (#54)         :         m3_3, 2026-09-15, 2026-10-10
+    交易密語懸浮助理與藏身處快捷操作 (#53/#72) :done,    m3_2, 2026-09-03, 2026-09-03
+    裝備工藝模擬與成本期望精算器 (#54/#73)     :done,    m3_3, 2026-09-03, 2026-09-03
     section v2.1.0 通貨交易所與情報
     Faustus 通貨交易所即時行情與套利換算       :         m4_1, 2026-10-10, 2026-11-05
     高價資產 7 天價格走勢與波動預警           :         m4_2, 2026-10-25, 2026-11-20
@@ -88,7 +88,7 @@ gantt
    - 進出圖前後自動計算背包與倉庫物品資產差額，即時精算單場利潤、總累計收益與神聖石時薪（Divine/hr）。
    - 支援警示音效、自訂投資成本扣除與 Markdown/CSV 收益報表匯出。
    - 關聯 PR/Issue：[#51](https://github.com/saijo0404/POE-tool/issues/51), [#70](https://github.com/saijo0404/POE-tool/pull/70)
-2. **💬 交易密語懸浮助理與藏身處快速操作 (Trade Whisper & Quick Response Assistant)** `[開發中]`
+2. **💬 交易密語懸浮助理與藏身處快速操作 (Trade Whisper & Quick Response Assistant)** `[已交付/待整合發布]`
    - 即時監聽 `Client.txt` 交易密語（`@From <玩家名>: Hi, I would like to buy your...`）。
    - 畫面邊緣自動彈出迷你快捷卡片：
      - 🟢 **組隊 (`/invite`)**：一鍵邀請買家。
@@ -97,12 +97,12 @@ gantt
      - ⚪ **致謝並踢除 (`ty gl` + `/kick`)**：交易完成一鍵致謝並移出隊伍。
      - 🔴 **回藏身處 (`/hideout`)**：快捷回城。
    - **倉庫格位懸浮高亮標記 (Stash Grid Indicator)**：依據密語中的分頁名稱與座標（例如 `(left 4, top 8)`），於遊戲螢幕以透明方框標示物品確切位置。
-   - 關聯 Issue：[#53](https://github.com/saijo0404/POE-tool/issues/53)
-3. **🛠️ 裝備工藝模擬與成本期望精算器 (Crafting Calculator)** `[規劃中]`
-   - 輕量整合 Craft of Exile 之工藝期望模型，收錄精髓 (Essence)、化石 (Fossil)、收割 (Harvest)、古靈 (Eldritch)、隱匿 (Veiled) 與破裂 (Fracture)。
-   - 玩家指定裝備基底與目標詞綴組合（前綴/後綴）後，即時計算達成機率、平均耗費通貨期望值與信心區間（P50 / P90 成本估算）。
-   - 推薦最省錢的工藝路徑步驟與備料清單。
-   - 關聯 Issue：[#54](https://github.com/saijo0404/POE-tool/issues/54)
+   - 關聯 PR/Issue：[#53](https://github.com/saijo0404/POE-tool/issues/53), [#72](https://github.com/saijo0404/POE-tool/pull/72)
+3. **🛠️ 裝備工藝模擬與成本期望精算器 (Crafting Calculator)** `[已交付/待整合發布]`
+   - 輕量整合 Craft of Exile 之工藝期望模型，收錄精髓 (Essence)、化石 (Fossil)、收割 (Harvest) 與混沌石點骰。
+   - 玩家指定裝備基底與目標詞綴組合（前綴/後綴）後，即時計算達成機率、平均耗費通貨期望值與 95% 信心區間成本估算。
+   - 自動推薦最省錢的工藝路徑步驟，並提供實機模擬試骰沙盒與 6 大熱門配方一鍵帶入。
+   - 關聯 PR/Issue：[#54](https://github.com/saijo0404/POE-tool/issues/54), [#73](https://github.com/saijo0404/POE-tool/pull/73)
 
 ---
 

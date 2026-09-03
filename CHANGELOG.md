@@ -10,6 +10,22 @@
 
 ---
 
+## [2.0.0] - 2026-09-03
+
+### ✨ 新增 (Added)
+- **裝備工藝模擬與成本期望精算器 (Crafting Actuary & Simulator - Craft of Exile 輕量整合)**：
+  - 支援全裝備部位（身體護甲、頭盔、手套、靴子、弓、單手武器、盾牌、飾品等）熱門基底與 ilvl (1~100) 等級選擇 ([#54](https://github.com/saijo0404/POE-tool/issues/54), [#73](https://github.com/saijo0404/POE-tool/pull/73))。
+  - 根據前/後綴詞綴權重資料庫，即時精算精髓 (Essence) 保底、化石 (Fossils) 最佳配方（10x 加倍與 0x 阻斷權重組合）、收割 (Harvest) 與混沌石點骰之成功機率 $P$。
+  - 精準提供平均嘗試次數 $1/P$、期望 Chaos/Divine 成本、95% 信心區間花費預估，並自動以金色徽章推薦最省錢工藝路線。
+  - **實機模擬試骰沙盒 (Live Craft Sandbox)**：支援單次試骰與自動點到命中（上限 100 次），仿 PoE 經典風格即時展示裝備卡片、隨機 roll 點結果與目標命中高亮。
+  - **熱門工藝預設配方**：內建壓抑生命抗性胸甲、35% 跑速雙抗鞋、大傷物理脊骨弓、滿混抗紫晶戒指、+1 全法術寶石法杖、純護甲星辰皮甲等一鍵帶入範本。
+- **交易密語懸浮助理與藏身處快速操作 (Trade Whisper & Quick Response Assistant)**：
+  - 即時監聽遊戲日誌 `Client.txt` 與剪貼簿，支援英文、繁體中文（台服）、簡體中文（國服）與大宗通貨交易密語解析 ([#53](https://github.com/saijo0404/POE-tool/issues/53), [#72](https://github.com/saijo0404/POE-tool/pull/72))。
+  - 提供五大快捷指令按鈕：`/invite`（組隊）、`@<玩家名> 正在刷圖中，請稍候 1 分鐘！`（稍候回覆）、`/tradewith`（交易）、`/hideout`（回藏身處）與 `ty gl` + `/kick`（致謝並踢除）。
+  - **倉庫格位視覺指示器 (Stash Grid Indicator)**：依據密語座標自動高亮 12x12 一般分頁與 24x24 四倍分頁目標格位。
+  - **合成提示音效**：透過 Web Audio API 原生合成清脆水晶提示音 (`playTradeWhisperSound`)。
+  - **密語助理模擬器 (Trade Whisper Tester)**：內建多語言密語測試範本與自訂快捷回覆詞設定。
+
 ## [1.5.0] - 2026-09-02
 
 ### ✨ 新增 (Added)

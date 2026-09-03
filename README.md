@@ -7,7 +7,7 @@
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B%20Strict-blue.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0%2B-646cff.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tests](https://img.shields.io/badge/Tests-393%20Passed-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-462%20Passed-success.svg)]()
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20Clean%20Code-purple.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
@@ -85,7 +85,28 @@
 - **Act 1 ~ Act 10 最佳主線路線**：完整任務流程、被動技能點、昇華試煉與天賦拓荒節奏，採模組化章節架構維護。
 - **職業寶石獎勵過濾與迷你浮窗模式**：支援職業專屬寶石過濾與懸浮置頂半透明迷你模式。
 
-### 8. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
+### 8. 💬 交易密語懸浮助理與藏身處快速操作 (Trade Whisper Assistant & Quick Actions)
+- **多語言交易密語即時監聽**：
+  透過 Rust 原生 `client_log_watcher` 與剪貼簿事件監聽遊戲日誌 `Client.txt`，支援英文、繁體中文（台服）、簡體中文（國服）與大宗通貨密語解析。
+- **五大快捷指令注入**：
+  收到買家密語自動彈出懸浮卡片，一鍵發送 `/invite`（組隊）、`@<玩家名> 正在刷圖中，請稍候 1 分鐘！`（稍候回覆）、`/tradewith`（交易）、`/hideout`（回藏身處）與 `ty gl` + `/kick`（致謝並踢除）。
+- **倉庫格位視覺指示器 (Stash Grid Indicator)**：
+  自動提取密語中分頁名稱與格位座標（如 `(left 4, top 8)`），直覺高亮一般 12x12 與四倍 24x24 分頁取貨位置。
+- **合成水晶提示音**：內建 Web Audio API 原生合成清脆水晶提示音，無額外音訊檔案負擔。
+
+### 9. ⚒️ 裝備工藝模擬與成本期望精算器 (Crafting Actuary & Simulator - Craft of Exile 輕量整合)
+- **全部位基底與 ilvl 等級自訂**：
+  支援身體護甲、頭盔、手套、靴子、雙手弓、單手武器、盾牌、飾品等全類別熱門基底，支援 ilvl 1~100 滑桿與基底屬性檢驗。
+- **詞綴池與精算矩陣**：
+  即時計算精髓保底、化石最佳配方組合（10x 權重加倍與 0x 阻斷）、收割標籤保底與混沌石隨機點骰。
+- **精準成本期望與 95% 信心區間**：
+  提供單次成功機率 $P$、平均次數 $1/P$、期望 Chaos / Divine 總花費，以及 95% 信心區間花費預估，並以金色標籤自動推薦最省錢工藝路線。
+- **實機模擬試骰沙盒 (Live Craft Sandbox)**：
+  支援「單次試骰」與「自動點到命中（上限 100 次）」虛擬體驗，仿 PoE 原生介面呈現裝備卡片、前後綴即時 roll 點結果與目標命中高亮。
+- **6 大熱門工藝預設配方**：
+  一鍵帶入壓抑生命抗性敏捷胸甲、35% 跑速雙抗鞋、大傷物理脊骨弓、滿混抗紫晶戒指、+1 全法術寶石法杖、純護甲星辰皮甲等經典工藝範本。
+
+### 10. ⚡ 純 Rust 原生核心 (Pure Rust + Tokio Backend)
 - 前後端完全透過 **Tauri 2.0 記憶體 IPC** 直接通訊（延遲 < 0.05ms），不再需要本機 HTTP 開 port 或 Node.js 伺服器中介。
 - 記憶體佔用極低（僅約 35MB~60MB），啟動速度 < 0.2 秒。
 
