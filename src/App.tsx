@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, Suspense, lazy, useRef } from 'react';
-import { Navbar } from './components/Navbar';
+import { Navbar, type AppTabType } from './components/Navbar';
 import { PriceChecker } from './components/PriceChecker';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { poeApi } from './services/api';
@@ -18,6 +18,7 @@ const BuildCalculator = lazy(() => import('./components/BuildCalculator'));
 const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
 const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
 const MapModHub = lazy(() => import('./components/MapModHub'));
+const CraftingSimulatorHub = lazy(() => import('./components/CraftingSimulatorHub'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const TradeWhisperModal = lazy(() => import('./components/whisper/TradeWhisperModal').then(m => ({ default: m.TradeWhisperModal })));
 
@@ -30,7 +31,7 @@ const LoadingFallback: React.FC = () => (
 
 export const App: React.FC = () => {
   const { settings, activeLeague, divineRate, refreshSettings, refreshDivineRate } = useSettings();
-  const [activeTab, setActiveTab] = useState<'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod'>('price');
+  const [activeTab, setActiveTab] = useState<AppTabType>('price');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWhisperOpen, setIsWhisperOpen] = useState<boolean>(false);
@@ -159,6 +160,8 @@ export const App: React.FC = () => {
                   <MappingTracker league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
                 ) : activeTab === 'mapmod' ? (
                   <MapModHub onShowToast={showToast} />
+                ) : activeTab === 'craft' ? (
+                  <CraftingSimulatorHub league={activeLeague} divineRate={divineRate} onShowToast={showToast} />
                 ) : (
                   <WealthTracker league={activeLeague} onShowToast={showToast} />
                 )}

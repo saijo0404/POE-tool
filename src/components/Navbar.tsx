@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert, MessageSquare } from 'lucide-react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert, MessageSquare, Hammer } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
-export type AppTabType = 'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod';
+export type AppTabType = 'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod' | 'craft';
 
 interface NavbarProps {
   activeTab: AppTabType;
@@ -17,6 +17,17 @@ interface NavbarProps {
   divineRate?: number;
   accountName?: string;
 }
+
+const NAV_TABS: { id: AppTabType; label: string; icon: React.ReactNode }[] = [
+  { id: 'price', label: '裝備即時查價', icon: <Search size={15} /> },
+  { id: 'wealth', label: '每小時資產估算', icon: <TrendingUp size={15} /> },
+  { id: 'mapping', label: '刷圖收益追蹤', icon: <Swords size={15} /> },
+  { id: 'build', label: 'Build 成本計算', icon: <Calculator size={15} /> },
+  { id: 'acts', label: '拓荒攻略', icon: <Map size={15} /> },
+  { id: 'atlas', label: '輿圖天賦策略', icon: <Compass size={15} /> },
+  { id: 'mapmod', label: '地圖過濾 / Regex', icon: <ShieldAlert size={15} /> },
+  { id: 'craft', label: '工藝期望精算', icon: <Hammer size={15} /> },
+];
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
@@ -84,68 +95,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <button
-          type="button"
-          onClick={() => setActiveTab('price')}
-          className={activeTab === 'price' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <Search size={15} /> 裝備即時查價
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('wealth')}
-          className={activeTab === 'wealth' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <TrendingUp size={15} /> 每小時資產估算
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('mapping')}
-          className={activeTab === 'mapping' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <Swords size={15} /> 刷圖收益追蹤
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('build')}
-          className={activeTab === 'build' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <Calculator size={15} /> Build 成本計算
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('acts')}
-          className={activeTab === 'acts' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <Map size={15} /> 拓荒攻略
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('atlas')}
-          className={activeTab === 'atlas' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <Compass size={15} /> 輿圖天賦策略
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('mapmod')}
-          className={activeTab === 'mapmod' ? 'poe-button' : 'poe-button-secondary'}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-        >
-          <ShieldAlert size={15} /> 地圖過濾 / Regex
-        </button>
+        {NAV_TABS.map(tab => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={activeTab === tab.id ? 'poe-button' : 'poe-button-secondary'}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
+          >
+            {tab.icon} {tab.label}
+          </button>
+        ))}
 
         <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
 
