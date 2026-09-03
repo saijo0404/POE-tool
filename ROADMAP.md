@@ -34,9 +34,9 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 
 | 版本里程碑 | 核心主題 | 目標狀態 | 關聯 GitHub Milestone / 目標 |
 | :--- | :--- | :---: | :--- |
-| 🟢 **v1.5.0** | **穩定性與效能重構** *(Stability & Core Optimization)* | ✅ 已完成 (待發布) | [Milestone v1.5.0](https://github.com/saijo0404/POE-tool/milestone/1) |
-| 🟢 **v1.6.0** | **查價與使用者體驗躍升** *(UX & In-Game Overlay)* | ✅ 已完成 (待發布) | [Milestone v1.6.0](https://github.com/saijo0404/POE-tool/milestone/2) |
-| 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已達成 (待發布) | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
+| 🟢 **v1.5.0** | **穩定性與效能重構** *(Stability & Core Optimization)* | ✅ 已發布 | [Milestone v1.5.0](https://github.com/saijo0404/POE-tool/milestone/1) |
+| 🟢 **v1.6.0** | **查價與使用者體驗躍升** *(UX & In-Game Overlay)* | ✅ 已整合 | [Milestone v1.6.0](https://github.com/saijo0404/POE-tool/milestone/2) |
+| 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已發布 | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
 | 📋 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | 📋 規劃中 | 追蹤 Faustus 黑市交易所、即時套利與高階物價走勢 |
 | 📋 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | 📋 規劃中 | 裝備 T1~T12 階級評鑑、工藝潛力分、社群輿圖分享 |
 | 🔭 **v2.3.0** | **跨平台支援與離線資料庫快照** *(Linux/Proton & Offline DB)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
