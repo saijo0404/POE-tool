@@ -37,7 +37,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v1.5.0** | **穩定性與效能重構** *(Stability & Core Optimization)* | ✅ 已發布 | [Milestone v1.5.0](https://github.com/saijo0404/POE-tool/milestone/1) |
 | 🟢 **v1.6.0** | **查價與使用者體驗躍升** *(UX & In-Game Overlay)* | ✅ 已整合 | [Milestone v1.6.0](https://github.com/saijo0404/POE-tool/milestone/2) |
 | 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已發布 | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
-| 📋 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | 📋 規劃中 | 追蹤 Faustus 黑市交易所、即時套利與高階物價走勢 |
+| 🟡 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | 🚀 規劃就緒 | [Milestone v2.1.0](https://github.com/saijo0404/POE-tool/milestone/4) |
 | 📋 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | 📋 規劃中 | 裝備 T1~T12 階級評鑑、工藝潛力分、社群輿圖分享 |
 | 🔭 **v2.3.0** | **跨平台支援與離線資料庫快照** *(Linux/Proton & Offline DB)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
@@ -112,16 +112,19 @@ gantt
 
 #### 📦 交付功能與關鍵項目
 
-1. **🪙 Faustus 官方大宗通貨交易所即時行情 (Currency Exchange Tracker)**
+1. **🪙 Faustus 官方大宗通貨交易所即時行情 (Currency Exchange Tracker)** `[待開發]`
    - 支援官方 Currency Exchange 買賣訂單簿即時抓取與比價。
    - 自動試算金幣 (Gold) 手續費與跨幣種即時折算（Chaos ➔ Divine ➔ Mirror）。
    - 提供通貨跨市場價差套利分析（市集直購 vs 交易所掛單價差）。
-2. **📈 高價值資產價格趨勢圖與波動預警 (Price Trend & Fluctuation Alert)**
+   - 關聯 Issue：[#74](https://github.com/saijo0404/POE-tool/issues/74)
+2. **📈 高價值資產價格趨勢圖與波動預警 (Price Trend & Fluctuation Alert)** `[待開發]`
    - 針對獵首 (Headhunter)、魔血 (Mageblood)、卡蘭德之鏡 (Mirror)、鎖鏈等高價傳奇與通貨，提供 7 天歷史走勢圖。
    - 支援自訂價格門檻推播通知（例如：當神聖石單價突破 220C 時發出警報）。
-3. **💼 玩家資產組合分析報表 (Asset Portfolio & Net Worth Growth)**
+   - 關聯 Issue：[#75](https://github.com/saijo0404/POE-tool/issues/75)
+3. **💼 玩家資產組合分析報表 (Asset Portfolio & Net Worth Growth)** `[待開發]`
    - 繪製倉庫總淨值隨賽季時間增長曲線圖。
    - 依通貨、命運卡、地圖、甲蟲、精髓分類呈現資產圓餅圖與資產結構分析。
+   - 關聯 Issue：[#76](https://github.com/saijo0404/POE-tool/issues/76)
 
 ---
 
