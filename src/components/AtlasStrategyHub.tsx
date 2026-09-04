@@ -7,6 +7,7 @@ import { AtlasScarabConfig } from './atlas/AtlasScarabConfig';
 import { AtlasExtraItemsConfig } from './atlas/AtlasExtraItemsConfig';
 import { AtlasCostSummaryCard } from './atlas/AtlasCostSummaryCard';
 import { AtlasBatchPlanner } from './atlas/AtlasBatchPlanner';
+import { AtlasBulkShoppingCard } from './atlas/AtlasBulkShoppingCard';
 import { AtlasEditStrategyModal } from './atlas/AtlasEditStrategyModal';
 import { AtlasCommunityHubModal } from './atlas/AtlasCommunityHubModal';
 import { AtlasEmptyStateCard } from './atlas/AtlasEmptyStateCard';
@@ -235,6 +236,15 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
               divineRate={divineRate}
               onUpdateRevenue={val => updateCurrentTier(t => ({ ...t, estimatedRevenuePerMapChaos: val }))}
               onUpdateMapsPerHour={val => updateCurrentTier(t => ({ ...t, mapsPerHour: val }))}
+            />
+
+            {/* Bulk Materials Shopping & Faustus Gold Fee Card (Issue #108) */}
+            <AtlasBulkShoppingCard
+              tier={currentTier}
+              strategyName={currentStrategy?.name}
+              divineRate={divineRate}
+              ninjaRates={ninjaRates}
+              onShowToast={onShowToast}
             />
 
             {/* Batch Materials & Shopping List Planner */}
