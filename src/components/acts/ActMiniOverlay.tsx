@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { ActData, CharacterClass } from '../../domain/acts/types';
+import { getGemSwapMilestonesByClass } from '../../domain/acts/gemSwapData';
 import { ChevronLeft, ChevronRight, X, Award, MapPin, Shield, CheckSquare, Square, Lightbulb } from 'lucide-react';
 
 interface ActMiniOverlayProps {
@@ -11,6 +12,8 @@ interface ActMiniOverlayProps {
   selectedClass: CharacterClass;
   onPrevAct: () => void;
   onNextAct: () => void;
+  completedGemIds?: Set<string>;
+  onToggleGem?: (gemId: string) => void;
 }
 
 export const ActMiniOverlay: React.FC<ActMiniOverlayProps> = ({
@@ -21,8 +24,11 @@ export const ActMiniOverlay: React.FC<ActMiniOverlayProps> = ({
   onToggleStep,
   selectedClass,
   onPrevAct,
-  onNextAct
+  onNextAct,
+  completedGemIds,
+  onToggleGem
 }) => {
+  const [hudTab, setHudTab] = useState<'steps' | 'gems'>('steps');
   // Find index of first uncompleted step in this Act
   const firstUncompletedIdx = actData.steps.findIndex(s => !completedSteps.has(s.id));
   const [activeStepIdx, setActiveStepIdx] = useState<number>(
@@ -92,8 +98,86 @@ export const ActMiniOverlay: React.FC<ActMiniOverlayProps> = ({
         </button>
       </div>
 
-      {/* Main Step HUD Body */}
-      <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {/* Sub-bar Tab Selector */}
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', background: 'rgba(15, 20, 30, 0.6)' }}>
+        <button
+          type="button"
+          onClick={() => setHudTab('steps')}
+          style={{
+            flex: 1,
+            padding: '6px 0',
+            fontSize: '0.76rem',
+            background: hudTab === 'steps' ? 'rgba(200, 170, 110, 0.15)' : 'transparent',
+            border: 'none',
+            borderBottom: hudTab === 'steps' ? '2px solid var(--text-gold)' : '2px solid transparent',
+            color: hudTab === 'steps' ? 'var(--text-gold)' : 'var(--text-muted)',
+            cursor: 'pointer',
+            fontWeight: hudTab === 'steps' ? 600 : 400
+          }}
+        >
+          地圖走法
+        </button>
+        <button
+          type="button"
+          onClick={() => setHudTab('gems')}
+          style={{
+            flex: 1,
+            padding: '6px 0',
+            fontSize: '0.76rem',
+            background: hudTab === 'gems' ? 'rgba(200, 170, 110, 0.15)' : 'transparent',
+            border: 'none',
+            borderBottom: hudTab === 'gems' ? '2px solid var(--text-gold)' : '2px solid transparent',
+            color: hudTab === 'gems' ? 'var(--text-gold)' : 'var(--text-muted)',
+            cursor: 'pointer',
+            fontWeight: hudTab === 'gems' ? 600 : 400
+          }}
+        >
+          技能轉換檢查點
+        </button>
+      </div>
+
+      {/* Main HUD Body */}
+      {hudTab === 'gems' ? (
+        <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '340px', overflowY: 'auto' }}>
+          {getGemSwapMilestonesByClass(selectedClass).map(ms => (
+            <div key={ms.level} style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(243, 209, 121, 0.2)', borderRadius: '4px', padding: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-gold)' }}>Lv {ms.level} 轉換</span>
+                <span style={{ fontSize: '0.7rem', color: '#38bdf8' }}>{ms.gearResistanceTarget}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {ms.gems.map(g => {
+                  const isAcquired = completedGemIds?.has(g.id);
+                  return (
+                    <div key={g.id} style={{ fontSize: '0.74rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {onToggleGem && (
+                            <button
+                              type="button"
+                              onClick={() => onToggleGem(g.id)}
+                              style={{ background: 'transparent', border: 'none', color: isAcquired ? '#22c55e' : 'var(--text-gold)', cursor: 'pointer', padding: 0 }}
+                            >
+                              {isAcquired ? <CheckSquare size={14} /> : <Square size={14} />}
+                            </button>
+                          )}
+                          <span style={{ color: isAcquired ? '#86efac' : '#f8fafc', fontWeight: 600 }}>{g.name}</span>
+                        </div>
+                        <span style={{ color: 'var(--text-gold)', fontSize: '0.68rem', fontWeight: 700 }}>{g.recommendedColors}</span>
+                      </div>
+                      <div style={{ color: '#94a3b8', fontSize: '0.68rem', marginTop: '2px' }}>📍 {g.sourceNpc}</div>
+                      {g.attributeWarning && (
+                        <div style={{ color: '#fbbf24', fontSize: '0.68rem', marginTop: '2px' }}>{g.attributeWarning}</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {/* Step Indicator & Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -165,6 +249,7 @@ export const ActMiniOverlay: React.FC<ActMiniOverlayProps> = ({
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 };
