@@ -1,14 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import type { ParsedItem, ParsedItemMod, TradeSearchResult, TradeListing, TradeStatusOption } from '../types/poe';
+import { useState, useEffect, useRef } from 'react';
+import type { ParsedItem, TradeListing, TradeStatusOption } from '../types/poe';
 import { poeApi } from '../services/api';
 import { useAppState } from './useAppState';
-import { useRecentSearches } from './useRecentSearches';
-import type { RecentSearchItem } from './useRecentSearches';
+import { useRecentSearches, type RecentSearchItem } from './useRecentSearches';
 import { useItemFilters } from './useItemFilters';
-import { getSortConfig, mergeTradeResults, useSyncAppState } from '../domain/trade/tradeSearchHelpers';
+import { useSyncAppState } from '../domain/trade/tradeSearchHelpers';
+import { useTradeSearchExecution } from './useTradeSearchExecution';
 
 export { formatModText } from '../domain/item/modFormatter';
 export type { RecentSearchItem } from './useRecentSearches';
+
+function useAppStateSafe() {
+  try { return useAppState(); } catch { return null; }
+}
 
 export function usePriceChecker({
   league,
@@ -25,13 +29,9 @@ export function usePriceChecker({
   const [selectedLeague, setSelectedLeague] = useState<string>(league || 'Standard');
   const [tradeStatus, setTradeStatus] = useState<TradeStatusOption>(cached?.tradeStatus || 'instant');
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'indexed_desc'>(cached?.sortBy || 'price_asc');
-  const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [rawText, setRawText] = useState<string>(cached?.rawText || '');
   const [parsedItem, setParsedItem] = useState<ParsedItem | null>(cached?.parsedItem || null);
-  const [searching, setSearching] = useState<boolean>(false);
-  const [tradeResults, setTradeResults] = useState<TradeSearchResult | null>(cached?.tradeResults || null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
 
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
   const filters = useItemFilters({
@@ -39,6 +39,24 @@ export function usePriceChecker({
     initialLinksMin: cached?.linksMin,
     initialCorrupted: cached?.corruptedFilter,
     initialItemLevelMin: cached?.itemLevelMin
+  });
+
+  const {
+    searching,
+    loadingMore,
+    tradeResults,
+    setTradeResults,
+    authError,
+    clearAuthError,
+    executeTradeSearch
+  } = useTradeSearchExecution({
+    selectedLeague,
+    tradeStatus,
+    sortBy,
+    rawText,
+    initialResults: cached?.tradeResults || null,
+    addRecentSearch,
+    onShowToast
   });
 
   const lastSyncedKeyRef = useRef<string>('');
@@ -59,70 +77,6 @@ export function usePriceChecker({
       setRawText(externalText);
     }
   }, [externalText]);
-
-  const executeTradeSearch = useCallback(async (
-    targetItem: ParsedItem | null,
-    targetMods: ParsedItemMod[],
-    targetLinks?: number,
-    targetCorrupted?: boolean,
-    targetIlvl?: number,
-    fetchOffset?: number
-  ) => {
-    if (!targetItem) return null;
-    const isLoadMore = Boolean(fetchOffset && fetchOffset > 0);
-    if (isLoadMore) setLoadingMore(true); else setSearching(true);
-
-    try {
-      const activeMods = targetMods.filter(m => m.enabled);
-      const res = await poeApi.searchTrade({
-        league: selectedLeague,
-        tradeStatus,
-        name: targetItem.name,
-        baseType: targetItem.baseType,
-        rarity: targetItem.rarity,
-        linksMin: targetLinks,
-        corrupted: targetCorrupted,
-        itemLevelMin: targetIlvl,
-        selectedMods: activeMods,
-        item: targetItem,
-        sort: getSortConfig(sortBy),
-        fetchOffset: fetchOffset || 0
-      });
-
-      setAuthError(null);
-      if (isLoadMore) {
-        setTradeResults(prev => mergeTradeResults(prev, res));
-      } else {
-        setTradeResults(res);
-        if (targetItem.name || targetItem.baseType) {
-          addRecentSearch({
-            id: `${Date.now()}_${targetItem.name || targetItem.baseType}`, timestamp: Date.now(),
-            name: targetItem.name || targetItem.baseType, baseType: targetItem.baseType,
-            rarity: targetItem.rarity, rawText, minPriceDivine: res?.estimatedMinPriceDivine,
-            minPriceChaos: res?.estimatedMinPriceChaos
-          });
-        }
-      }
-      return res;
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      if (
-        msg.includes('AUTH_SESSION_EXPIRED') ||
-        msg.includes('CLOUDFLARE_CHALLENGE') ||
-        msg.includes('403') ||
-        msg.includes('401') ||
-        msg.includes('憑證已過期') ||
-        msg.includes('Cloudflare')
-      ) {
-        setAuthError(msg);
-      }
-      onShowToast(msg || '查價失敗，請稍後再試');
-      return null;
-    } finally {
-      setSearching(false);
-      setLoadingMore(false);
-    }
-  }, [selectedLeague, tradeStatus, sortBy, rawText, addRecentSearch, onShowToast]);
 
   const executeRef = useRef(executeTradeSearch);
   executeRef.current = executeTradeSearch;
@@ -150,7 +104,7 @@ export function usePriceChecker({
     });
 
     return () => { isSubscribed = false; };
-  }, [rawText]);
+  }, [rawText, setTradeResults]);
 
   return {
     selectedLeague, setSelectedLeague,
@@ -162,7 +116,7 @@ export function usePriceChecker({
     corruptedFilter: filters.corruptedFilter, setCorruptedFilter: filters.setCorruptedFilter,
     itemLevelMin: filters.itemLevelMin, setItemLevelMin: filters.setItemLevelMin,
     rollPercentage: filters.rollPercentage, setRollPercentage: filters.setRollPercentage,
-    searching, tradeResults, copiedId, authError, clearAuthError: () => setAuthError(null),
+    searching, tradeResults, copiedId, authError, clearAuthError,
     recentSearches, clearRecentSearches,
     handleSearchTrade: () => executeTradeSearch(parsedItem, filters.mods, filters.linksMin, filters.corruptedFilter, filters.itemLevelMin),
     retrySearch: () => executeTradeSearch(parsedItem, filters.mods, filters.linksMin, filters.corruptedFilter, filters.itemLevelMin),
@@ -202,8 +156,4 @@ export function usePriceChecker({
     },
     handleRemoveMod: (idx: number) => filters.setMods(prev => prev.filter((_, i) => i !== idx))
   };
-}
-
-function useAppStateSafe() {
-  try { return useAppState(); } catch { return null; }
 }
