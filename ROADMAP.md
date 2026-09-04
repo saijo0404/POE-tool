@@ -40,7 +40,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | ✅ 已發布 | [Milestone v2.1.0](https://github.com/saijo0404/POE-tool/milestone/4) |
 | 🟢 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | ✅ 已發布 | [Milestone v2.2.0](https://github.com/saijo0404/POE-tool/milestone/5) |
 | 🟢 **v2.3.0** | **離線容災快取、自訂密語範本與刷圖歷史分析** *(Offline Fallback, Whisper Templates & Mapping Analytics)* | ✅ 已發布 | [Milestone v2.3.0](https://github.com/saijo0404/POE-tool/milestone/6) |
-| 🟡 **v2.4.0** | **跨平台適配、增量物價引擎與輿圖大宗採購精算** *(Cross-Platform HUD, Incremental Price Engine & Bulk Shopping)* | 🚀 進行中 | [Milestone v2.4.0](https://github.com/saijo0404/POE-tool/milestone/7) |
+| 🟢 **v2.4.0** | **跨平台適配、增量物價引擎與輿圖大宗採購精算** *(Cross-Platform HUD, Incremental Price Engine & Bulk Shopping)* | ✅ 已發布 | [Milestone v2.4.0](https://github.com/saijo0404/POE-tool/milestone/7) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -76,8 +76,11 @@ gantt
     本機離線物價快照與容災快取引擎 (#100/#103)    :done,    m6_1, 2026-09-04, 2026-09-04
     交易密語自訂快捷範本與情境快速回覆 (#101/#104) :done,    m6_2, 2026-09-04, 2026-09-04
     刷圖日誌歷程深度統計與時薪分佈分析 (#102/#105) :done,    m6_3, 2026-09-04, 2026-09-04
-    section v2.4.0 ~ v3.0.0 未來藍圖
-    Linux / Steam Deck 跨平台適配與極致效能      :         m7_1, 2027-01-01, 2027-02-15
+    section v2.4.0 跨平台 HUD 與大宗備料 (已完成)
+    輿圖策略 50 場大宗備料精算 (#108/#111)       :done,    m7_1, 2026-09-04, 2026-09-05
+    本機增量物價差分快取與查詢 (#109/#112)       :done,    m7_2, 2026-09-05, 2026-09-05
+    Steam Deck 與觸控 HUD 介面模式 (#110/#113)  :done,    m7_3, 2026-09-05, 2026-09-05
+    section v3.0.0+ 次世代藍圖
     PoE 2 次世代獨立雙核心模組架構           :         m8_1, 2027-02-15, 2027-05-01
 ```
 
@@ -191,18 +194,18 @@ gantt
 
 #### 📦 交付功能與關鍵項目
 
-1. **🗺️ 輿圖策略 50 場大宗備料清單與成本精算器 (Atlas Strategy Bulk Material Shopping List & Cost Calculator)** `[進行中]`
+1. **🗺️ 輿圖策略 50 場大宗備料清單與成本精算器 (Atlas Strategy Bulk Material Shopping List & Cost Calculator)** `[已交付/已發布]`
    - 根據策略分級（Tiers）中定義的甲蟲配置、額外道具與地圖工藝費用，乘上指定場次（10/25/50/100 場）。
    - 自動彙整總備料採購清單、換算為混沌石與神聖石總成本，並估算 Faustus 通貨交易所金幣手續費。
    - 支援一鍵複製採購清單文字與自訂單價覆寫。
-   - 關聯 PR/Issue：[#108](https://github.com/saijo0404/POE-tool/issues/108)
-2. **📦 本機增量物價差分快取與高效查詢引擎 (Incremental Price Cache & Diff Query Engine)** `[進行中]`
+   - 關聯 PR/Issue：[#108](https://github.com/saijo0404/POE-tool/issues/108), [#111](https://github.com/saijo0404/POE-tool/pull/111)
+2. **📦 本機增量物價差分快取與高效查詢引擎 (Incremental Price Cache & Diff Query Engine)** `[已交付/已發布]`
    - 快照版本對比演算法，僅計算與儲存物價變動項目（Delta Diff Patching）。
    - 基準快照 + 增量差分合成最新物價，降低反序列化延遲與記憶體開銷。
-   - 關聯 PR/Issue：[#109](https://github.com/saijo0404/POE-tool/issues/109)
-3. **🎮 Steam Deck 與手把友善觸控 HUD 介面模式 (Steam Deck HUD & Gamepad Friendly UI Mode)** `[進行中]`
+   - 關聯 PR/Issue：[#109](https://github.com/saijo0404/POE-tool/issues/109), [#112](https://github.com/saijo0404/POE-tool/pull/112)
+3. **🎮 Steam Deck 與手把友善觸控 HUD 介面模式 (Steam Deck HUD & Gamepad Friendly UI Mode)** `[已交付/已發布]`
    - 專屬裝置設定（`desktop`、`steam-deck`、`compact-hud`），支援觸控大按鈕與高對比字體排版。
-   - 關聯 PR/Issue：[#110](https://github.com/saijo0404/POE-tool/issues/110)
+   - 關聯 PR/Issue：[#110](https://github.com/saijo0404/POE-tool/issues/110), [#113](https://github.com/saijo0404/POE-tool/pull/113)
 
 ---
 

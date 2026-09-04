@@ -10,6 +10,30 @@
 
 ---
 
+## [2.4.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **輿圖策略 50 場大宗備料清單與成本精算器 (Atlas Strategy Bulk Material Shopping List & Cost Calculator)**：
+  - 純領域計算核心 (`atlasBulkShoppingEngine.ts`)，根據策略分級之聖甲蟲與額外工藝配置，乘算指定場次（10/25/50/100 或自訂），自動產出備料清單、單場與總採購花費（Chaos / Divine）以及利潤期望值預估 ([#108](https://github.com/saijo0404/POE-tool/issues/108), [#111](https://github.com/saijo0404/POE-tool/pull/111))。
+  - 整合 Faustus 通貨交易所金幣手續費計算公式，評估大宗交易需耗費之金幣總量與 T16 補金幣場次。
+  - 大宗採購精算卡片 (`AtlasBulkShoppingCard.tsx`) 整合至輿圖規劃中心，支援單價即時自訂覆寫與一鍵複製格式化採購清單。
+- **本機增量物價差分快取與高效查詢引擎 (Incremental Price Cache & Diff Query Engine)**：
+  - 增量差分領域引擎 (`incrementalCache.ts`)，比對物價快照版本產出新增、更新與移除差分物件 (`PriceDelta`)，支援基準快照疊加差分重構最新物價，避免全量 JSON 反序列化之記憶體消耗 ([#109](https://github.com/saijo0404/POE-tool/issues/109), [#112](https://github.com/saijo0404/POE-tool/pull/112))。
+  - 支援繁中、英文與 ID 三向 $O(1)$ 高效索引查詢與基於 TTL 的差分過期管理。
+  - 差分快取本地儲存適配器 (`IncrementalPriceStorage.ts`)，提供最大差分佇列持久化。
+- **Steam Deck 與手把友善觸控 HUD 介面模式 (Steam Deck HUD & Gamepad Friendly UI Mode)**：
+  - 裝置設定領域模型 (`deviceProfile.ts`)，支援標準桌面 (`desktop`)、掌機模式 (`steam-deck`，125% 縮放、48px 觸控點擊目標、高對比字體) 與精簡模式 (`compact-hud`)，並能依據螢幕解析度智慧建議最佳配置 ([#110](https://github.com/saijo0404/POE-tool/issues/110), [#113](https://github.com/saijo0404/POE-tool/pull/113))。
+  - 響應式狀態管理 (`useDeviceProfile.ts`) 與全域 CSS 變數動態注入。
+  - 裝置切換器組件 (`DeviceProfileSelector.tsx`) 整合至系統設定視窗。
+
+### ♻️ 重構 (Refactored)
+- **輿圖架構分級行數閾值解耦 (Atlas Architecture Thresholds Decoupling)**：
+  - 抽離分類過濾標籤列至獨立組件 `AtlasCategoryFilterBar.tsx` (113 行)，使 `AtlasStrategySelector.tsx` 降至 282 行 ([#106](https://github.com/saijo0404/POE-tool/issues/106), [#107](https://github.com/saijo0404/POE-tool/pull/107))。
+  - 抽出 `atlasDataParser.ts` (122 行)、`atlasOrbitGeometry.ts` (32 行)、`atlasNodeTranslations.ts` (70 行) 與 `atlasMechanicDetector.ts` (33 行)，使 `atlasOfficialSyncService.ts` 降至 76 行。
+  - 抽出 `atlasCostSummary.ts` (163 行)，使 `atlasHelpers.ts` 降至 87 行，全數嚴格符合 Domain $\le 200$ 行與 UI $\le 300$ 行規範。
+
+---
+
 ## [2.3.0] - 2026-09-04
 
 ### ✨ 新增 (Added)
@@ -231,7 +255,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/saijo0404/POE-tool/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/saijo0404/POE-tool/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/saijo0404/POE-tool/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/saijo0404/POE-tool/compare/v2.0.0...v2.1.0
