@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, Search, Sparkles, TrendingUp } from 'lucide-react';
+import { RefreshCw, Search, Sparkles, TrendingUp, Briefcase } from 'lucide-react';
 import { useFaustusExchange } from '../../hooks/useFaustusExchange';
 import { EXCHANGE_CATEGORIES } from '../../domain/exchange/constants';
 import { CurrencyMatrixWidget } from './CurrencyMatrixWidget';
@@ -7,6 +7,7 @@ import { GoldCalculatorWidget } from './GoldCalculatorWidget';
 import { ArbitrageOpportunityPanel } from './ArbitrageOpportunityPanel';
 import { ExchangeOrderBookTable } from './ExchangeOrderBookTable';
 import { PriceTrendHub } from '../priceTrend/PriceTrendHub';
+import { PortfolioAnalysisHub } from '../portfolio/PortfolioAnalysisHub';
 
 interface FaustusExchangeHubProps {
   league?: string;
@@ -14,7 +15,7 @@ interface FaustusExchangeHubProps {
 }
 
 export const FaustusExchangeHub: React.FC<FaustusExchangeHubProps> = ({ league = 'Settlers', onShowToast }) => {
-  const [activeView, setActiveView] = useState<'exchange' | 'trends'>('exchange');
+  const [activeView, setActiveView] = useState<'exchange' | 'trends' | 'portfolio'>('exchange');
   const {
     marketData,
     loading,
@@ -81,6 +82,14 @@ export const FaustusExchangeHub: React.FC<FaustusExchangeHubProps> = ({ league =
         >
           <TrendingUp size={14} /> 7天高價資產走勢與價格警報
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveView('portfolio')}
+          className={activeView === 'portfolio' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', padding: '6px 14px' }}
+        >
+          <Briefcase size={14} /> 玩家資產結構分析
+        </button>
       </div>
 
       {error && (
@@ -91,6 +100,8 @@ export const FaustusExchangeHub: React.FC<FaustusExchangeHubProps> = ({ league =
 
       {activeView === 'trends' ? (
         <PriceTrendHub league={league} divineRate={rates?.divineChaosRate || 150} onShowToast={onShowToast} />
+      ) : activeView === 'portfolio' ? (
+        <PortfolioAnalysisHub divineRate={rates?.divineChaosRate || 150} league={league} onShowToast={onShowToast} />
       ) : (
         <>
           {/* Top Widgets: Conversion Matrix & Arbitrage */}
