@@ -60,3 +60,10 @@ if (typeof window.URL.revokeObjectURL === 'undefined') {
     value: vi.fn(),
   });
 }
+
+// Polyfill window.open for jsdom tests
+Object.defineProperty(window, 'open', {
+  writable: true,
+  value: vi.fn().mockImplementation(() => null),
+});
+
