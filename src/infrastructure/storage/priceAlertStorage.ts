@@ -29,7 +29,7 @@ export function loadPriceAlertRules(): PriceAlertRule[] {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_PRICE_ALERT_RULES;
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_PRICE_ALERT_RULES;
+    if (!Array.isArray(parsed)) return DEFAULT_PRICE_ALERT_RULES;
     return parsed.filter(item => item && item.id && item.assetName && item.threshold > 0);
   } catch {
     return DEFAULT_PRICE_ALERT_RULES;
