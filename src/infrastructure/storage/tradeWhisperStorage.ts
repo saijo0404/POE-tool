@@ -1,5 +1,6 @@
 import type { TradeQuickResponseConfig, TradeWhisper } from '../../domain/tradeWhisper/types';
 import { DEFAULT_TRADE_WHISPER_CONFIG } from '../../domain/tradeWhisper/constants';
+import { mergeWhisperTemplates, getDefaultWhisperTemplates, type WhisperTemplate } from '../../domain/tradeWhisper/whisperTemplates';
 
 const STORAGE_KEY_CONFIG = 'poe_tool_trade_whisper_config';
 const STORAGE_KEY_HISTORY = 'poe_tool_trade_whisper_history';
@@ -15,11 +16,25 @@ export function loadTradeWhisperConfig(): TradeQuickResponseConfig {
     const parsed = JSON.parse(raw);
     return {
       ...DEFAULT_TRADE_WHISPER_CONFIG,
-      ...parsed
+      ...parsed,
+      customTemplates: mergeWhisperTemplates(parsed.customTemplates)
     };
   } catch {
     return DEFAULT_TRADE_WHISPER_CONFIG;
   }
+}
+
+export function loadWhisperTemplates(): WhisperTemplate[] {
+  const config = loadTradeWhisperConfig();
+  return config.customTemplates || getDefaultWhisperTemplates();
+}
+
+export function saveWhisperTemplates(templates: WhisperTemplate[]): void {
+  const config = loadTradeWhisperConfig();
+  saveTradeWhisperConfig({
+    ...config,
+    customTemplates: templates
+  });
 }
 
 export function saveTradeWhisperConfig(config: TradeQuickResponseConfig): void {

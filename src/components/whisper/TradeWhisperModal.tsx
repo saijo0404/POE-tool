@@ -21,6 +21,7 @@ export const TradeWhisperModal: React.FC<TradeWhisperModalProps> = ({
     config,
     handleNewWhisper,
     handleAction,
+    handleSendTemplate,
     dismissWhisper,
     updateConfig
   } = useTradeWhisper();
@@ -65,9 +66,14 @@ export const TradeWhisperModal: React.FC<TradeWhisperModalProps> = ({
               <TradeWhisperCard
                 key={w.id}
                 whisper={w}
+                templates={config.customTemplates}
                 onAction={(wh, act) => {
                   handleAction(wh, act);
                   onShowToast?.(`已執行：${act}`);
+                }}
+                onSendTemplate={(wh, tpl) => {
+                  handleSendTemplate(wh, tpl);
+                  onShowToast?.(`已回覆：${tpl.label}`);
                 }}
                 onDismiss={dismissWhisper}
               />

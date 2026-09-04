@@ -12,6 +12,10 @@ import {
   buildThanksAndKickCommands,
   buildHideoutCommand
 } from '../domain/tradeWhisper/commandBuilder';
+import {
+  buildWhisperResponseCommand,
+  type WhisperTemplate
+} from '../domain/tradeWhisper/whisperTemplates';
 import { playTradeWhisperSound } from '../application/audio/whisperSound';
 import {
   loadTradeWhisperConfig,
@@ -82,6 +86,20 @@ export function useTradeWhisper() {
     return success;
   }, []);
 
+  const handleSendTemplate = useCallback(async (whisper: TradeWhisper, template: WhisperTemplate): Promise<boolean> => {
+    const cmd = buildWhisperResponseCommand(whisper.sender, template.message, {
+      item: whisper.itemName,
+      price: whisper.price,
+      stashTab: whisper.stashTab
+    });
+    const success = await poeApi.triggerInGameCommand(cmd);
+    const newStatus: TradeWhisper['status'] =
+      template.category === 'thanks' ? 'completed' :
+      template.category === 'sold' ? 'dismissed' : 'waited';
+    setWhispers(prev => prev.map(w => w.id === whisper.id ? { ...w, status: newStatus } : w));
+    return success;
+  }, []);
+
   const updateConfig = useCallback((partial: Partial<TradeQuickResponseConfig>) => {
     setConfig(prev => {
       const next = { ...prev, ...partial };
@@ -125,6 +143,7 @@ export function useTradeWhisper() {
     setActiveWhisperId,
     handleNewWhisper,
     handleAction,
+    handleSendTemplate,
     dismissWhisper,
     updateConfig
   };

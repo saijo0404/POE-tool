@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import type { TradeQuickResponseConfig } from '../../domain/tradeWhisper/types';
-import { MessageSquare, Send, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import {
+  getDefaultWhisperTemplates,
+  validateWhisperTemplate,
+  type WhisperTemplate
+} from '../../domain/tradeWhisper/whisperTemplates';
+import { MessageSquare, Send, Volume2, VolumeX, Sparkles, Plus, RotateCcw, Trash2 } from 'lucide-react';
 
 interface TradeWhisperTesterProps {
   onSimulate: (rawText: string) => void;
@@ -33,6 +38,12 @@ export const TradeWhisperTester: React.FC<TradeWhisperTesterProps> = ({
   onUpdateConfig
 }) => {
   const [customText, setCustomText] = useState<string>('');
+  const [newLabel, setNewLabel] = useState<string>('');
+  const [newMessage, setNewMessage] = useState<string>('');
+
+  const currentTemplates = config.customTemplates && config.customTemplates.length > 0
+    ? config.customTemplates
+    : getDefaultWhisperTemplates();
 
   const handleApplyPreset = (text: string) => {
     setCustomText(text);
@@ -41,9 +52,32 @@ export const TradeWhisperTester: React.FC<TradeWhisperTesterProps> = ({
 
   const handleSimulateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (customText.trim()) {
-      onSimulate(customText.trim());
+    if (customText.trim()) onSimulate(customText.trim());
+  };
+
+  const handleAddTemplate = (e: React.FormEvent) => {
+    e.preventDefault();
+    const candidate: Partial<WhisperTemplate> = {
+      id: `tpl-${Date.now()}`,
+      label: newLabel.trim(),
+      message: newMessage.trim(),
+      category: 'custom'
+    };
+    const res = validateWhisperTemplate(candidate);
+    if (res.isOk()) {
+      onUpdateConfig({ customTemplates: [...currentTemplates, res.value] });
+      setNewLabel('');
+      setNewMessage('');
     }
+  };
+
+  const handleDeleteTemplate = (id: string) => {
+    const updated = currentTemplates.filter(t => t.id !== id);
+    onUpdateConfig({ customTemplates: updated });
+  };
+
+  const handleResetTemplates = () => {
+    onUpdateConfig({ customTemplates: getDefaultWhisperTemplates() });
   };
 
   return (
@@ -132,7 +166,7 @@ export const TradeWhisperTester: React.FC<TradeWhisperTesterProps> = ({
       </div>
 
       {/* Custom input simulation form */}
-      <form onSubmit={handleSimulateSubmit} style={{ display: 'flex', gap: '8px' }}>
+      <form onSubmit={handleSimulateSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
         <input
           type="text"
           placeholder="貼上或輸入自訂交易密語 (@From 玩家名: Hi, I would like to buy...)"
@@ -149,6 +183,73 @@ export const TradeWhisperTester: React.FC<TradeWhisperTesterProps> = ({
           <span>模擬密語</span>
         </button>
       </form>
+
+      {/* Customizable Whisper Templates Management Section */}
+      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <span style={{ fontSize: '0.8rem', color: '#c8aa6e', fontWeight: 'bold' }}>
+            ⚡ 情境快速回覆範本庫 ({currentTemplates.length} 個)：
+          </span>
+          <button
+            type="button"
+            onClick={handleResetTemplates}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: '#8c94a4', cursor: 'pointer', fontSize: '0.72rem' }}
+            title="重設為系統預設範本"
+          >
+            <RotateCcw size={12} />
+            <span>重設預設值</span>
+          </button>
+        </div>
+
+        {/* Existing Templates List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '120px', overflowY: 'auto', marginBottom: '10px' }}>
+          {currentTemplates.map(t => (
+            <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#0b0f16', padding: '4px 8px', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)', fontSize: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                <span style={{ color: '#f3d179', fontWeight: 600, whiteSpace: 'nowrap' }}>{t.label}</span>
+                <span style={{ color: '#8c94a4', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{t.message}</span>
+              </div>
+              {!t.isDefault && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTemplate(t.id)}
+                  style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', padding: '2px' }}
+                  title="刪除此範本"
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Add New Template Form */}
+        <form onSubmit={handleAddTemplate} style={{ display: 'flex', gap: '6px' }}>
+          <input
+            type="text"
+            placeholder="範本標籤 (例: 💎 通貨交換中)"
+            value={newLabel}
+            onChange={e => setNewLabel(e.target.value)}
+            style={{ width: '35%', background: '#0a0d14', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '4px', padding: '4px 8px', color: '#fff', fontSize: '0.75rem' }}
+          />
+          <input
+            type="text"
+            placeholder="回覆文字 (支援 {buyer}, {item}, {price}, {stash})"
+            value={newMessage}
+            onChange={e => setNewMessage(e.target.value)}
+            style={{ flex: 1, background: '#0a0d14', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '4px', padding: '4px 8px', color: '#fff', fontSize: '0.75rem' }}
+          />
+          <button
+            type="submit"
+            className="poe-button"
+            disabled={!newLabel.trim() || !newMessage.trim()}
+            style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '4px 10px', borderRadius: '4px', fontSize: '0.75rem' }}
+          >
+            <Plus size={12} />
+            <span>新增</span>
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
