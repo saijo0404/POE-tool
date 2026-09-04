@@ -122,12 +122,33 @@ describe('gearInspector (Issue #92)', () => {
     expect(report.spaces.canCraftBenchMod).toBe(false);
   });
 
-  it('handles empty explicits or non-rare items safely', () => {
+  it('handles empty explicits or non-rare items safely and marks normal items as non-craftable', () => {
     const normalItem = createMockItem({ rarity: 'Normal', explicits: [] });
     const report = evaluateGearPotential(normalItem);
 
     expect(report.score).toBe(0);
     expect(report.grade).toBe('C');
     expect(report.isHighValueBase).toBe(false);
+    expect(report.spaces.maxPrefixes).toBe(0);
+    expect(report.spaces.maxSuffixes).toBe(0);
+    expect(report.spaces.canCraftBenchMod).toBe(false);
+  });
+
+  it('restricts crafting on corrupted items even with open affix slots', () => {
+    const corruptedItem = createMockItem({
+      corrupted: true,
+      explicits: [
+        { id: '1', text: '+120 最大生命', englishText: '+120 to Maximum Life', type: 'explicit', tier: 1, enabled: true }
+      ]
+    });
+
+    const report = evaluateGearPotential(corruptedItem);
+
+    expect(report.spaces.canCraftBenchMod).toBe(false);
+    expect(report.spaces.canMultiMod).toBe(false);
+    expect(report.spaces.canPrefixesCannotBeChanged).toBe(false);
+    expect(report.spaces.canSuffixesCannotBeChanged).toBe(false);
+    expect(report.recommendations.some(r => r.includes('已污染'))).toBe(true);
+    expect(report.recommendations.some(r => r.includes('工藝台附加'))).toBe(false);
   });
 });
