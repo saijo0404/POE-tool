@@ -8,7 +8,9 @@ import { AtlasExtraItemsConfig } from './atlas/AtlasExtraItemsConfig';
 import { AtlasCostSummaryCard } from './atlas/AtlasCostSummaryCard';
 import { AtlasBatchPlanner } from './atlas/AtlasBatchPlanner';
 import { AtlasEditStrategyModal } from './atlas/AtlasEditStrategyModal';
-import { Compass, RefreshCw } from 'lucide-react';
+import { AtlasCommunityHubModal } from './atlas/AtlasCommunityHubModal';
+import { AtlasEmptyStateCard } from './atlas/AtlasEmptyStateCard';
+import { Compass, RefreshCw, Share2 } from 'lucide-react';
 
 interface AtlasStrategyHubProps {
   league: string;
@@ -73,6 +75,8 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
     onShowToast
   });
 
+  const [isCommunityModalOpen, setIsCommunityModalOpen] = React.useState(false);
+
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Page Header */}
@@ -100,23 +104,42 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
           </p>
         </div>
 
-        {/* Live Status Badge */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'rgba(0, 0, 0, 0.35)',
-          padding: '6px 14px',
-          borderRadius: '20px',
-          border: '1px solid rgba(200, 170, 110, 0.25)',
-          fontSize: '0.82rem'
-        }}>
-          <span style={{ color: 'var(--text-dim)' }}>當前聯盟：</span>
-          <span style={{ color: 'var(--text-gold)', fontWeight: 600 }}>{league || 'Settlers'}</span>
-          <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
-          <span style={{ color: 'var(--text-dim)' }}>神聖石匯率：</span>
-          <span style={{ color: 'var(--text-gold)', fontWeight: 700 }}>1 Div = {divineRate} C</span>
-          {isRatesLoading && <RefreshCw size={13} className="spin" color="var(--text-gold)" style={{ marginLeft: '4px' }} />}
+        {/* Actions & Live Status Badge */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="poe-button-secondary"
+            onClick={() => setIsCommunityModalOpen(true)}
+            style={{
+              height: '34px',
+              padding: '0 14px',
+              fontSize: '0.84rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              border: '1px solid rgba(243, 209, 121, 0.4)'
+            }}
+          >
+            <Share2 size={15} color="var(--text-gold)" /> 社群策略中心
+          </button>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(0, 0, 0, 0.35)',
+            padding: '6px 14px',
+            borderRadius: '20px',
+            border: '1px solid rgba(200, 170, 110, 0.25)',
+            fontSize: '0.82rem'
+          }}>
+            <span style={{ color: 'var(--text-dim)' }}>當前聯盟：</span>
+            <span style={{ color: 'var(--text-gold)', fontWeight: 600 }}>{league || 'Settlers'}</span>
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+            <span style={{ color: 'var(--text-dim)' }}>神聖石匯率：</span>
+            <span style={{ color: 'var(--text-gold)', fontWeight: 700 }}>1 Div = {divineRate} C</span>
+            {isRatesLoading && <RefreshCw size={13} className="spin" color="var(--text-gold)" style={{ marginLeft: '4px' }} />}
+          </div>
         </div>
       </div>
 
@@ -143,50 +166,10 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
 
       {/* Global Empty State Hero Card */}
       {strategies.length === 0 && (
-        <div style={{
-          background: 'linear-gradient(180deg, rgba(27, 36, 52, 0.6) 0%, rgba(16, 22, 34, 0.8) 100%)',
-          border: '1px solid rgba(200, 170, 110, 0.3)',
-          borderRadius: '8px',
-          padding: '48px 24px',
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '16px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)'
-        }}>
-          <div style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, #f3d179 0%, #8c7849 70%, #2a2216 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(243, 209, 121, 0.4)'
-          }}>
-            <Compass size={36} color="#0d121c" />
-          </div>
-
-          <h2 className="poe-font" style={{ fontSize: '1.4rem', color: 'var(--text-gold)', margin: '4px 0 0 0' }}>
-            目前尚未建立任何輿圖策略 (No Strategies Configured)
-          </h2>
-
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '560px', margin: 0, lineHeight: 1.6 }}>
-            您的輿圖策略庫目前為空。您可以自由建立全新的自訂刷圖配置、聖甲蟲與輿圖分級規劃，或從上方匯入 JSON 策略備份檔。
-          </p>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
-            <button
-              type="button"
-              className="poe-button"
-              onClick={createNewStrategy}
-              style={{ padding: '10px 20px', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              <Compass size={17} /> + 新增自訂策略
-            </button>
-          </div>
-        </div>
+        <AtlasEmptyStateCard
+          onCreateStrategy={createNewStrategy}
+          onOpenCommunityHub={() => setIsCommunityModalOpen(true)}
+        />
       )}
 
       {/* 2. Multi-Tier Selector */}
@@ -280,6 +263,16 @@ export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
           strategy={editingStrategy}
           onSave={saveStrategyEdit}
           onDelete={deleteStrategy}
+        />
+      )}
+
+      {/* 6. Community Hub Modal */}
+      {isCommunityModalOpen && (
+        <AtlasCommunityHubModal
+          isOpen={isCommunityModalOpen}
+          onClose={() => setIsCommunityModalOpen(false)}
+          onImportStrategy={saveStrategyEdit}
+          currentStrategy={currentStrategy}
         />
       )}
     </div>
