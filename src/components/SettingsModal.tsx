@@ -5,6 +5,8 @@ import { GeneralSettingsSection } from './settings/GeneralSettingsSection';
 import { OverlaySettingsSection } from './settings/OverlaySettingsSection';
 import { AccountAuthSection } from './settings/AccountAuthSection';
 import { StashTabSelector } from './settings/StashTabSelector';
+import { DeviceProfileSelector } from './common/DeviceProfileSelector';
+import { useDeviceProfile } from '../hooks/useDeviceProfile';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -26,6 +28,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     handleLogin, handleLogout, handleTestConnection, handleFetchStashTabs,
     handleSaveSettings, handleSelectAllTabs, handleClearAllTabs, handleSelectCurrencyTabs
   } = useSettingsModal({ isOpen, onClose, onShowToast, onSettingsUpdated });
+  const deviceProfile = useDeviceProfile();
 
   if (!isOpen) return null;
 
@@ -74,6 +77,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           settings={settings}
           setSettings={setSettings}
         />
+
+        <div style={{ marginBottom: '20px' }}>
+          <DeviceProfileSelector
+            mode={deviceProfile.mode}
+            onModeChange={deviceProfile.setMode}
+            suggestedMode={deviceProfile.suggestedMode}
+          />
+        </div>
 
         <OverlaySettingsSection
           settings={settings}
