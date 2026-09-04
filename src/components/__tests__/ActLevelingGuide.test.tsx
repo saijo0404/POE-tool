@@ -1,9 +1,13 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ActLevelingGuide } from '../ActLevelingGuide';
 
 describe('ActLevelingGuide Component', () => {
   const onShowToast = vi.fn();
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
 
   it('renders Act 1 overview and step checklist by default', () => {
     render(<ActLevelingGuide onShowToast={onShowToast} />);
@@ -49,5 +53,20 @@ describe('ActLevelingGuide Component', () => {
     fireEvent.click(hudBtn);
 
     expect(screen.getByText(/ACT 1 拓荒極簡 HUD/i)).toBeInTheDocument();
+  });
+
+  it('switches between map steps and gem swap checkpoints tab', () => {
+    render(<ActLevelingGuide onShowToast={onShowToast} />);
+
+    const gemTabBtn = screen.getByRole('button', { name: /技能與裝備轉換里程碑/i });
+    fireEvent.click(gemTabBtn);
+
+    expect(screen.getByText(/技能與裝備轉換里程碑檢查點/i)).toBeInTheDocument();
+    expect(screen.getByText(/女巫 Lv 12: 元素\/召喚一階爆發/i)).toBeInTheDocument();
+
+    const stepsTabBtn = screen.getByRole('button', { name: /地圖走法與任務步驟/i });
+    fireEvent.click(stepsTabBtn);
+
+    expect(screen.getAllByText(/暮光海灘/i)[0]).toBeInTheDocument();
   });
 });
