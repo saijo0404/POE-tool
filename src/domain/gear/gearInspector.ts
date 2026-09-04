@@ -30,20 +30,26 @@ function evaluateSingleMod(mod: ParsedItemMod): EvaluatedAffix {
   };
 }
 
+function getMaxAffixes(rarity: string): { maxPrefixes: number; maxSuffixes: number } {
+  if (rarity === 'Magic') return { maxPrefixes: 1, maxSuffixes: 1 };
+  if (rarity === 'Rare') return { maxPrefixes: 3, maxSuffixes: 3 };
+  return { maxPrefixes: 0, maxSuffixes: 0 };
+}
+
 export function calculateCraftingSpaces(
   rarity: string,
   prefixes: EvaluatedAffix[],
-  suffixes: EvaluatedAffix[]
+  suffixes: EvaluatedAffix[],
+  corrupted: boolean = false
 ): CraftingSpaces {
-  const maxPrefixes = rarity === 'Magic' ? 1 : 3;
-  const maxSuffixes = rarity === 'Magic' ? 1 : 3;
+  const { maxPrefixes, maxSuffixes } = getMaxAffixes(rarity);
   const totalPrefixes = prefixes.length;
   const totalSuffixes = suffixes.length;
   const openPrefixes = Math.max(0, maxPrefixes - totalPrefixes);
   const openSuffixes = Math.max(0, maxSuffixes - totalSuffixes);
-  const allMods = [...prefixes, ...suffixes];
-  const hasCraftedMod = allMods.some(m => m.type === 'crafted');
-  const hasFracturedMod = allMods.some(m => m.type === 'fractured');
+  const hasCraftedMod = [...prefixes, ...suffixes].some(m => m.type === 'crafted');
+  const hasFracturedMod = [...prefixes, ...suffixes].some(m => m.type === 'fractured');
+  const canCraft = !corrupted && !hasCraftedMod;
 
   return {
     totalPrefixes,
@@ -54,10 +60,10 @@ export function calculateCraftingSpaces(
     openSuffixes,
     hasCraftedMod,
     hasFracturedMod,
-    canCraftBenchMod: (openPrefixes > 0 || openSuffixes > 0) && !hasCraftedMod,
-    canMultiMod: !hasCraftedMod && openSuffixes >= 1 && (openPrefixes + openSuffixes >= 2),
-    canPrefixesCannotBeChanged: !hasCraftedMod && openSuffixes >= 1,
-    canSuffixesCannotBeChanged: !hasCraftedMod && openPrefixes >= 1
+    canCraftBenchMod: canCraft && (openPrefixes > 0 || openSuffixes > 0),
+    canMultiMod: canCraft && openSuffixes >= 1 && (openPrefixes + openSuffixes >= 2),
+    canPrefixesCannotBeChanged: canCraft && openSuffixes >= 1,
+    canSuffixesCannotBeChanged: canCraft && openPrefixes >= 1
   };
 }
 
@@ -87,8 +93,12 @@ export function generateCraftingRecommendations(
   spaces: CraftingSpaces,
   prefixes: EvaluatedAffix[],
   suffixes: EvaluatedAffix[],
-  score: number
+  score: number,
+  corrupted: boolean = false
 ): string[] {
+  if (corrupted) {
+    return ['⚠️ 裝備已污染 (Corrupted)，無法使用工藝台或常規通貨進行後續加工'];
+  }
   const recs: string[] = [];
   if (score >= 80) recs.push('🌟 頂級工藝胚子！高階詞綴豐富，具備極高的後續打造價值');
 
@@ -118,9 +128,10 @@ export function evaluateGearPotential(item: ParsedItem): GearPotentialReport {
   const suffixes = evaluatedExplicits.filter(m => m.classification === 'suffix');
   const implicits = (item.implicits || []).map(evaluateSingleMod);
 
-  const spaces = calculateCraftingSpaces(item.rarity, prefixes, suffixes);
+  const isCorrupted = Boolean(item.corrupted);
+  const spaces = calculateCraftingSpaces(item.rarity, prefixes, suffixes, isCorrupted);
   const { score, grade } = calculateScoreAndGrade(item.rarity, prefixes, suffixes, spaces);
-  const recommendations = generateCraftingRecommendations(spaces, prefixes, suffixes, score);
+  const recommendations = generateCraftingRecommendations(spaces, prefixes, suffixes, score, isCorrupted);
 
   return {
     score,

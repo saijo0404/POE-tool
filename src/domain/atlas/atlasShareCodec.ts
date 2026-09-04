@@ -1,4 +1,4 @@
-import type { AtlasStrategy } from './types';
+import type { AtlasStrategy, AtlasStrategyTier } from './types';
 import { Result } from '../errors/Result';
 import { DomainError } from '../errors/DomainError';
 
@@ -67,7 +67,7 @@ export function decodeAtlasStrategyShareCode(code: string): Result<AtlasStrategy
       category: parsed.category,
       description: parsed.description || '',
       tags: Array.isArray(parsed.tags) ? parsed.tags : [],
-      tiers: parsed.tiers.map((t: any, idx: number) => ({
+      tiers: parsed.tiers.map((t: Partial<AtlasStrategyTier>, idx: number) => ({
         id: `tier_${idx + 1}`,
         name: t.name || `T${idx + 1}`,
         recommendedMaps: Array.isArray(t.recommendedMaps) ? t.recommendedMaps : [],
