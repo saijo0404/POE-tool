@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MappingTracker } from '../MappingTracker';
+import { poeApi } from '../../../services/api';
 
 vi.mock('../../../services/api', () => ({
   poeApi: {
@@ -37,8 +38,9 @@ describe('MappingTracker Component', () => {
     window.localStorage.clear();
   });
 
-  it('renders summary cards, timer, tab selector and empty runs message', () => {
+  it('renders summary cards, timer, tab selector and empty runs message', async () => {
     render(<MappingTracker league="Settlers" divineRate={150} onShowToast={onShowToast} />);
+    await waitFor(() => expect(poeApi.getStashTabs).toHaveBeenCalled());
 
     expect(screen.getByText('當前 Session:')).toBeInTheDocument();
     expect(screen.getByText('已完成場次')).toBeInTheDocument();
@@ -48,8 +50,9 @@ describe('MappingTracker Component', () => {
     expect(screen.getByText(/目前尚無刷圖結算紀錄/)).toBeInTheDocument();
   });
 
-  it('opens and closes the investment modal', () => {
+  it('opens and closes the investment modal', async () => {
     render(<MappingTracker league="Settlers" divineRate={150} onShowToast={onShowToast} />);
+    await waitFor(() => expect(poeApi.getStashTabs).toHaveBeenCalled());
 
     const openBtn = screen.getByText('門票成本設定');
     fireEvent.click(openBtn);
