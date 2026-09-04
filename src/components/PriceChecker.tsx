@@ -12,6 +12,7 @@ import { AffixFilterList } from './price/AffixFilterList';
 import { TradeSummaryCard } from './price/TradeSummaryCard';
 import { TradeListingView } from './price/TradeListingView';
 import { PriceCheckerDebugPanel } from './price/PriceCheckerDebugPanel';
+import { GearInspectorCard } from './gear/GearInspectorCard';
 
 const MOCK_SAMPLE_ZH_ITEM = `物品種類: 頭部
 稀有度: 稀有
@@ -163,6 +164,10 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
           onRefreshSearch={handleSearchTrade}
           rawText={rawText}
         />
+      )}
+
+      {parsedItem && (parsedItem.rarity === 'Rare' || parsedItem.rarity === 'Magic') && (
+        <GearInspectorCard item={parsedItem} />
       )}
 
       {parsedItem && (
