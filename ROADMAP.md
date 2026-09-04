@@ -39,7 +39,8 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已發布 | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
 | 🟢 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | ✅ 已發布 | [Milestone v2.1.0](https://github.com/saijo0404/POE-tool/milestone/4) |
 | 🟢 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | ✅ 已發布 | [Milestone v2.2.0](https://github.com/saijo0404/POE-tool/milestone/5) |
-| 🔭 **v2.3.0** | **跨平台支援與離線資料庫快照** *(Linux/Proton & Offline DB)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
+| 🟢 **v2.3.0** | **離線容災快取、自訂密語範本與刷圖歷史分析** *(Offline Fallback, Whisper Templates & Mapping Analytics)* | ✅ 已發布 | [Milestone v2.3.0](https://github.com/saijo0404/POE-tool/milestone/6) |
+| 🔭 **v2.4.0** | **跨平台支援與底層極致效能** *(Linux/Proton & Deep Performance)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -71,9 +72,13 @@ gantt
     裝備詞綴階級評鑑與工藝潛力分數 (#92/#95)     :done,    m5_1, 2026-09-04, 2026-09-04
     輿圖策略社群雲端分享與短代碼 (#93/#96)       :done,    m5_2, 2026-09-04, 2026-09-04
     章節拓荒技能與裝備轉換檢查點 (#94/#97)       :done,    m5_3, 2026-09-04, 2026-09-04
-    section v2.3.0 ~ v3.0.0 未來藍圖
-    Linux / Steam Deck 跨平台與離線快照      :         m6_1, 2027-01-01, 2027-02-15
-    PoE 2 次世代獨立雙核心模組架構           :         m7_1, 2027-02-15, 2027-05-01
+    section v2.3.0 容災快取與深度分析 (已完成)
+    本機離線物價快照與容災快取引擎 (#100/#103)    :done,    m6_1, 2026-09-04, 2026-09-04
+    交易密語自訂快捷範本與情境快速回覆 (#101/#104) :done,    m6_2, 2026-09-04, 2026-09-04
+    刷圖日誌歷程深度統計與時薪分佈分析 (#102/#105) :done,    m6_3, 2026-09-04, 2026-09-04
+    section v2.4.0 ~ v3.0.0 未來藍圖
+    Linux / Steam Deck 跨平台適配與極致效能      :         m7_1, 2027-01-01, 2027-02-15
+    PoE 2 次世代獨立雙核心模組架構           :         m8_1, 2027-02-15, 2027-05-01
 ```
 
 ---
@@ -155,18 +160,42 @@ gantt
 
 ---
 
-### 階段四 (v2.3.0)：系統底層極致化與跨平台架構 (Deep Performance & Cross-Platform)
+### 階段四 (v2.3.0)：離線容災快取、自訂密語範本與刷圖歷史分析 (Offline Fallback, Whisper Templates & Mapping Analytics)
 
-> **核心目標**：拓展至 Linux / Steam Deck 玩家群體，並提供斷網環境下的離線快照能力。
+> **核心目標**：強化網路限流環境下的容災韌性，支援多元情境交易密語回覆，並提供刷圖歷程多維度深度統計與策略回報分析。
+
+#### 📦 交付功能與關鍵項目
+
+1. **📦 本機離線物價快照與容災快取引擎 (Offline Price Snapshot & Fallback Engine)** `[已交付/已發布]`
+   - 純領域快照結構與合法性驗證 (`priceSnapshotEngine.ts`)，支援精確、模糊與類別降級匹配。
+   - 提供 24 小時快照陳舊度 (Stale Age) 健康度判定與友好相對時間計算。
+   - LocalStorage 持久化快取 (`priceSnapshotStorage.ts`)、JSON 快照手動備份匯出/匯入與查價介面容災徽章 (`PriceSnapshotBadge.tsx`)。
+   - 關聯 PR/Issue：[#100](https://github.com/saijo0404/POE-tool/issues/100), [#103](https://github.com/saijo0404/POE-tool/pull/103)
+2. **💬 交易密語自訂快捷範本與情境快速回覆 (Customizable Trade Whisper Templates & Quick Actions)** `[已交付/已發布]`
+   - 多情境密語範本純領域管理 (`whisperTemplates.ts`)，內建刷圖稍候、打王攻堅、物品已售出、感謝交易等情境。
+   - 支援動態變數替換（`{buyer}`, `{item}`, `{price}`, `{stash}`）與合法性校驗。
+   - 交易懸浮卡片 (`TradeWhisperCard.tsx`) 整合「⚡ 情境回覆範本」快捷選單，一鍵發送特定情境回覆至遊戲內。
+   - 交易設定 (`TradeWhisperTester.tsx`) 提供自訂範本增刪與重設預設值。
+   - 關聯 PR/Issue：[#101](https://github.com/saijo0404/POE-tool/issues/101), [#104](https://github.com/saijo0404/POE-tool/pull/104)
+3. **📈 刷圖日誌歷程深度統計與時薪分佈分析 (Mapping History Analytics & Hourly Profit Distribution)** `[已交付/已發布]`
+   - 多 Session 歷程聚合分析核心 (`mappingAnalytics.ts`)，計算總刷圖場次、累積總時長、總淨利潤、綜合平均時薪、單場均利與最佳回報 Top 3 排行。
+   - 支援依聯盟、時間區間（今日、近 7 天、近 30 天、全部）與輿圖策略多維度過濾。
+   - 刷圖記錄器 (`MappingTracker.tsx`) 整合深度統計分析卡片 (`MappingHistoryAnalyticsCard.tsx`)。
+   - 關聯 PR/Issue：[#102](https://github.com/saijo0404/POE-tool/issues/102), [#105](https://github.com/saijo0404/POE-tool/pull/105)
+
+---
+
+### 階段五 (v2.4.0)：系統底層極致化與跨平台架構 (Deep Performance & Cross-Platform)
+
+> **核心目標**：拓展至 Linux / Steam Deck 玩家群體，並提供 SQLite/DuckDB 本機高效向量物價儲存。
 
 #### 📦 交付功能與關鍵項目
 
 1. **🐧 Linux / Steam Deck (Proton) 跨平台適配**
    - 透過 X11 / Wayland 原生模組適配全域快捷鍵與剪貼簿事件監聽。
    - 針對 Steam Deck 7 吋螢幕優化專用高對比觸控操作介面。
-2. **📦 離線資料庫快照與本機向量搜尋 (Offline Price Snapshot & DuckDB/SQLite)**
+2. **📦 輕量嵌入式資料庫物價向量搜尋 (DuckDB/SQLite Storage)**
    - 引入本機嵌入式輕量資料庫快取當季歷史物價。
-   - 在網路中斷或官方 API 遭 Cloudflare 嚴格限流時，無縫切換至離線估值模式。
    - 實作增量差分更新協定，每次物價同步僅需傳輸幾十 KB 差量資料。
 
 ---

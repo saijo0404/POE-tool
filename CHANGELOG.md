@@ -10,6 +10,27 @@
 
 ---
 
+## [2.3.0] - 2026-09-04
+
+### ✨ 新增 (Added)
+- **本機離線物價快照與容災快取引擎 (Offline Price Snapshot & Fallback Engine)**：
+  - 純領域快照模型 (`priceSnapshotEngine.ts`)，支援快照結構封裝、合法性驗證、精確/模糊/類別降級回退與陳舊度 (Stale Age) 健康評估 ([#100](https://github.com/saijo0404/POE-tool/issues/100), [#103](https://github.com/saijo0404/POE-tool/pull/103))。
+  - LocalStorage 持久化快取 (`priceSnapshotStorage.ts`) 與 JSON 快照匯出/匯入。
+  - 查價介面無縫整合快照狀態警示徽章 (`PriceSnapshotBadge.tsx`)。
+- **交易密語自訂快捷範本與情境快速回覆 (Customizable Trade Whisper Templates & Quick Actions)**：
+  - 多情境密語範本純領域管理 (`whisperTemplates.ts`)，內建刷圖稍候、打王攻堅、已售出、感謝交易等預設情境，支援動態變數替換 (`{buyer}`, `{item}`, `{price}`, `{stash}`) ([#101](https://github.com/saijo0404/POE-tool/issues/101), [#104](https://github.com/saijo0404/POE-tool/pull/104))。
+  - 交易懸浮卡片 (`TradeWhisperCard.tsx`) 整合「⚡ 情境回覆範本」快捷選單。
+  - 交易助理設定 (`TradeWhisperTester.tsx`) 提供自訂範本增刪與預設值重設。
+- **刷圖日誌歷程深度統計與時薪分佈分析 (Mapping History Analytics & Hourly Profit Distribution)**：
+  - 多 Session 歷程聚合分析核心 (`mappingAnalytics.ts`)，計算總刷圖場次、累積總時長、總淨利潤、綜合平均時薪、單場均利與最佳回報 Top 3 排行 ([#102](https://github.com/saijo0404/POE-tool/issues/102), [#105](https://github.com/saijo0404/POE-tool/pull/105))。
+  - 支援聯盟、時間區間（今日、近 7 天、近 30 天、全部）與輿圖策略過濾。
+  - 刷圖記錄器 (`MappingTracker.tsx`) 整合深度統計分析卡片 (`MappingHistoryAnalyticsCard.tsx`)。
+
+### 🐛 修復 (Fixed)
+- **已污染與白裝異常獲得工藝空間修復**：修正 `craftingCalculator.ts` 中已污染物品 (`item.corrupted === true`) 與普通白裝誤判為具備工藝空間之瑕疵，並防範無效附魔推薦 ([#98](https://github.com/saijo0404/POE-tool/issues/98), [#99](https://github.com/saijo0404/POE-tool/pull/99))。
+
+---
+
 ## [2.2.0] - 2026-09-04
 
 ### ✨ 新增 (Added)
@@ -210,7 +231,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/saijo0404/POE-tool/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/saijo0404/POE-tool/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/saijo0404/POE-tool/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/saijo0404/POE-tool/compare/v1.5.0...v2.0.0
