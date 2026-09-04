@@ -1,11 +1,12 @@
-import React from 'react';
-import { RefreshCw, Search, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { RefreshCw, Search, Sparkles, TrendingUp } from 'lucide-react';
 import { useFaustusExchange } from '../../hooks/useFaustusExchange';
 import { EXCHANGE_CATEGORIES } from '../../domain/exchange/constants';
 import { CurrencyMatrixWidget } from './CurrencyMatrixWidget';
 import { GoldCalculatorWidget } from './GoldCalculatorWidget';
 import { ArbitrageOpportunityPanel } from './ArbitrageOpportunityPanel';
 import { ExchangeOrderBookTable } from './ExchangeOrderBookTable';
+import { PriceTrendHub } from '../priceTrend/PriceTrendHub';
 
 interface FaustusExchangeHubProps {
   league?: string;
@@ -13,6 +14,7 @@ interface FaustusExchangeHubProps {
 }
 
 export const FaustusExchangeHub: React.FC<FaustusExchangeHubProps> = ({ league = 'Settlers', onShowToast }) => {
+  const [activeView, setActiveView] = useState<'exchange' | 'trends'>('exchange');
   const {
     marketData,
     loading,
@@ -61,14 +63,38 @@ export const FaustusExchangeHub: React.FC<FaustusExchangeHubProps> = ({ league =
         </button>
       </div>
 
+      {/* Sub-navigation Switch */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '8px' }}>
+        <button
+          type="button"
+          onClick={() => setActiveView('exchange')}
+          className={activeView === 'exchange' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', padding: '6px 14px' }}
+        >
+          <Sparkles size={14} /> Faustus 交易所即時訂單簿
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveView('trends')}
+          className={activeView === 'trends' ? 'poe-button' : 'poe-button-secondary'}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', padding: '6px 14px' }}
+        >
+          <TrendingUp size={14} /> 7天高價資產走勢與價格警報
+        </button>
+      </div>
+
       {error && (
         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(231, 76, 60, 0.15)', border: '1px solid #e74c3c', borderRadius: '6px', color: '#ff6b6b', fontSize: '0.84rem' }}>
           ⚠️ {error}
         </div>
       )}
 
-      {/* Top Widgets: Conversion Matrix & Arbitrage */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '14px' }}>
+      {activeView === 'trends' ? (
+        <PriceTrendHub league={league} divineRate={rates?.divineChaosRate || 150} onShowToast={onShowToast} />
+      ) : (
+        <>
+          {/* Top Widgets: Conversion Matrix & Arbitrage */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '14px' }}>
         <CurrencyMatrixWidget rates={rates} />
         <GoldCalculatorWidget
           selectedItem={selectedItemForGoldCalc}
@@ -137,6 +163,8 @@ export const FaustusExchangeHub: React.FC<FaustusExchangeHubProps> = ({ league =
         selectedItemId={selectedItemForGoldCalc?.id}
         onSelectItemForGold={setSelectedItemForGoldCalc}
       />
+        </>
+      )}
     </div>
   );
 };
