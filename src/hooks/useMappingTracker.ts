@@ -1,29 +1,11 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { WealthSnapshot, StashTabMeta } from '../types/poe';
-import type {
-  MappingSession,
-  MappingTimerState,
-  MapInvestment,
-  MapRun
-} from '../domain/mapping/types';
+import type { MapRun } from '../domain/mapping/types';
 import { DEFAULT_MAPPING_TIMER_STATE } from '../domain/mapping/constants';
-import {
-  computeItemDeltas,
-  computeMapRunProfit,
-  computeSessionStats
-} from '../domain/mapping/mappingCalculator';
-import {
-  generateDiscordMappingReport,
-  exportMappingSessionCsv
-} from '../domain/mapping/mappingExport';
-import {
-  loadMappingSessions,
-  saveMappingSessions,
-  loadActiveSessionId,
-  saveActiveSessionId,
-  createDefaultMappingSession
-} from '../infrastructure/storage/mappingStorage';
+import { computeItemDeltas, computeMapRunProfit } from '../domain/mapping/mappingCalculator';
 import { poeApi } from '../services/api';
+import { useMappingTimers } from './mapping/useMappingTimers';
+import { useMappingSessionActions } from './mapping/useMappingSessionActions';
 
 export function useMappingTracker({
   league,
@@ -34,59 +16,49 @@ export function useMappingTracker({
   divineRate?: number;
   onShowToast: (msg: string) => void;
 }) {
-  const [sessions, setSessions] = useState<MappingSession[]>(() => loadMappingSessions(league));
-  const [activeSessionId, setActiveSessionId] = useState<string>(() => loadActiveSessionId(sessions));
-  const [timerState, setTimerState] = useState<MappingTimerState>(DEFAULT_MAPPING_TIMER_STATE);
   const [snapshotting, setSnapshotting] = useState<boolean>(false);
   const [snapshotA, setSnapshotA] = useState<WealthSnapshot | null>(null);
   const [availableTabs, setAvailableTabs] = useState<StashTabMeta[]>([]);
-  const [sessionWallClockSeconds, setSessionWallClockSeconds] = useState<number>(0);
 
-  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const {
+    timerState,
+    setTimerState,
+    sessionWallClockSeconds,
+    handlePauseMap,
+    handleResumeMap,
+    handleResetTimer
+  } = useMappingTimers();
 
-  const activeSession = useMemo(() => {
-    return sessions.find(s => s.id === activeSessionId) || sessions[0] || createDefaultMappingSession(league);
-  }, [sessions, activeSessionId, league]);
+  const handleResetTimers = useCallback(() => {
+    setSnapshotA(null);
+    setTimerState(DEFAULT_MAPPING_TIMER_STATE);
+  }, [setTimerState]);
 
-  // Sync sessions to localStorage
-  useEffect(() => {
-    saveMappingSessions(sessions);
-  }, [sessions]);
+  const {
+    sessions,
+    activeSession,
+    activeSessionId,
+    setActiveSessionId,
+    stats,
+    addMapRun,
+    handleDeleteRun,
+    handleClearRuns,
+    handleUpdateInvestment,
+    handleUpdateSelectedTabs,
+    handleCreateSession,
+    handleExportDiscord,
+    handleExportCsv
+  } = useMappingSessionActions({
+    league,
+    divineRate,
+    sessionWallClockSeconds,
+    onShowToast,
+    onResetTimers: handleResetTimers
+  });
 
-  // Sync activeSessionId to localStorage
-  useEffect(() => {
-    if (activeSessionId) saveActiveSessionId(activeSessionId);
-  }, [activeSessionId]);
-
-  // Load stash tabs metadata
   useEffect(() => {
     poeApi.getStashTabs(league).then(tabs => setAvailableTabs(tabs || [])).catch(() => {});
   }, [league]);
-
-  // Wall-clock session timer
-  useEffect(() => {
-    sessionTimerRef.current = setInterval(() => {
-      setSessionWallClockSeconds(prev => prev + 1);
-    }, 1000);
-    return () => {
-      if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
-    };
-  }, []);
-
-  // Map run stopwatch timer
-  useEffect(() => {
-    if (timerState.status === 'running') {
-      timerIntervalRef.current = setInterval(() => {
-        setTimerState(prev => ({ ...prev, elapsedSeconds: prev.elapsedSeconds + 1 }));
-      }, 1000);
-    } else if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
-    return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
-  }, [timerState.status]);
 
   const handleStartMap = useCallback(async () => {
     setTimerState(prev => ({
@@ -109,19 +81,7 @@ export function useMappingTracker({
     } else {
       onShowToast('⏱️ 計時開始！祝您這場掉落高價神聖石！');
     }
-  }, [snapshotA, onShowToast]);
-
-  const handlePauseMap = useCallback(() => {
-    setTimerState(prev => ({ ...prev, status: 'paused' }));
-  }, []);
-
-  const handleResumeMap = useCallback(() => {
-    setTimerState(prev => ({ ...prev, status: 'running' }));
-  }, []);
-
-  const handleResetTimer = useCallback(() => {
-    setTimerState(prev => ({ ...prev, status: 'idle', elapsedSeconds: 0, startTimestamp: null }));
-  }, []);
+  }, [snapshotA, onShowToast, setTimerState]);
 
   const handleTakeSnapshotA = useCallback(async () => {
     setSnapshotting(true);
@@ -164,11 +124,8 @@ export function useMappingTracker({
       tabNames: activeSession.selectedTabNames
     };
 
-    setSessions(prev =>
-      prev.map(s => (s.id === activeSession.id ? { ...s, runs: [newRun, ...s.runs], updatedAt: Date.now() } : s))
-    );
-
-    setSnapshotA(snapshotB); // Chain snapshot B as next map's snapshot A
+    addMapRun(newRun);
+    setSnapshotA(snapshotB);
     setTimerState(prev => ({
       status: 'completed',
       currentRunNumber: prev.currentRunNumber + 1,
@@ -178,65 +135,7 @@ export function useMappingTracker({
     setSnapshotting(false);
 
     onShowToast(`🎉 第 ${newRun.runNumber} 場結算完成！淨利潤：${profit.netProfitDivine} Div (${profit.netProfitChaos}c)`);
-  }, [timerState, snapshotA, activeSession, divineRate, onShowToast]);
-
-  const handleDeleteRun = useCallback((runId: string) => {
-    setSessions(prev =>
-      prev.map(s => (s.id === activeSession.id ? { ...s, runs: s.runs.filter(r => r.id !== runId) } : s))
-    );
-    onShowToast('已刪除指定場次紀錄');
-  }, [activeSession.id, onShowToast]);
-
-  const handleClearRuns = useCallback(() => {
-    setSessions(prev =>
-      prev.map(s => (s.id === activeSession.id ? { ...s, runs: [] } : s))
-    );
-    setSnapshotA(null);
-    setTimerState(DEFAULT_MAPPING_TIMER_STATE);
-    onShowToast('已清除當前 Session 所有場次紀錄');
-  }, [activeSession.id, onShowToast]);
-
-  const handleUpdateInvestment = useCallback((inv: MapInvestment) => {
-    setSessions(prev =>
-      prev.map(s => (s.id === activeSession.id ? { ...s, defaultInvestment: inv, updatedAt: Date.now() } : s))
-    );
-    onShowToast('已更新單場門票成本設定');
-  }, [activeSession.id, onShowToast]);
-
-  const handleUpdateSelectedTabs = useCallback((tabs: string[]) => {
-    setSessions(prev =>
-      prev.map(s => (s.id === activeSession.id ? { ...s, selectedTabNames: tabs, updatedAt: Date.now() } : s))
-    );
-  }, [activeSession.id]);
-
-  const handleCreateSession = useCallback((name: string, strategyName?: string) => {
-    const newSess: MappingSession = {
-      ...createDefaultMappingSession(league),
-      name: name.trim() || '新刷圖 Session',
-      strategyName
-    };
-    setSessions(prev => [newSess, ...prev]);
-    setActiveSessionId(newSess.id);
-    setSnapshotA(null);
-    setTimerState(DEFAULT_MAPPING_TIMER_STATE);
-    onShowToast(`已建立並切換至「${newSess.name}」！`);
-  }, [league, onShowToast]);
-
-  const stats = useMemo(() => {
-    return computeSessionStats(activeSession.runs, sessionWallClockSeconds, divineRate);
-  }, [activeSession.runs, sessionWallClockSeconds, divineRate]);
-
-  const handleExportDiscord = useCallback(() => {
-    const text = generateDiscordMappingReport(activeSession, stats);
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(text);
-    }
-    onShowToast('已複製 Discord 格式刷圖收益結算報表！可直接在社群分享');
-  }, [activeSession, stats, onShowToast]);
-
-  const handleExportCsv = useCallback(() => {
-    exportMappingSessionCsv(activeSession, stats, onShowToast);
-  }, [activeSession, stats, onShowToast]);
+  }, [timerState, snapshotA, activeSession, divineRate, onShowToast, addMapRun, setTimerState]);
 
   return {
     sessions,

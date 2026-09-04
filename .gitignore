@@ -81,5 +81,6 @@ Thumbs.db
 node_modules/
 
 # Antigravity agent temp
-.antigravity/
+.antigravity/*
+!.antigravity/*.md
 
