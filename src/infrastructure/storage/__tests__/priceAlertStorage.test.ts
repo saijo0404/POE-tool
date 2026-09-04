@@ -44,4 +44,10 @@ describe('priceAlertStorage', () => {
     expect(loaded.length).toBe(1);
     expect(loaded[0].id).toBe('valid-1');
   });
+
+  it('allows user to clear all rules and returns empty array on reload', () => {
+    savePriceAlertRules([]);
+    const loaded = loadPriceAlertRules();
+    expect(loaded).toEqual([]);
+  });
 });

@@ -157,6 +157,7 @@
 1. **升級版本號與日誌**：
    - 更新 `package.json` 與 `src-tauri/Cargo.toml` 的版本號（遵循語意化版本 SemVer）。
    - 更新 `CHANGELOG.md`，列出該 Milestone 完成的所有功能與修復。
+   - 更新 `README.md`，確保內容和當前專案相符
 2. **提交版本發布變更**：
    ```bash
    git checkout main && git pull origin main
