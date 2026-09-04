@@ -10,6 +10,34 @@
 
 ---
 
+## [2.1.0] - 2026-09-04
+
+### ✨ 新增 (Added)
+- **官方通貨交易所 (Faustus Currency Exchange) 即時行情整合與套利試算**：
+  - 即時查詢卡爾葛通貨交易所主流通貨行情與金幣 (Gold) 手續費消耗精算 ([#74](https://github.com/saijo0404/POE-tool/issues/74), [#81](https://github.com/saijo0404/POE-tool/pull/81))。
+  - 三角套利與跨市場利差警示，自動標記套利機會與期望回報率。
+  - 支援全通貨匯率轉換矩陣與一鍵反向試算。
+- **高價值資產 7 日價格走勢圖與自訂波動警報 (Price Trends & Volatility Alerts)**：
+  - 7 日歷史價格走勢圖、波動率 (Volatility) 指標與 24 小時漲跌幅高亮 ([#75](https://github.com/saijo0404/POE-tool/issues/75), [#85](https://github.com/saijo0404/POE-tool/pull/85))。
+  - 自訂價格突破/跌破警戒線設定，支援 LocalStorage 本地持久化保存與 Web Audio 原生合成清脆警報提示音效 (`playPriceAlertSound`)。
+- **玩家資產組合深度分析與歷史成長軌跡 (Portfolio Breakdown & Net Worth Growth)**：
+  - 互動式 SVG 甜甜圈圓餅圖展示資產分類佔比、分類下鑽排行與資產集中度指標 ([#76](https://github.com/saijo0404/POE-tool/issues/76), [#86](https://github.com/saijo0404/POE-tool/pull/86))。
+  - 歷史淨值成長折線圖與躍升里程碑偵測（標記大額掉落/交易飛躍點）。
+  - 支援 Markdown、CSV 與 Discord 多格式資產總結報表一鍵匯出與複製。
+
+### ♻️ 重構 (Refactored)
+- **微模組化分級閾值架構規範確立與核心組件解耦**：
+  - 確立分級行數閾值標準（Domain/計算/工具/Hooks 嚴格 $\le 200$ 行；複合 UI 容器/解析器 $\le 300$ 行；全域函式嚴格 $\le 30$ 行）([#79](https://github.com/saijo0404/POE-tool/issues/79), [#87](https://github.com/saijo0404/POE-tool/pull/87))。
+  - 解耦 `AtlasEditStrategyModal.tsx`（387 行 $\to$ 156 行），抽離 `StrategyMetaFields.tsx` (150 行) 與 `StrategyTierFields.tsx` (87 行)。
+  - 解耦 `useMappingTracker.ts`（265 行 $\to$ 164 行），抽離 `useMappingTimers.ts` (54 行) 與 `useMappingSessionActions.ts` (121 行)。
+
+### 🐛 修復 (Fixed)
+- **更新日誌版本比對連結修復**：補齊 `CHANGELOG.md` 底部遺漏的 `[2.0.0]` 比對定義並新增單元測試 ([#77](https://github.com/saijo0404/POE-tool/issues/77), [#82](https://github.com/saijo0404/POE-tool/pull/82))。
+- **React 19 異步測試 act(...) 警告修復**：為 `useMappingTracker` 與 `MappingTracker` 補齊異步倉庫分頁掛載等待，達成測試零警告 ([#78](https://github.com/saijo0404/POE-tool/issues/78), [#83](https://github.com/saijo0404/POE-tool/pull/83))。
+- **測試環境 Polyfill 增補**：補齊 jsdom 環境缺少 `window.open` 實作之 Mock，消除警告 ([#80](https://github.com/saijo0404/POE-tool/issues/80), [#84](https://github.com/saijo0404/POE-tool/pull/84))。
+
+---
+
 ## [2.0.0] - 2026-09-03
 
 ### ✨ 新增 (Added)
@@ -158,7 +186,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/saijo0404/POE-tool/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/saijo0404/POE-tool/compare/v1.5.0...v2.0.0
 [1.5.0]: https://github.com/saijo0404/POE-tool/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/saijo0404/POE-tool/compare/v1.3.0...v1.4.0
