@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { ParsedItem, ParsedItemMod, TradeSearchResult, TradeListing } from '../types/poe';
 import { poeApi } from '../services/api';
-import { isTauri } from '../utils/tauri';
 import { useSettings } from './useSettings';
+import { useOverlayWindowEvents } from './useOverlayWindowEvents';
 import { buildSmartDefaultMods } from '../domain/trade/smartModFilter';
 import { evaluateMapDanger } from '../domain/mapMod/dangerEvaluator';
 import { DEFAULT_MAP_DANGER_CONFIG } from '../domain/mapMod/dangerPresets';
@@ -21,11 +21,9 @@ export function useOverlayPrice() {
   const [opacity, setOpacity] = useState<number>(settings.overlayOpacity ?? 0.92);
   const [scale, setScale] = useState<number>(settings.overlayScale ?? 1.0);
   const [clickThrough, setClickThrough] = useState<boolean>(settings.overlayClickThrough ?? false);
-
   const [dangerEvaluation, setDangerEvaluation] = useState<MapDangerEvaluation | null>(null);
 
   const autoClose = settings.overlayAutoCloseOnBlur ?? true;
-
   const activeLeagueRef = useRef(activeLeague);
   activeLeagueRef.current = activeLeague;
 
@@ -87,82 +85,12 @@ export function useOverlayPrice() {
     }
   }, [executeSearch, settings.mapDangerConfig]);
 
-  const loadAndParseItemRef = useRef(loadAndParseItem);
-  loadAndParseItemRef.current = loadAndParseItem;
-
-  // Register global JS hook for direct zero-latency invocation from Rust
-  useEffect(() => {
-    (window as unknown as { __POE_LOAD_ITEM?: (text: string) => void }).__POE_LOAD_ITEM = (text: string) => {
-      loadAndParseItemRef.current(text);
-    };
-    return () => {
-      delete (window as unknown as { __POE_LOAD_ITEM?: (text: string) => void }).__POE_LOAD_ITEM;
-    };
-  }, []);
-
-  // Esc key and Window Blur listener
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        handleCloseOverlay();
-      }
-    };
-
-    const handleBlur = () => {
-      if (autoClose && !pinned) {
-        handleCloseOverlay();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('blur', handleBlur);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, [autoClose, pinned, handleCloseOverlay]);
-
-  // Listen to Tauri events and focus checks for new item queries
-  useEffect(() => {
-    if (!isTauri()) return;
-    let unmounted = false;
-    let unlistens: Array<() => void> = [];
-
-    const checkPendingOrClipboard = () => {
-      poeApi.getPendingOverlayItem().then(item => {
-        if (item && !unmounted) {
-          loadAndParseItemRef.current(item);
-        }
-      }).catch(() => {});
-    };
-
-    checkPendingOrClipboard();
-
-    const handleFocus = () => {
-      checkPendingOrClipboard();
-    };
-
-    window.addEventListener('focus', handleFocus);
-
-    import('@tauri-apps/api/event').then(({ listen }) => {
-      if (unmounted) return;
-      listen<string>('overlay-show-item', (ev) => {
-        if (ev.payload) loadAndParseItemRef.current(ev.payload);
-      }).then(u => unlistens.push(u));
-
-      listen<{ text?: string }>('poe-item-copied', (ev) => {
-        const t = typeof ev.payload === 'string' ? ev.payload : ev.payload?.text;
-        if (t) loadAndParseItemRef.current(t);
-      }).then(u => unlistens.push(u));
-    });
-
-    return () => {
-      unmounted = true;
-      window.removeEventListener('focus', handleFocus);
-      unlistens.forEach(u => u());
-    };
-  }, []);
+  useOverlayWindowEvents({
+    autoClose,
+    pinned,
+    handleCloseOverlay,
+    onLoadItem: loadAndParseItem
+  });
 
   const toggleMod = useCallback((idx: number) => {
     setMods(prev => {
