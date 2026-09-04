@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useMappingTracker } from '../useMappingTracker';
 import { poeApi } from '../../services/api';
@@ -19,7 +19,7 @@ describe('useMappingTracker', () => {
     window.localStorage.clear();
   });
 
-  it('should initialize with default session and idle timer state', () => {
+  it('should initialize with default session and idle timer state', async () => {
     const { result } = renderHook(() =>
       useMappingTracker({ league: 'Settlers', divineRate: 150, onShowToast })
     );
@@ -28,6 +28,10 @@ describe('useMappingTracker', () => {
     expect(result.current.activeSession).toBeDefined();
     expect(result.current.timerState.status).toBe('idle');
     expect(result.current.timerState.elapsedSeconds).toBe(0);
+
+    await waitFor(() => {
+      expect(result.current.availableTabs.length).toBeGreaterThan(0);
+    });
   });
 
   it('should handle timer state transitions (start, pause, resume, reset)', async () => {
@@ -145,10 +149,14 @@ describe('useMappingTracker', () => {
     expect(run.drops[0].deltaCount).toBe(2);
   });
 
-  it('should allow deleting runs and creating sessions', () => {
+  it('should allow deleting runs and creating sessions', async () => {
     const { result } = renderHook(() =>
       useMappingTracker({ league: 'Settlers', divineRate: 150, onShowToast })
     );
+
+    await waitFor(() => {
+      expect(result.current.availableTabs.length).toBeGreaterThan(0);
+    });
 
     act(() => {
       result.current.handleCreateSession('Juiced Dunes Farm', '軍團拓荒');
