@@ -1,0 +1,70 @@
+// Traditional Chinese Translation Table for all Keystones & Key Notables
+export const KEYSTONE_TRANSLATIONS: Record<string, string> = {
+  // Official Atlas 27 Keystones
+  'Arbitrary Tenets': '隨意教條 (Arbitrary Tenets)',
+  'Wellspring of Creation': '造物之泉 (Wellspring of Creation)',
+  'Gruelling Gauntlet': '艱難挑戰 (Gruelling Gauntlet)',
+  'Dimensional Foothold': '次元立足點 (Dimensional Foothold)',
+  'Extreme Archaeology': '極限考古 (Extreme Archaeology)',
+  'The Paths Not Taken': '未擇之路 (The Paths Not Taken)',
+  "Cassia's Pride": "卡西亞的自豪 (Cassia's Pride)",
+  'Enemy at the Gates': '大敵當前 (Enemy at the Gates)',
+  'Synthesised Stability': '憶境穩定 (Synthesised Stability)',
+  'Eldritch Gaze': '古靈凝視 (Eldritch Gaze)',
+  'Destructive Play': '破壞性競賽 (Destructive Play)',
+  'Twist of Fate': '命運扭曲 (Twist of Fate)',
+  'Immutable Dogma': '不變教條 (Immutable Dogma)',
+  'Dance of Destruction': '毀滅之舞 (Dance of Destruction)',
+  'Lucid Dreams': '清醒夢境 (Lucid Dreams)',
+  'Unending Nightmare': '無盡夢魘 (Unending Nightmare)',
+  "Refiner's Bargain": '精煉者的交易 (Refiner\'s Bargain)',
+  'Timeless Conflict': '永恆之戰 (Timeless Conflict)',
+  'Wrath of the Cosmos': '寰宇之怒 (Wrath of the Cosmos)',
+  'Crop Rotation': '農作輪替 (Crop Rotation)',
+  'Overloaded Circuits': '超載迴路 (Overloaded Circuits)',
+  'Endless Tide': '無盡潮汐 (Endless Tide)',
+  'Speaker of the Dead': '逝者之言 (Speaker of the Dead)',
+  'Thorough Exploration': '徹底探索 (Thorough Exploration)',
+  'Ruinous Wager': '毀滅賭注 (Ruinous Wager)',
+  'Meticulous Appraiser': '嚴苛鑑價師 (Meticulous Appraiser)',
+  'Unwavering Vision': '不屈之志 (Unwavering Vision)',
+
+  // Additional / Classic Keystones
+  'All Hands': '全員到齊 (All Hands)',
+  'Singular Focus': '專注單一 (Singular Focus)',
+  'The Seventh Gate': '第七道門 (The Seventh Gate)',
+  'Stream of Consciousness': '意識流 (Stream of Consciousness)',
+  'Bold Undertakings': '大膽嘗試 (Bold Undertakings)',
+  'Overloaded Outposts': '超載前哨 (Overloaded Outposts)',
+  'Wandering Path': '流浪之路 (Wandering Path)',
+  'Grand Design': '大計畫 (Grand Design)',
+  'Dance with Death': '與死共舞 (Dance with Death)',
+  'Back to Basics': '回歸初衷 (Back to Basics)',
+  'Unrelenting Torment': '無盡苦痛 (Unrelenting Torment)',
+
+  // Key Notables
+  'Conquer The Stones': '征服石圈 (Conquer The Stones)',
+  'Vivid Memories': '生動記憶 (Vivid Memories)',
+  'Prolific Essence': '豐產精髓 (Prolific Essence)',
+  'Amplified Energies': '能量放大 (Amplified Energies)',
+  'Heart of the Grove': '古樹之心 (Heart of the Grove)',
+  'Ancient Decay': '遠古腐化 (Ancient Decay)',
+  'Dimensional Barrier': '維度屏障 (Dimensional Barrier)',
+  'Mighty Hunter': '強大獵手 (Mighty Hunter)',
+  "Fortune's Favour": '命運眷顧 (Fortune\'s Favour)',
+  'Drawn to Power': '汲取力量 (Drawn to Power)',
+  'Sulphite Infusion': '赤藍注入 (Sulphite Infusion)',
+  'The Singular Eternity': '單一永恆 (The Singular Eternity)',
+  'Yield Upon Yield': '產量豐饒 (Yield Upon Yield)',
+  'Sturdy Construction': '堅固構造 (Sturdy Construction)',
+  'Harrowing Carapaces': '可怖甲殼 (Harrowing Carapaces)',
+  'Time Dilation': '時間膨脹 (Time Dilation)',
+  'Prove Yourself Worthy': '證明實力 (Prove Yourself Worthy)',
+  'Fiendish Opulence': '邪靈富裕 (Fiendish Opulence)',
+  'A Noble Quest': '崇高任務 (A Noble Quest)',
+  'Emblematic': '象徵標誌 (Emblematic)'
+};
+
+export function translateKeystone(name: string): string {
+  return KEYSTONE_TRANSLATIONS[name] || name;
+}
