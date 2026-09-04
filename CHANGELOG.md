@@ -10,6 +10,30 @@
 
 ---
 
+## [2.2.0] - 2026-09-04
+
+### ✨ 新增 (Added)
+- **裝備詞綴階級評鑑與工藝潛力分析 (Gear Inspector & Affix Tier Evaluator)**：
+  - 純領域詞綴分類器 (`affixClassifier.ts`)，精準識別生命、抗性、物理、法術、速度等前綴與後綴屬性維度 ([#92](https://github.com/saijo0404/POE-tool/issues/92), [#95](https://github.com/saijo0404/POE-tool/pull/95))。
+  - 工藝潛力評鑑引擎 (`gearInspector.ts`)，自動判定前綴/後綴剩餘空位 (Open Prefixes/Suffixes)、裝備綜合評級 (S/A/B/C/Vendor Trash)，並提供針對性工藝策略建議（保前保後重鑄、附魔補抗、隱匿混沌等）。
+  - 查價介面無縫整合裝備潛力分析卡片 (`GearInspectorCard.tsx`)。
+- **輿圖策略社群雲端分享中心與短代碼匯入匯出 (Atlas Strategy Community Hub & Share Codes)**：
+  - 輕量化 `POEATLAS-v1-` 短代碼編解碼器 (`atlasShareCodec.ts`)，支援以 base64url 格式一鍵複製與匯入輿圖策略配置 ([#93](https://github.com/saijo0404/POE-tool/issues/93), [#96](https://github.com/saijo0404/POE-tool/pull/96))。
+  - 內建 5 大熱門機制精選社群配置（軍團沙丘速刷、甲蟲狂歡、炸墳黑鐮日誌、莊園作物輪替、通牒致命試煉）。
+  - 50 場大宗採購清單與成本計算器 (`communityStrategies.ts`)，快速精算聖甲蟲總量與 Divine 資金需求。
+  - 互動式社群中心視窗 (`AtlasCommunityHubModal.tsx`) 與空狀態引導組件 (`AtlasEmptyStateCard.tsx`)。
+- **章節拓荒技能與裝備轉換檢查點浮動指引 (Leveling Progression Gem Swap Checkpoints)**：
+  - 7 大職業在 Lv 12、Lv 28、Lv 38 的技能與裝備抗性門檻檢查點純領域模型 (`gemSwapData.ts`)，共收錄 21 組關鍵里程碑 ([#94](https://github.com/saijo0404/POE-tool/issues/94), [#97](https://github.com/saijo0404/POE-tool/pull/97))。
+  - 智慧屬性缺口警告系統 (`getAttributeWarningForGem`)，依據起手體質主動提示補足力量/敏捷/智慧底座（海玉/翡翠護身符、重革腰帶等）。
+  - 技能轉換檢查點組件 (`ActGemSwapCheckpoints.tsx`)，支援分級篩選、插槽顏色提示與打勾持久化。
+  - `ActLevelingGuide.tsx` 與 `ActMiniOverlay.tsx` 極簡置頂 HUD 全面整合技能里程碑檢視。
+
+### 🐛 修復 (Fixed)
+- **價格警報清空後重啟導致預設規則復活問題**：修正 `priceAlertStorage.ts` 中解析為空陣列被誤判為初始狀態的條件分支 ([#88](https://github.com/saijo0404/POE-tool/issues/88), [#90](https://github.com/saijo0404/POE-tool/pull/90))。
+- **SVG 甜甜圈圓餅圖 100% 單一類別分配時弧線消失問題**：在 `portfolioCalculator.ts` 中對單一類別 100% 情況施加角度微量安全夾逼，避免 SVG 弧線起點與終點完全重合而無法繪製 ([#89](https://github.com/saijo0404/POE-tool/issues/89), [#91](https://github.com/saijo0404/POE-tool/pull/91))。
+
+---
+
 ## [2.1.0] - 2026-09-04
 
 ### ✨ 新增 (Added)
@@ -186,7 +210,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/saijo0404/POE-tool/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/saijo0404/POE-tool/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/saijo0404/POE-tool/compare/v1.5.0...v2.0.0
 [1.5.0]: https://github.com/saijo0404/POE-tool/compare/v1.4.0...v1.5.0

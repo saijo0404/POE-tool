@@ -38,7 +38,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v1.6.0** | **查價與使用者體驗躍升** *(UX & In-Game Overlay)* | ✅ 已整合 | [Milestone v1.6.0](https://github.com/saijo0404/POE-tool/milestone/2) |
 | 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已發布 | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
 | 🟢 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | ✅ 已發布 | [Milestone v2.1.0](https://github.com/saijo0404/POE-tool/milestone/4) |
-| 🟡 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | 🚀 規劃就緒 | 裝備 T1~T12 階級評鑑、工藝潛力分、社群輿圖分享 |
+| 🟢 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | ✅ 已發布 | [Milestone v2.2.0](https://github.com/saijo0404/POE-tool/milestone/5) |
 | 🔭 **v2.3.0** | **跨平台支援與離線資料庫快照** *(Linux/Proton & Offline DB)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
@@ -67,10 +67,11 @@ gantt
     Faustus 通貨交易所即時行情與套利換算 (#74/#81) :done,    m4_1, 2026-09-03, 2026-09-04
     高價資產 7 天價格走勢與波動預警 (#75/#85)     :done,    m4_2, 2026-09-04, 2026-09-04
     玩家資產組合分析與歷史成長軌跡 (#76/#86)       :done,    m4_3, 2026-09-04, 2026-09-04
-    微模組化分級規範與核心解耦 (#79/#87)          :done,    m4_4, 2026-09-04, 2026-09-04
-    section v2.2.0 ~ v3.0.0 未來藍圖
-    裝備詞綴階級評鑑與工藝潛力分數           :         m5_1, 2026-11-20, 2026-12-15
-    輿圖策略社群雲端分享與熱門榜單           :         m5_2, 2026-12-01, 2026-12-31
+    section v2.2.0 裝備評鑑與輿圖社群 (已完成)
+    裝備詞綴階級評鑑與工藝潛力分數 (#92/#95)     :done,    m5_1, 2026-09-04, 2026-09-04
+    輿圖策略社群雲端分享與短代碼 (#93/#96)       :done,    m5_2, 2026-09-04, 2026-09-04
+    章節拓荒技能與裝備轉換檢查點 (#94/#97)       :done,    m5_3, 2026-09-04, 2026-09-04
+    section v2.3.0 ~ v3.0.0 未來藍圖
     Linux / Steam Deck 跨平台與離線快照      :         m6_1, 2027-01-01, 2027-02-15
     PoE 2 次世代獨立雙核心模組架構           :         m7_1, 2027-02-15, 2027-05-01
 ```
@@ -130,23 +131,27 @@ gantt
 
 ---
 
-### 階段三 (v2.2.0)：進階裝備評鑑與輿圖社群生態 (Gear Inspector & Atlas Community Hub)
+### 階段三 (v2.2.0)：進階裝備評鑑與輿圖社群生態 (Gear Inspector & Atlas Community Hub) `[已發布]`
 
 > **核心目標**：深度增強玩家對裝備價值的判讀能力，並打造社群共享的輿圖策略生態圈。
 
 #### 📦 交付功能與關鍵項目
 
-1. **🔍 裝備詞綴階級與工藝潛力評鑑 (Item Tier & Crafting Potential Inspector)**
+1. **🔍 裝備詞綴階級與工藝潛力評鑑 (Item Tier & Crafting Potential Inspector)** `[已交付]`
    - 懸浮查價視窗直接標註裝備上每條詞綴之官方 Tier 階級（T1~T12、固定詞綴、隱匿詞綴）。
    - 智慧計算裝備剩餘工藝空間（前綴空幾條、後綴空幾條）與工藝台可補足之最強屬性。
    - 提供「裝備總評分 (Item Potential Score)」，快速識別高價值黃裝底子。
-2. **🌐 輿圖策略社群雲端分享中心 (Atlas Strategy Community Hub)**
-   - 支援輿圖天賦配置 + 甲蟲備料 + 地圖工藝一鍵產生分享短代碼（Share Code / Base64）。
-   - 內建社群精選策略庫（軍團飆車流、甲蟲狂歡流、炸墳收益流、深淵經驗流）。
-   - 支援一鍵匯入社群策略並自動生成市集採購清單。
-3. **🧭 拓荒流程升級指引浮動窗 (Leveling Progression Floating Guide)**
-   - 章節拓荒模式支援「技能與裝備轉換檢查點 (Gem Swap Checkpoint)」。
+   - 關聯 PR/Issue：[#92](https://github.com/saijo0404/POE-tool/issues/92), [#95](https://github.com/saijo0404/POE-tool/pull/95)
+2. **🌐 輿圖策略社群雲端分享中心 (Atlas Strategy Community Hub)** `[已交付]`
+   - 支援輿圖天賦配置 + 甲蟲備料 + 地圖工藝一鍵產生分享短代碼（`POEATLAS-v1-` Base64url）。
+   - 內建社群精選策略庫（軍團飆車流、甲蟲狂歡流、炸墳收益流、莊園作物輪替、通牒致命試煉）。
+   - 支援一鍵匯入社群策略並自動精算 50 場大宗採購清單與成本。
+   - 關聯 PR/Issue：[#93](https://github.com/saijo0404/POE-tool/issues/93), [#96](https://github.com/saijo0404/POE-tool/pull/96)
+3. **🧭 拓荒流程升級指引浮動窗 (Leveling Progression Floating Guide)** `[已交付]`
+   - 章節拓荒模式支援「技能與裝備轉換檢查點 (Gem Swap Checkpoints)」。
    - 當角色達到特定等級（例如 Lv 12、Lv 28、Lv 38）時主動提醒更換核心技能寶石與輔助串法。
+   - 智慧對照屬性門檻並發出底座配戴警示（海玉護身符、重革腰帶等）。
+   - 關聯 PR/Issue：[#94](https://github.com/saijo0404/POE-tool/issues/94), [#97](https://github.com/saijo0404/POE-tool/pull/97)
 
 ---
 
