@@ -23,6 +23,7 @@ import type {
   BuildCostResult,
   NinjaPricesResult
 } from '../domain/build/types';
+import type { FaustusMarketOverview } from '../domain/exchange/types';
 
 export const poeApi = {
   // Settings & Auth
@@ -66,11 +67,13 @@ export const poeApi = {
   triggerInGameCommand: (command: string): Promise<boolean> =>
     ApiClientFactory.getClient().triggerInGameCommand(command),
 
-  // Ninja & Build Calculator
+  // Ninja & Build Calculator & Faustus Exchange
   getNinjaPrices: (league?: string, refresh?: boolean): Promise<NinjaPricesResult> =>
     ApiClientFactory.getClient().getNinjaPrices(league, refresh),
   calculateBuild: (ninjaUrl: string): Promise<BuildCostResult> =>
     ApiClientFactory.getClient().calculateBuild(ninjaUrl),
+  getFaustusExchangeOverview: (league?: string, refresh?: boolean): Promise<FaustusMarketOverview> =>
+    ApiClientFactory.getClient().getFaustusExchangeOverview(league, refresh),
 
   // Wealth Snapshots & Stash
   getWealthSnapshots: (): Promise<WealthSnapshot[]> =>

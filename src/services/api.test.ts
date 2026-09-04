@@ -178,6 +178,13 @@ describe('poeApi service client', () => {
       expect(res?.totalCostChaos).toBe(10000);
     });
 
+    it('getFaustusExchangeOverview gets /api/exchange/overview', async () => {
+      const mockOverview = { totalItems: 20, items: [] };
+      vi.spyOn(axios, 'get').mockResolvedValueOnce({ data: mockOverview } as any);
+      const res = await poeApi.getFaustusExchangeOverview('Settlers');
+      expect(res?.totalItems).toBe(20);
+    });
+
     it('testConnection, loginAuth, logoutAuth, and getAuthStatus', async () => {
       vi.spyOn(axios, 'post').mockResolvedValueOnce({ data: { success: true, message: 'Connected' } } as any);
       const connRes = await poeApi.testConnection({ poesessid: 'abc' });
@@ -233,6 +240,7 @@ describe('poeApi service client', () => {
         if (cmd === 'travel_to_hideout') return { success: true, gameTriggered: true };
         if (cmd === 'get_ninja_prices') return { divineChaosRate: 160 };
         if (cmd === 'calculate_build') return { totalCostChaos: 5000 };
+        if (cmd === 'get_faustus_exchange_overview') return { totalItems: 20 };
         if (cmd === 'fetch_build_item_live_price') return { total: 2 };
         if (cmd === 'create_trade_search_url') return 'https://tauri.trade';
         if (cmd === 'test_connection') return { success: true };
@@ -272,6 +280,7 @@ describe('poeApi service client', () => {
       expect(await poeApi.travelToHideout({ token: 'tok' })).toEqual({ success: true, gameTriggered: true });
       expect(await poeApi.getNinjaPrices('Settlers')).toEqual({ divineChaosRate: 160 });
       expect(await poeApi.calculateBuild('url')).toEqual({ totalCostChaos: 5000 });
+      expect(await poeApi.getFaustusExchangeOverview('Settlers')).toEqual({ totalItems: 20 });
       expect(await poeApi.fetchBuildItemLivePrice('Settlers', '{}')).toEqual({ total: 2 });
       expect(await poeApi.createTradeSearchUrl('Settlers', '{}')).toBe('https://tauri.trade');
       await poeApi.openExternalUrl('url');

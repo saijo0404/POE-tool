@@ -19,6 +19,7 @@ const ActLevelingGuide = lazy(() => import('./components/ActLevelingGuide'));
 const AtlasStrategyHub = lazy(() => import('./components/AtlasStrategyHub'));
 const MapModHub = lazy(() => import('./components/MapModHub'));
 const CraftingSimulatorHub = lazy(() => import('./components/CraftingSimulatorHub'));
+const FaustusExchangeHub = lazy(() => import('./components/exchange/FaustusExchangeHub'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const TradeWhisperModal = lazy(() => import('./components/whisper/TradeWhisperModal').then(m => ({ default: m.TradeWhisperModal })));
 
@@ -150,6 +151,8 @@ export const App: React.FC = () => {
               <Suspense fallback={<LoadingFallback />}>
                 {activeTab === 'price' ? (
                   <PriceChecker league={activeLeague} onShowToast={showToast} externalText={pastedText} />
+                ) : activeTab === 'exchange' ? (
+                  <FaustusExchangeHub league={activeLeague} onShowToast={showToast} />
                 ) : activeTab === 'build' ? (
                   <BuildCalculator league={activeLeague} onShowToast={showToast} />
                 ) : activeTab === 'acts' ? (

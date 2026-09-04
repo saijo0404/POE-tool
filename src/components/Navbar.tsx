@@ -6,7 +6,7 @@ import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 
-export type AppTabType = 'price' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod' | 'craft';
+export type AppTabType = 'price' | 'exchange' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod' | 'craft';
 
 interface NavbarProps {
   activeTab: AppTabType;
@@ -20,6 +20,7 @@ interface NavbarProps {
 
 const NAV_TABS: { id: AppTabType; label: string; icon: React.ReactNode }[] = [
   { id: 'price', label: '裝備即時查價', icon: <Search size={15} /> },
+  { id: 'exchange', label: '大宗交易所', icon: <Coins size={15} /> },
   { id: 'wealth', label: '每小時資產估算', icon: <TrendingUp size={15} /> },
   { id: 'mapping', label: '刷圖收益追蹤', icon: <Swords size={15} /> },
   { id: 'build', label: 'Build 成本計算', icon: <Calculator size={15} /> },

@@ -106,6 +106,16 @@ export class HttpFallbackClient implements IPoeApiClient {
   async calculateBuild(ninjaUrl: string): Promise<BuildCostResult> {
     return this.safePost<BuildCostResult>('/api/build-calculator', { ninjaUrl }, undefined);
   }
+  async getFaustusExchangeOverview(league?: string, refresh?: boolean): Promise<import('../../domain/exchange/types').FaustusMarketOverview> {
+    const { createDefaultExchangeOverview } = await import('../../domain/exchange/defaultOverview');
+    const fallback = createDefaultExchangeOverview(league || 'Settlers');
+    return this.safeGet<import('../../domain/exchange/types').FaustusMarketOverview>(
+      '/api/exchange/overview',
+      { params: { league, refresh: refresh ? 'true' : undefined } },
+      fallback
+    );
+  }
+
   async getWealthSnapshots(): Promise<WealthSnapshot[]> {
     const res = await this.safeGet<WealthSnapshot[]>('/api/wealth/snapshots', undefined, []);
     return Array.isArray(res) ? res : [];
