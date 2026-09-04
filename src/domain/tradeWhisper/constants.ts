@@ -1,11 +1,13 @@
 import type { TradeQuickResponseConfig } from './types';
+import { getDefaultWhisperTemplates } from './whisperTemplates';
 
 export const DEFAULT_TRADE_WHISPER_CONFIG: TradeQuickResponseConfig = {
   waitMessageTemplate: '正在刷圖中，請稍候 1 分鐘！',
   thanksMessageTemplate: 'ty gl!',
   autoOpenOverlayOnWhisper: true,
   soundAlertEnabled: true,
-  clientLogPath: ''
+  clientLogPath: '',
+  customTemplates: getDefaultWhisperTemplates()
 };
 
 export const ACTION_THEME_COLORS = {

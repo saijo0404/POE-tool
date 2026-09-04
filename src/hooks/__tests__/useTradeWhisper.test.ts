@@ -96,4 +96,29 @@ describe('useTradeWhisper', () => {
     });
     expect(result.current.whispers.length).toBe(0);
   });
+
+  it('dispatches custom whisper template responses properly', async () => {
+    const { result } = renderHook(() => useTradeWhisper());
+    const raw = '@From <VIP> BuyerPro: Hi, I would like to buy your Mageblood listed for 200 divine in Settlers (stash tab "Sale"; position: left 4, top 8)';
+
+    act(() => {
+      result.current.handleNewWhisper(raw);
+    });
+    const target = result.current.activeWhisper!;
+
+    await act(async () => {
+      const ok = await result.current.handleSendTemplate(target, {
+        id: 'tpl-sold',
+        label: '🚪 物品已售出',
+        message: '抱歉 {buyer}，{item} 已售出，祝遊戲愉快！',
+        category: 'sold'
+      });
+      expect(ok).toBe(true);
+    });
+
+    expect(poeApi.triggerInGameCommand).toHaveBeenCalledWith(
+      '@BuyerPro 抱歉 BuyerPro，Mageblood 已售出，祝遊戲愉快！'
+    );
+    expect(result.current.whispers[0].status).toBe('dismissed');
+  });
 });

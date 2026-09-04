@@ -3,7 +3,9 @@ import {
   loadTradeWhisperConfig,
   saveTradeWhisperConfig,
   loadTradeWhisperHistory,
-  saveTradeWhisperHistory
+  saveTradeWhisperHistory,
+  loadWhisperTemplates,
+  saveWhisperTemplates
 } from '../tradeWhisperStorage';
 import { DEFAULT_TRADE_WHISPER_CONFIG } from '../../../domain/tradeWhisper/constants';
 import type { TradeWhisper } from '../../../domain/tradeWhisper/types';
@@ -42,5 +44,23 @@ describe('tradeWhisperStorage', () => {
     const history = loadTradeWhisperHistory();
     expect(history.length).toBe(1);
     expect(history[0].sender).toBe('Buyer1');
+  });
+
+  it('loads and saves custom whisper templates', () => {
+    const defaultTemplates = loadWhisperTemplates();
+    expect(defaultTemplates.length).toBeGreaterThanOrEqual(4);
+
+    const customList = [
+      ...defaultTemplates,
+      {
+        id: 'tpl-my-custom',
+        label: '自訂模板',
+        message: '稍後聯繫',
+        category: 'custom' as const
+      }
+    ];
+    saveWhisperTemplates(customList);
+    const loaded = loadWhisperTemplates();
+    expect(loaded.some(t => t.id === 'tpl-my-custom')).toBe(true);
   });
 });

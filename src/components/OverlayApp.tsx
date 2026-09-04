@@ -23,6 +23,8 @@ export const OverlayApp: React.FC = () => {
     activeWhisper,
     setActiveWhisperId,
     handleAction: handleWhisperAction,
+    handleSendTemplate: handleWhisperTemplate,
+    config: whisperConfig,
     dismissWhisper
   } = useTradeWhisper();
 
@@ -85,7 +87,9 @@ export const OverlayApp: React.FC = () => {
             )}
             <TradeWhisperCard
               whisper={activeWhisper}
+              templates={whisperConfig.customTemplates}
               onAction={handleWhisperAction}
+              onSendTemplate={handleWhisperTemplate}
               onDismiss={dismissWhisper}
             />
           </div>

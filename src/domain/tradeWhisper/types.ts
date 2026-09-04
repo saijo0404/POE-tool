@@ -1,3 +1,7 @@
+import type { WhisperTemplate } from './whisperTemplates';
+
+export type { WhisperTemplate };
+
 export interface StashPosition {
   left: number;
   top: number;
@@ -42,6 +46,7 @@ export interface TradeQuickResponseConfig {
   autoOpenOverlayOnWhisper: boolean;
   soundAlertEnabled: boolean;
   clientLogPath?: string;
+  customTemplates?: WhisperTemplate[];
 }
 
 export interface StashCellPercentage {

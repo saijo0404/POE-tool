@@ -43,4 +43,44 @@ describe('TradeWhisperTester', () => {
       waitMessageTemplate: '請稍候 30 秒！'
     });
   });
+
+  it('adds custom whisper template via form and allows reset', () => {
+    const onSimulate = vi.fn();
+    const onUpdateConfig = vi.fn();
+
+    render(
+      <TradeWhisperTester
+        onSimulate={onSimulate}
+        config={DEFAULT_TRADE_WHISPER_CONFIG}
+        onUpdateConfig={onUpdateConfig}
+      />
+    );
+
+    const labelInput = screen.getByPlaceholderText(/範本標籤/);
+    const msgInput = screen.getByPlaceholderText(/回覆文字/);
+
+    fireEvent.change(labelInput, { target: { value: '⚡ 快速刷圖中' } });
+    fireEvent.change(msgInput, { target: { value: '請稍等 30 秒馬上來！' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /新增/ }));
+
+    expect(onUpdateConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customTemplates: expect.arrayContaining([
+          expect.objectContaining({
+            label: '⚡ 快速刷圖中',
+            message: '請稍等 30 秒馬上來！'
+          })
+        ])
+      })
+    );
+
+    // Test Reset
+    fireEvent.click(screen.getByRole('button', { name: /重設預設值/ }));
+    expect(onUpdateConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customTemplates: expect.any(Array)
+      })
+    );
+  });
 });

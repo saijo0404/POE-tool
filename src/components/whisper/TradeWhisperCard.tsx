@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { TradeWhisper, TradeWhisperAction } from '../../domain/tradeWhisper/types';
+import {
+  getDefaultWhisperTemplates,
+  interpolateWhisperTemplate,
+  type WhisperTemplate
+} from '../../domain/tradeWhisper/whisperTemplates';
 import { TradeWhisperStashGrid } from './TradeWhisperStashGrid';
-import { UserPlus, Clock, ArrowRightLeft, UserCheck, Home, X, Copy, Check, Grid } from 'lucide-react';
+import {
+  UserPlus,
+  Clock,
+  ArrowRightLeft,
+  UserCheck,
+  Home,
+  X,
+  Copy,
+  Check,
+  Grid,
+  MessageSquareQuote,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 
 interface TradeWhisperCardProps {
   whisper: TradeWhisper;
   onAction: (whisper: TradeWhisper, action: TradeWhisperAction) => void;
   onDismiss: (id: string) => void;
+  templates?: WhisperTemplate[];
+  onSendTemplate?: (whisper: TradeWhisper, template: WhisperTemplate) => void;
 }
 
 function getStatusBadge(status: TradeWhisper['status']): { label: string; color: string } | null {
@@ -15,6 +35,7 @@ function getStatusBadge(status: TradeWhisper['status']): { label: string; color:
     case 'waited': return { label: '已通知稍候', color: '#3498db' };
     case 'traded': return { label: '已發起交易', color: '#f1c40f' };
     case 'completed': return { label: '已致謝並踢除', color: '#95a5a6' };
+    case 'dismissed': return { label: '已忽略/已售出', color: '#e74c3c' };
     default: return null;
   }
 }
@@ -22,11 +43,18 @@ function getStatusBadge(status: TradeWhisper['status']): { label: string; color:
 export const TradeWhisperCard: React.FC<TradeWhisperCardProps> = ({
   whisper,
   onAction,
-  onDismiss
+  onDismiss,
+  templates,
+  onSendTemplate
 }) => {
   const [copied, setCopied] = useState<boolean>(false);
   const [showGrid, setShowGrid] = useState<boolean>(!!whisper.position);
+  const [showTemplates, setShowTemplates] = useState<boolean>(false);
   const statusBadge = getStatusBadge(whisper.status);
+
+  const availableTemplates = useMemo(() => {
+    return templates && templates.length > 0 ? templates : getDefaultWhisperTemplates();
+  }, [templates]);
 
   const handleCopySender = () => {
     if (navigator.clipboard) {
@@ -34,6 +62,15 @@ export const TradeWhisperCard: React.FC<TradeWhisperCardProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     }
+  };
+
+  const handleSelectTemplate = (tpl: WhisperTemplate) => {
+    if (onSendTemplate) {
+      onSendTemplate(whisper, tpl);
+    } else {
+      onAction(whisper, 'wait');
+    }
+    setShowTemplates(false);
   };
 
   return (
@@ -142,9 +179,19 @@ export const TradeWhisperCard: React.FC<TradeWhisperCardProps> = ({
         </button>
       </div>
 
-      {/* Optional Stash Grid Indicator Toggle */}
-      {whisper.position && (
-        <div style={{ marginTop: '4px' }}>
+      {/* Template selector toggle & stash grid toggle bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', paddingTop: '4px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <button
+          type="button"
+          onClick={() => setShowTemplates(!showTemplates)}
+          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: '#f3d179', cursor: 'pointer', fontSize: '0.72rem', padding: 0 }}
+        >
+          <MessageSquareQuote size={12} />
+          <span>⚡ 情境回覆範本</span>
+          {showTemplates ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+        </button>
+
+        {whisper.position && (
           <button
             type="button"
             onClick={() => setShowGrid(!showGrid)}
@@ -153,13 +200,57 @@ export const TradeWhisperCard: React.FC<TradeWhisperCardProps> = ({
             <Grid size={12} />
             <span>{showGrid ? '收合倉庫格位指示' : `查看倉庫格位 (${whisper.stashTab || '分頁'} 左${whisper.position.left}, 上${whisper.position.top})`}</span>
           </button>
-          {showGrid && (
-            <TradeWhisperStashGrid
-              position={whisper.position}
-              stashTab={whisper.stashTab}
-              itemName={whisper.itemName}
-            />
-          )}
+        )}
+      </div>
+
+      {/* Expandable Whisper Template Quick Selector */}
+      {showTemplates && (
+        <div style={{
+          marginTop: '6px',
+          padding: '6px',
+          background: 'rgba(10, 14, 20, 0.85)',
+          borderRadius: '4px',
+          border: '1px solid rgba(200, 170, 110, 0.25)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '4px'
+        }}>
+          {availableTemplates.map(tpl => (
+            <button
+              key={tpl.id}
+              type="button"
+              onClick={() => handleSelectTemplate(tpl)}
+              style={{
+                background: 'rgba(200, 170, 110, 0.12)',
+                border: '1px solid rgba(200, 170, 110, 0.35)',
+                borderRadius: '3px',
+                padding: '3px 8px',
+                color: '#f5deb3',
+                cursor: 'pointer',
+                fontSize: '0.72rem',
+                textAlign: 'left'
+              }}
+              title={interpolateWhisperTemplate(tpl.message, {
+                buyer: whisper.sender,
+                item: whisper.itemName,
+                price: whisper.price,
+                stashTab: whisper.stashTab
+              })}
+            >
+              {tpl.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Optional Stash Grid Indicator */}
+      {whisper.position && showGrid && (
+        <div style={{ marginTop: '6px' }}>
+          <TradeWhisperStashGrid
+            position={whisper.position}
+            stashTab={whisper.stashTab}
+            itemName={whisper.itemName}
+          />
         </div>
       )}
     </div>

@@ -79,4 +79,32 @@ describe('TradeWhisperCard', () => {
     fireEvent.click(screen.getByTitle('關閉此密語卡片'));
     expect(onDismiss).toHaveBeenCalledWith('tw-1');
   });
+
+  it('toggles template menu and triggers onSendTemplate when template is clicked', () => {
+    const onAction = vi.fn();
+    const onDismiss = vi.fn();
+    const onSendTemplate = vi.fn();
+
+    render(
+      <TradeWhisperCard
+        whisper={dummyWhisper}
+        onAction={onAction}
+        onDismiss={onDismiss}
+        onSendTemplate={onSendTemplate}
+      />
+    );
+
+    // Toggle template menu
+    const toggleBtn = screen.getByRole('button', { name: /情境回覆/i });
+    fireEvent.click(toggleBtn);
+
+    // Click "打王攻堅中" template
+    const bossTplBtn = screen.getByRole('button', { name: /打王攻堅中/i });
+    fireEvent.click(bossTplBtn);
+
+    expect(onSendTemplate).toHaveBeenCalledWith(
+      dummyWhisper,
+      expect.objectContaining({ label: expect.stringContaining('打王攻堅中') })
+    );
+  });
 });
