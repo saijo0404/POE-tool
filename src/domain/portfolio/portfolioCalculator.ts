@@ -83,7 +83,8 @@ export function generateDonutChartPaths(
 
   let startAngle = 0;
   return categories.map(cat => {
-    const angle = (cat.percentage / 100) * (2 * Math.PI);
+    const rawAngle = (cat.percentage / 100) * (2 * Math.PI);
+    const angle = Math.min(rawAngle, 2 * Math.PI - 0.001);
     const endAngle = startAngle + angle;
 
     const x1 = radius + radius * Math.sin(startAngle);

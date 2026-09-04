@@ -167,5 +167,29 @@ describe('portfolioCalculator', () => {
     it('returns empty array when allocations is empty', () => {
       expect(generateDonutChartPaths([], 100, 60)).toEqual([]);
     });
+
+    it('ensures single category with 100% allocation has a non-negligible sweep (> 0.01px difference) to prevent SVG renderer arc degeneration', () => {
+      const singleCategory = [{
+        category: 'Currency' as const,
+        label: '通貨 (Currency)',
+        totalChaos: 5000,
+        totalDivine: 33.3,
+        percentage: 100,
+        itemCount: 5,
+        topItems: [],
+        color: '#f59e0b'
+      }];
+
+      const paths = generateDonutChartPaths(singleCategory, 100, 60);
+      expect(paths.length).toBe(1);
+      const d = paths[0].path;
+      const match = d.match(/M\s+([\d.-]+)\s+([\d.-]+)\s+A\s+[\d.-]+\s+[\d.-]+\s+0\s+1\s+1\s+([\d.-]+)\s+([\d.-]+)/);
+      expect(match).not.toBeNull();
+      if (match) {
+        const [, x1Str, y1Str, x2Str, y2Str] = match;
+        const dist = Math.hypot(parseFloat(x2Str) - parseFloat(x1Str), parseFloat(y2Str) - parseFloat(y1Str));
+        expect(dist).toBeGreaterThanOrEqual(0.01);
+      }
+    });
   });
 });
