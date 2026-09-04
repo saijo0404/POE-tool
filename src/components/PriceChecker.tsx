@@ -13,6 +13,9 @@ import { TradeSummaryCard } from './price/TradeSummaryCard';
 import { TradeListingView } from './price/TradeListingView';
 import { PriceCheckerDebugPanel } from './price/PriceCheckerDebugPanel';
 import { GearInspectorCard } from './gear/GearInspectorCard';
+import { PriceSnapshotBadge } from './price/PriceSnapshotBadge';
+import { loadPriceSnapshot, savePriceSnapshot } from '../infrastructure/storage/priceSnapshotStorage';
+import type { PriceSnapshot } from '../domain/price/priceSnapshotEngine';
 
 const MOCK_SAMPLE_ZH_ITEM = `物品種類: 頭部
 稀有度: 稀有
@@ -87,6 +90,13 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
   } = usePriceChecker({ league, onShowToast, externalText });
 
   const { settings } = useSettings();
+  const [priceSnapshot, setPriceSnapshot] = React.useState<PriceSnapshot | null>(() => loadPriceSnapshot());
+
+  const handleImportSnapshot = (snap: PriceSnapshot) => {
+    setPriceSnapshot(snap);
+    savePriceSnapshot(snap);
+  };
+
   const dangerEvaluation = useMemo(() => {
     if (!parsedItem) return null;
     const cfg = settings.mapDangerConfig || DEFAULT_MAP_DANGER_CONFIG;
@@ -99,6 +109,12 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
         recentSearches={recentSearches}
         onSelectSearch={handleSelectRecent}
         onClearSearches={clearRecentSearches}
+      />
+
+      <PriceSnapshotBadge
+        snapshot={priceSnapshot}
+        onImportSnapshot={handleImportSnapshot}
+        onShowToast={onShowToast}
       />
 
       {authError && (
