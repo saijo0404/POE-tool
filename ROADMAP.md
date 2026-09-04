@@ -37,8 +37,8 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v1.5.0** | **穩定性與效能重構** *(Stability & Core Optimization)* | ✅ 已發布 | [Milestone v1.5.0](https://github.com/saijo0404/POE-tool/milestone/1) |
 | 🟢 **v1.6.0** | **查價與使用者體驗躍升** *(UX & In-Game Overlay)* | ✅ 已整合 | [Milestone v1.6.0](https://github.com/saijo0404/POE-tool/milestone/2) |
 | 🟢 **v2.0.0** | **高階自動化、交易助理與工藝精算** *(Advanced Automation & Crafting)* | ✅ 已發布 | [Milestone v2.0.0](https://github.com/saijo0404/POE-tool/milestone/3) |
-| 🟡 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | 🚀 規劃就緒 | [Milestone v2.1.0](https://github.com/saijo0404/POE-tool/milestone/4) |
-| 📋 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | 📋 規劃中 | 裝備 T1~T12 階級評鑑、工藝潛力分、社群輿圖分享 |
+| 🟢 **v2.1.0** | **官方通貨交易所與即時市場情報** *(Exchange & Market Intel)* | ✅ 已發布 | [Milestone v2.1.0](https://github.com/saijo0404/POE-tool/milestone/4) |
+| 🟡 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | 🚀 規劃就緒 | 裝備 T1~T12 階級評鑑、工藝潛力分、社群輿圖分享 |
 | 🔭 **v2.3.0** | **跨平台支援與離線資料庫快照** *(Linux/Proton & Offline DB)* | 🔭 規劃中 | Steam Deck / Linux 支援、SQLite 本機物價向量快取 |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
@@ -63,9 +63,11 @@ gantt
     刷圖收益即時追蹤與結算器 (#51/#70)        :done,    m3_1, 2026-09-01, 2026-09-02
     交易密語懸浮助理與藏身處快捷操作 (#53/#72) :done,    m3_2, 2026-09-03, 2026-09-03
     裝備工藝模擬與成本期望精算器 (#54/#73)     :done,    m3_3, 2026-09-03, 2026-09-03
-    section v2.1.0 通貨交易所與情報
-    Faustus 通貨交易所即時行情與套利換算       :         m4_1, 2026-10-10, 2026-11-05
-    高價資產 7 天價格走勢與波動預警           :         m4_2, 2026-10-25, 2026-11-20
+    section v2.1.0 通貨交易所與情報 (已完成)
+    Faustus 通貨交易所即時行情與套利換算 (#74/#81) :done,    m4_1, 2026-09-03, 2026-09-04
+    高價資產 7 天價格走勢與波動預警 (#75/#85)     :done,    m4_2, 2026-09-04, 2026-09-04
+    玩家資產組合分析與歷史成長軌跡 (#76/#86)       :done,    m4_3, 2026-09-04, 2026-09-04
+    微模組化分級規範與核心解耦 (#79/#87)          :done,    m4_4, 2026-09-04, 2026-09-04
     section v2.2.0 ~ v3.0.0 未來藍圖
     裝備詞綴階級評鑑與工藝潛力分數           :         m5_1, 2026-11-20, 2026-12-15
     輿圖策略社群雲端分享與熱門榜單           :         m5_2, 2026-12-01, 2026-12-31
@@ -112,19 +114,19 @@ gantt
 
 #### 📦 交付功能與關鍵項目
 
-1. **🪙 Faustus 官方大宗通貨交易所即時行情 (Currency Exchange Tracker)** `[待開發]`
+1. **🪙 Faustus 官方大宗通貨交易所即時行情 (Currency Exchange Tracker)** `[已交付/已發布]`
    - 支援官方 Currency Exchange 買賣訂單簿即時抓取與比價。
    - 自動試算金幣 (Gold) 手續費與跨幣種即時折算（Chaos ➔ Divine ➔ Mirror）。
    - 提供通貨跨市場價差套利分析（市集直購 vs 交易所掛單價差）。
-   - 關聯 Issue：[#74](https://github.com/saijo0404/POE-tool/issues/74)
-2. **📈 高價值資產價格趨勢圖與波動預警 (Price Trend & Fluctuation Alert)** `[待開發]`
+   - 關聯 PR/Issue：[#74](https://github.com/saijo0404/POE-tool/issues/74), [#81](https://github.com/saijo0404/POE-tool/pull/81)
+2. **📈 高價值資產價格趨勢圖與波動預警 (Price Trend & Fluctuation Alert)** `[已交付/已發布]`
    - 針對獵首 (Headhunter)、魔血 (Mageblood)、卡蘭德之鏡 (Mirror)、鎖鏈等高價傳奇與通貨，提供 7 天歷史走勢圖。
    - 支援自訂價格門檻推播通知（例如：當神聖石單價突破 220C 時發出警報）。
-   - 關聯 Issue：[#75](https://github.com/saijo0404/POE-tool/issues/75)
-3. **💼 玩家資產組合分析報表 (Asset Portfolio & Net Worth Growth)** `[待開發]`
+   - 關聯 PR/Issue：[#75](https://github.com/saijo0404/POE-tool/issues/75), [#85](https://github.com/saijo0404/POE-tool/pull/85)
+3. **💼 玩家資產組合分析報表 (Asset Portfolio & Net Worth Growth)** `[已交付/已發布]`
    - 繪製倉庫總淨值隨賽季時間增長曲線圖。
    - 依通貨、命運卡、地圖、甲蟲、精髓分類呈現資產圓餅圖與資產結構分析。
-   - 關聯 Issue：[#76](https://github.com/saijo0404/POE-tool/issues/76)
+   - 關聯 PR/Issue：[#76](https://github.com/saijo0404/POE-tool/issues/76), [#86](https://github.com/saijo0404/POE-tool/pull/86)
 
 ---
 
