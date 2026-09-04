@@ -16,6 +16,7 @@ describe('Navbar Component', () => {
     render(<Navbar {...defaultProps} />);
 
     expect(screen.getAllByText(/裝備即時查價/i)[0]).toBeInTheDocument();
+    expect(screen.getByText(/大宗交易所/i)).toBeInTheDocument();
     expect(screen.getByText(/每小時資產估算/i)).toBeInTheDocument();
     expect(screen.getByText(/Build 成本/i)).toBeInTheDocument();
     expect(screen.getByText(/拓荒攻略/i)).toBeInTheDocument();
@@ -30,6 +31,10 @@ describe('Navbar Component', () => {
     const wealthTab = screen.getByText(/每小時資產估算/i);
     fireEvent.click(wealthTab);
     expect(defaultProps.setActiveTab).toHaveBeenCalledWith('wealth');
+
+    const exchangeTab = screen.getByText(/大宗交易所/i);
+    fireEvent.click(exchangeTab);
+    expect(defaultProps.setActiveTab).toHaveBeenCalledWith('exchange');
 
     const actsTab = screen.getByText(/拓荒攻略/i);
     fireEvent.click(actsTab);

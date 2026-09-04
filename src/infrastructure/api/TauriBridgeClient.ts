@@ -129,6 +129,15 @@ export class TauriBridgeClient implements IPoeApiClient {
     return this.invoke<BuildCostResult>('calculate_build', { ninjaUrl });
   }
 
+  async getFaustusExchangeOverview(league?: string, refresh?: boolean): Promise<import('../../domain/exchange/types').FaustusMarketOverview> {
+    try {
+      return await this.invoke<import('../../domain/exchange/types').FaustusMarketOverview>('get_faustus_exchange_overview', { league, refresh });
+    } catch {
+      const { createDefaultExchangeOverview } = await import('../../domain/exchange/defaultOverview');
+      return createDefaultExchangeOverview(league || 'Settlers');
+    }
+  }
+
   async getWealthSnapshots(): Promise<WealthSnapshot[]> {
     const res = await this.invoke<WealthSnapshot[]>('get_wealth_snapshots');
     return Array.isArray(res) ? res : [];

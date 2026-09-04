@@ -50,9 +50,10 @@ export interface IPoeApiClient {
   openAtlasTreeWindow(url: string, title?: string): Promise<void>;
   triggerInGameCommand(command: string): Promise<boolean>;
 
-  // Ninja & Build Calculator
+  // Ninja & Build Calculator & Faustus Exchange
   getNinjaPrices(league?: string, refresh?: boolean): Promise<NinjaPricesResult>;
   calculateBuild(ninjaUrl: string): Promise<BuildCostResult>;
+  getFaustusExchangeOverview(league?: string, refresh?: boolean): Promise<import('../../domain/exchange/types').FaustusMarketOverview>;
 
   // Wealth Snapshots & Stash
   getWealthSnapshots(): Promise<WealthSnapshot[]>;
