@@ -7,6 +7,7 @@ import { MappingTabSelector } from './MappingTabSelector';
 import { MappingProfitChart } from './MappingProfitChart';
 import { MappingRunsTable } from './MappingRunsTable';
 import { MappingInvestmentModal } from './MappingInvestmentModal';
+import { MappingHistoryAnalyticsCard } from './MappingHistoryAnalyticsCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -71,6 +72,13 @@ export const MappingTracker: React.FC<MappingTrackerProps> = ({
 
       {/* KPI Metrics Summary */}
       <MappingSummaryCard stats={stats} />
+
+      {/* Historical Macro Analytics & Strategy Comparison */}
+      <MappingHistoryAnalyticsCard
+        sessions={sessions}
+        divineRate={divineRate}
+        currentLeague={league}
+      />
 
       {/* Timer & Live Settle Card */}
       <MappingTimerCard
