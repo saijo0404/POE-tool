@@ -11,9 +11,7 @@ fn test_build_search_query_payload_rare_with_affixes() {
         base_type: Some("罪魔邪冠".to_string()),
         name: Some("暴怒 避難所".to_string()),
         item_level_min: Some(85),
-        links_min: None,
         corrupted: Some(false),
-        filters: None,
         selected_mods: Some(vec![
             ParsedItemMod {
                 id: "explicit.stat_1050105434".to_string(),
@@ -49,11 +47,7 @@ fn test_build_search_query_payload_rare_with_affixes() {
                 enabled: false,
             },
         ]),
-        item: None,
-        poesessid: None,
-        sort: None,
-        fetch_offset: None,
-        search_id: None,
+        ..Default::default()
     };
 
     let payload = build_search_query_payload(&req);
@@ -98,16 +92,7 @@ fn test_build_search_query_payload_unique() {
         rarity: Some("Unique".to_string()),
         base_type: Some("金光戒指".to_string()),
         name: Some("賭神芬多".to_string()),
-        item_level_min: None,
-        links_min: None,
-        corrupted: None,
-        filters: None,
-        selected_mods: None,
-        item: None,
-        poesessid: None,
-        sort: None,
-        fetch_offset: None,
-        search_id: None,
+        ..Default::default()
     };
 
     let payload = build_search_query_payload(&req);
@@ -121,6 +106,27 @@ fn test_build_search_query_payload_unique() {
         query["filters"]["type_filters"]["filters"]["rarity"]["option"],
         "unique"
     );
+}
+
+#[test]
+fn test_build_search_query_payload_poe2_filters() {
+    let req = TradeQueryRequest {
+        league: Some("Standard".to_string()),
+        engine: Some("poe2".to_string()),
+        spirit_min: Some(120),
+        rune_sockets_min: Some(2),
+        waystone_tier_min: Some(16),
+        uncut_gem_tier_min: Some(20),
+        ..Default::default()
+    };
+
+    let payload = build_search_query_payload(&req);
+    let query = &payload["query"];
+
+    assert_eq!(query["filters"]["equipment_filters"]["filters"]["spirit"]["min"], 120);
+    assert_eq!(query["filters"]["socket_filters"]["filters"]["rune_sockets"]["min"], 2);
+    assert_eq!(query["filters"]["map_filters"]["filters"]["waystone_tier"]["min"], 16);
+    assert_eq!(query["filters"]["misc_filters"]["filters"]["gem_level"]["min"], 20);
 }
 
 #[test]

@@ -110,16 +110,8 @@ fn test_parse_scarab_and_map_item_format() {
         rarity: Some(parsed_generic.rarity.clone()),
         base_type: Some(parsed_generic.base_type.clone()),
         name: Some(parsed_generic.name.clone()),
-        item_level_min: None,
-        links_min: None,
-        corrupted: None,
-        filters: None,
-        selected_mods: None,
         item: Some(parsed_generic),
-        poesessid: None,
-        sort: None,
-        fetch_offset: None,
-        search_id: None,
+        ..Default::default()
     };
     let query_val = crate::services::trade::query_builder::build_search_query_payload(&req);
     assert_eq!(query_val["query"]["type"], serde_json::Value::Null);
@@ -146,16 +138,8 @@ fn test_parse_scarab_and_map_item_format() {
         rarity: Some(parsed_scarab.rarity.clone()),
         base_type: Some(parsed_scarab.base_type.clone()),
         name: Some(parsed_scarab.name.clone()),
-        item_level_min: None,
-        links_min: None,
-        corrupted: None,
-        filters: None,
-        selected_mods: None,
         item: Some(parsed_scarab),
-        poesessid: None,
-        sort: None,
-        fetch_offset: None,
-        search_id: None,
+        ..Default::default()
     };
     let scarab_query_val =
         crate::services::trade::query_builder::build_search_query_payload(&scarab_req);

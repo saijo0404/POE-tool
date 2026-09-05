@@ -65,23 +65,33 @@ pub async fn create_trade_search_url(
     app: tauri::AppHandle,
     league: String,
     query_json: String,
+    engine: Option<String>,
 ) -> Result<String, String> {
+    use crate::services::trade::trade_urls::{
+        get_trade_search_api_url, get_trade_search_web_query_url, get_trade_search_web_url,
+        is_poe2_engine,
+    };
+
     let settings = crate::services::storage::read_json_safe(
         &crate::services::storage::get_data_dir().join("settings.json"),
         crate::models::settings::AppSettings::default(),
     );
+
+    let is_poe2 = is_poe2_engine(engine.as_deref());
+    let default_league = if is_poe2 { "Standard" } else { "Settlers" };
 
     let active_league = if !league.is_empty() && league != "Auto" {
         league
     } else if !settings.league.is_empty() && settings.league != "Auto" {
         settings.league.clone()
     } else {
-        "Settlers".to_string()
+        default_league.to_string()
     };
 
     crate::app_log!(
-        "[Trade] 🔍 正在向 GGG 官方市集註冊搜尋條件 (聯盟: {})...",
-        active_league
+        "[Trade] 🔍 正在向 GGG 官方市集註冊搜尋條件 (聯盟: {}, engine: {:?})...",
+        active_league,
+        engine
     );
     crate::app_log!("[Trade] 📤 搜尋條件 Payload:\n{}", query_json);
 
@@ -91,20 +101,10 @@ pub async fn create_trade_search_url(
         .build()
         .map_err(|e| e.to_string())?;
 
-    let api_url = format!(
-        "https://www.pathofexile.com/api/trade/search/{}",
-        urlencoding::encode(&active_league)
-    );
+    let api_url = get_trade_search_api_url(is_poe2, false, &active_league);
     let mut req = client
         .post(&api_url)
         .header("Origin", "https://www.pathofexile.com")
-        .header(
-            "Referer",
-            format!(
-                "https://www.pathofexile.com/trade/search/{}",
-                urlencoding::encode(&active_league)
-            ),
-        )
         .header("Content-Type", "application/json")
         .header("Accept", "application/json")
         .header("X-Requested-With", "XMLHttpRequest");
@@ -119,11 +119,8 @@ pub async fn create_trade_search_url(
             if status.is_success() {
                 if let Ok(resp_json) = res.json::<serde_json::Value>().await {
                     if let Some(id) = resp_json["id"].as_str() {
-                        let full_url = format!(
-                            "https://www.pathofexile.com/trade/search/{}/{}",
-                            urlencoding::encode(&active_league),
-                            id
-                        );
+                        let full_url =
+                            get_trade_search_web_url(is_poe2, false, &active_league, id);
                         crate::app_log!(
                             "[Trade] ✅ 成功建立 GGG 官方市集搜尋 ID: {} -> {}",
                             id,
@@ -144,11 +141,8 @@ pub async fn create_trade_search_url(
         }
     }
 
-    let fallback_url = format!(
-        "https://www.pathofexile.com/trade/search/{}?q={}",
-        urlencoding::encode(&active_league),
-        urlencoding::encode(&query_json)
-    );
+    let fallback_url =
+        get_trade_search_web_query_url(is_poe2, false, &active_league, &query_json);
     crate::app_log!("[Trade] ↩️ 使用回退市集首頁: {}", fallback_url);
     open_browser_url(Some(&app), &fallback_url);
     Ok(fallback_url)

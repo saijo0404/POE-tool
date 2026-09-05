@@ -1,4 +1,6 @@
+use super::poe2_filters::apply_poe2_filters;
 use super::query_filter_builder::{build_stat_filters, build_top_filters};
+use super::trade_urls::is_poe2_engine;
 use crate::models::trade::TradeQueryRequest;
 use serde_json::{json, Value};
 
@@ -15,7 +17,15 @@ pub fn build_search_query_payload(req: &TradeQueryRequest) -> Value {
         query_obj["stats"] = json!([{ "type": "and", "filters": stat_filters }]);
     }
 
-    let top_filters = build_top_filters(req);
+    let mut top_filters = build_top_filters(req);
+    if is_poe2_engine(req.engine.as_deref())
+        || req.spirit_min.is_some()
+        || req.rune_sockets_min.is_some()
+        || req.waystone_tier_min.is_some()
+        || req.uncut_gem_tier_min.is_some()
+    {
+        apply_poe2_filters(&mut top_filters, req);
+    }
     if top_filters.as_object().is_some_and(|o| !o.is_empty()) {
         query_obj["filters"] = top_filters;
     }

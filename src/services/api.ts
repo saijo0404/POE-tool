@@ -8,7 +8,9 @@ import type {
   SessionHealthInfo
 } from '../domain/settings/types';
 import type { ParsedItem } from '../domain/item/types';
+import type { GameEngine } from '../domain/engine/types';
 import type {
+  TradeLeagueEntry,
   TradeQueryRequest,
   TradeSearchResult,
   TravelToHideoutPayload,
@@ -52,14 +54,16 @@ export const poeApi = {
     ApiClientFactory.getClient().parseItem(itemText),
   searchTrade: (payload: TradeQueryRequest): Promise<TradeSearchResult> =>
     ApiClientFactory.getClient().searchTrade(payload),
-  sendOfficialWhisper: (token: string, league?: string): Promise<{ success: boolean; message?: string }> =>
-    ApiClientFactory.getClient().sendOfficialWhisper(token, league),
+  getTradeLeagues: (engine?: GameEngine): Promise<TradeLeagueEntry[]> =>
+    ApiClientFactory.getClient().getTradeLeagues(engine),
+  sendOfficialWhisper: (token: string, league?: string, engine?: GameEngine): Promise<{ success: boolean; message?: string }> =>
+    ApiClientFactory.getClient().sendOfficialWhisper(token, league, engine),
   travelToHideout: (payload: TravelToHideoutPayload): Promise<TravelToHideoutResult> =>
     ApiClientFactory.getClient().travelToHideout(payload),
-  fetchBuildItemLivePrice: (league: string, queryJson: string): Promise<TradeSearchResult> =>
-    ApiClientFactory.getClient().fetchBuildItemLivePrice(league, queryJson),
-  createTradeSearchUrl: (league: string, queryJson: string): Promise<string> =>
-    ApiClientFactory.getClient().createTradeSearchUrl(league, queryJson),
+  fetchBuildItemLivePrice: (league: string, queryJson: string, engine?: GameEngine): Promise<TradeSearchResult> =>
+    ApiClientFactory.getClient().fetchBuildItemLivePrice(league, queryJson, engine),
+  createTradeSearchUrl: (league: string, queryJson: string, engine?: GameEngine): Promise<string> =>
+    ApiClientFactory.getClient().createTradeSearchUrl(league, queryJson, engine),
   openExternalUrl: (url: string): Promise<void> =>
     ApiClientFactory.getClient().openExternalUrl(url),
   openAtlasTreeWindow: (url: string, title?: string): Promise<void> =>

@@ -72,19 +72,27 @@ export class HttpFallbackClient implements IPoeApiClient {
   }
   async parseItem(itemText: string): Promise<ParsedItem> { return this.safePost<ParsedItem>('/api/parse-item', { itemText }, undefined); }
   async searchTrade(payload: TradeQueryRequest): Promise<TradeSearchResult> { return this.safePost<TradeSearchResult>('/api/trade/search', payload, undefined); }
-  async sendOfficialWhisper(token: string, league?: string): Promise<{ success: boolean; message?: string }> {
-    return this.safePost<{ success: boolean; message?: string }>('/api/trade/whisper', { token, league }, undefined);
+  async getTradeLeagues(engine?: import('../../domain/engine/types').GameEngine): Promise<import('../../domain/trade/types').TradeLeagueEntry[]> {
+    const { getDefaultTradeLeagues } = await import('../../domain/trade/engineTradeConfig');
+    const fallback = getDefaultTradeLeagues(engine || 'poe1');
+    return this.safeGet<import('../../domain/trade/types').TradeLeagueEntry[]>('/api/trade/leagues', { params: { engine } }, fallback);
+  }
+  async sendOfficialWhisper(token: string, league?: string, engine?: import('../../domain/engine/types').GameEngine): Promise<{ success: boolean; message?: string }> {
+    return this.safePost<{ success: boolean; message?: string }>('/api/trade/whisper', { token, league, engine }, undefined);
   }
   async travelToHideout(payload: TravelToHideoutPayload): Promise<TravelToHideoutResult> {
     return this.safePost<TravelToHideoutResult>('/api/trade/travel', payload, undefined);
   }
-  async fetchBuildItemLivePrice(league: string, queryJson: string): Promise<TradeSearchResult> {
-    return this.safePost<TradeSearchResult>('/api/trade/search-raw', { league, queryJson }, undefined);
+  async fetchBuildItemLivePrice(league: string, queryJson: string, engine?: import('../../domain/engine/types').GameEngine): Promise<TradeSearchResult> {
+    return this.safePost<TradeSearchResult>('/api/trade/search-raw', { league, queryJson, engine }, undefined);
   }
-  async createTradeSearchUrl(league: string, queryJson: string): Promise<string> {
-    const url = queryJson && queryJson !== '{}'
-      ? `https://www.pathofexile.com/trade/search/${encodeURIComponent(league)}?q=${encodeURIComponent(queryJson)}`
-      : `https://www.pathofexile.com/trade/search/${encodeURIComponent(league)}`;
+  async createTradeSearchUrl(league: string, queryJson: string, engine?: import('../../domain/engine/types').GameEngine): Promise<string> {
+    const { buildTradeSearchUrl } = await import('../../domain/trade/engineTradeConfig');
+    const url = buildTradeSearchUrl({
+      engine: engine || 'poe1',
+      league,
+      queryJson
+    });
     if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener,noreferrer');
     return url;
   }

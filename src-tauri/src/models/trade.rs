@@ -1,17 +1,18 @@
 use super::item::{ParsedItem, ParsedItemMod, TradeQueryFilter};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeQuerySort {
     pub price: Option<String>,
     pub indexed: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeQueryRequest {
     pub league: Option<String>,
+    pub engine: Option<String>,
     pub trade_status: Option<String>,
     pub rarity: Option<String>,
     pub base_type: Option<String>,
@@ -26,6 +27,17 @@ pub struct TradeQueryRequest {
     pub sort: Option<TradeQuerySort>,
     pub fetch_offset: Option<usize>,
     pub search_id: Option<String>,
+    pub spirit_min: Option<u32>,
+    pub rune_sockets_min: Option<u32>,
+    pub waystone_tier_min: Option<u32>,
+    pub uncut_gem_tier_min: Option<u32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct TradeLeagueEntry {
+    pub id: String,
+    pub text: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

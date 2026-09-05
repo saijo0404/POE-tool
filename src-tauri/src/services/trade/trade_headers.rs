@@ -1,3 +1,4 @@
+use super::trade_urls::{get_trade_search_web_url, get_trade_web_base};
 use crate::models::settings::AppSettings;
 use reqwest::header::{
     HeaderMap, HeaderValue, ACCEPT, CONTENT_TYPE, COOKIE, ORIGIN, REFERER, USER_AGENT,
@@ -9,6 +10,7 @@ pub fn build_trade_headers(
     settings: &AppSettings,
     league: &str,
     query_id: Option<&str>,
+    is_poe2: bool,
 ) -> HeaderMap {
     let mut headers = HeaderMap::new();
     let ua = settings.user_agent.as_deref().unwrap_or(DEFAULT_USER_AGENT);
@@ -40,14 +42,11 @@ pub fn build_trade_headers(
     );
 
     let referer = if let Some(qid) = query_id {
-        format!(
-            "https://www.pathofexile.com/trade/search/{}/{}",
-            urlencoding::encode(league),
-            qid
-        )
+        get_trade_search_web_url(is_poe2, false, league, qid)
     } else {
         format!(
-            "https://www.pathofexile.com/trade/search/{}",
+            "{}/search/{}",
+            get_trade_web_base(is_poe2, false),
             urlencoding::encode(league)
         )
     };
