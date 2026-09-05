@@ -57,7 +57,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.9.0** | **荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點** *(Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)* | ✅ 已發布 | [Milestone v2.9.0](https://github.com/saijo0404/POE-tool/milestone/12) |
 | 🟢 **v2.10.0** | **野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化** *(Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)* | ✅ 已發布 | [Milestone v2.10.0](https://github.com/saijo0404/POE-tool/milestone/13) |
 | 🟢 **v2.11.0** | **核心架構收斂、技術債清理與 UI 原語重構** *(Core Refactoring, Tech Debt Cleanup & UI Primitives)* | ✅ 已發布 | [Milestone v2.11.0](https://github.com/saijo0404/POE-tool/milestone/14) |
-| 🟡 **v2.12.0** | **PoE 1 終極架構收斂與後端模組化** *(PoE 1 Final Convergence & Rust Modularization)* | 📋 規劃中 | [Milestone v2.12.0](https://github.com/saijo0404/POE-tool/milestone/15) |
+| 🟢 **v2.12.0** | **PoE 1 終極架構收斂與後端模組化** *(PoE 1 Final Convergence & Rust Modularization)* | ✅ 已發布 | [Milestone v2.12.0](https://github.com/saijo0404/POE-tool/milestone/15) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -125,10 +125,10 @@ gantt
     測試套件模組化拆分與 100% 規格達標 (#152/#155)   :done,    m14_1, 2026-09-05, 2026-09-05
     App.tsx 路由解耦與全域快捷鍵 Hook 抽離 (#153/#156) :done,    m14_2, 2026-09-05, 2026-09-05
     UI 設計系統原語封裝與樣式收斂 (#154/#157)         :done,    m14_3, 2026-09-05, 2026-09-05
-    section v2.12.0 PoE 1 終極架構收斂 (進行中)
-    Rust 核心服務與超長測試模組化拆分 (#158)        :active,  m15_1, 2026-09-05, 2026-09-08
-    UI 原語元件全面普及與設計 Token 收斂 (#159)       :         m15_2, 2026-09-08, 2026-09-10
-    前端遺留測試嚴格型別化與相依安全性修復 (#160)     :         m15_3, 2026-09-10, 2026-09-12
+    section v2.12.0 PoE 1 終極架構收斂 (已完成)
+    Rust 核心服務與超長測試模組化拆分 (#158/#161)        :done,    m15_1, 2026-09-05, 2026-09-05
+    UI 原語元件全面普及與設計 Token 收斂 (#159/#162)       :done,    m15_2, 2026-09-05, 2026-09-05
+    前端遺留測試嚴格型別化與相依安全性修復 (#160/#163)     :done,    m15_3, 2026-09-05, 2026-09-05
     section v3.0.0+ 次世代藍圖
     PoE 2 次世代獨立雙核心模組架構           :         m16_1, 2027-02-15, 2027-05-01
 ```
@@ -427,20 +427,20 @@ gantt
 
 #### 📦 交付功能與關鍵項目
 
-1. **🦀 Rust 核心服務與超長測試模組化拆分 (Rust Services & Test Modularization)** `[待開發]`
+1. **🦀 Rust 核心服務與超長測試模組化拆分 (Rust Services & Test Modularization)** `[已交付/已發布]`
    - 拆分 `services/build_calc/tests.rs` (553 行) 為細粒度模組（PoB 解壓縮、過濾查詢產生、角色裝備解析）。
    - 拆分 `services/parser/tests.rs` (503 行) 為裝備/數值、寶石/地圖、未鑑定/特殊基底等獨立測試模組。
    - 解耦 `services/parser/mod.rs` (422 行)、`services/trade/listing_parser.rs` (398 行) 與 `services/stash/valuation.rs` (396 行)，提取單一職責子模組，使後端服務與測試全面符合 $\le 200$ 行架構標準。
-   - 關聯 PR/Issue：[#158](https://github.com/saijo0404/POE-tool/issues/158)
-2. **🎨 UI 原語元件全面普及與設計 Token 收斂 (Design System Primitives Ubiquitous Adoption)** `[待開發]`
-   - 將 `src/components/ui/` 原子原語（`Card`、`Button`、`Badge`、`StatBadge`）全面推廣至剩餘 28+ 個 Card 與相關容器元件。
+   - 關聯 PR/Issue：[#158](https://github.com/saijo0404/POE-tool/issues/158), [#161](https://github.com/saijo0404/POE-tool/pull/161)
+2. **🎨 UI 原語元件全面普及與設計 Token 收斂 (Design System Primitives Ubiquitous Adoption)** `[已交付/已發布]`
+   - 將 `src/components/ui/` 原子原語（`Card`、`Button`、`Badge`、`StatBadge`）全面推廣至剩餘 28 個 Card 與相關容器元件。
    - 徹底消弭散落於各業務模組之重複 Tailwind 類別與寫死色碼，確保全站視覺一致性。
-   - 關聯 PR/Issue：[#159](https://github.com/saijo0404/POE-tool/issues/159)
-3. **🧹 前端遺留測試嚴格型別化與相依安全性修復 (Test Typing Cleanup & Dependency Vulnerability Remediation)** `[待開發]`
+   - 關聯 PR/Issue：[#159](https://github.com/saijo0404/POE-tool/issues/159), [#162](https://github.com/saijo0404/POE-tool/pull/162)
+3. **🧹 前端遺留測試嚴格型別化與相依安全性修復 (Test Typing Cleanup & Dependency Vulnerability Remediation)** `[已交付/已發布]`
    - 拆分 `TradeListingView.test.tsx` (268 行) 與 `AffixFilterList.test.tsx` (254 行)，使全前端測試檔案 $100\%$ 符合 $\le 200$ 行上限。
    - 消除 `TradeListingView.test.tsx` 中殘留之 `let writeTextMock: any;` 與 `as any` 強制轉型，達成全專案 0 顯式 `any`。
-   - 修復 `nanoid` 與 `qs` 依賴套件安全性弱點警告。
-   - 關聯 PR/Issue：[#160](https://github.com/saijo0404/POE-tool/issues/160)
+   - 修復 `nanoid` 與 `qs` 依賴套件安全性弱點警告，達至 0 個 vulnerabilities。
+   - 關聯 PR/Issue：[#160](https://github.com/saijo0404/POE-tool/issues/160), [#163](https://github.com/saijo0404/POE-tool/pull/163)
 
 ---
 

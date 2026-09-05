@@ -10,6 +10,25 @@
 
 ---
 
+## [2.12.0] - 2026-09-05
+
+### ♻️ 重構與架構收斂 (Refactored & Architectural Convergence)
+- **Rust 後端核心服務與超長測試模組化拆分 (Rust Services & Test Modularization)**：
+  - 拆分 `services/build_calc/tests.rs` (553 行) 為細粒度模組 (`character_json_tests.rs`, `pob_parse_tests.rs`, `query_gen_tests.rs`) ([#158](https://github.com/saijo0404/POE-tool/issues/158), [#161](https://github.com/saijo0404/POE-tool/pull/161))。
+  - 拆分 `services/parser/tests.rs` (503 行) 為細粒度模組 (`gear_tests.rs`, `map_gem_tests.rs`, `ninja_tests.rs`, `tier_tests.rs`)。
+  - 解耦 `services/parser/mod.rs` (422 行)、`services/trade/listing_parser.rs` (398 行) 與 `services/stash/valuation.rs` (396 行) 至獨立單一職責子模組。
+  - 修復 Win32 `WNDCLASSEXW.cbWndExtra` 欄位型別，所有後端檔案與測試全數符合 $\le 200$ 行架構標準。
+- **UI 原語元件全面普及與設計 Token 收斂 (Design System Primitives Ubiquitous Adoption)**：
+  - 將 `src/components/ui/` 原子原語（`Card`, `Button`）全面推廣至全專案剩餘 28 個 Card 與容器元件 ([#159](https://github.com/saijo0404/POE-tool/issues/159), [#162](https://github.com/saijo0404/POE-tool/pull/162))。
+  - 涵蓋 `atlas`, `build`, `crafting`, `delirium`, `gear`, `jewel`, `mapMod`, `mapping`, `price`, `sanctum`, `scarab`, `settings`, `ultimatum`, `wealth`, `whisper`, `wildwood` 等領域模組。
+  - 徹底消弭散落於各業務模組之重複 Tailwind 類別與內聯樣式，確保全站視覺一致性且單檔 $\le 300$ 行。
+- **前端遺留測試嚴格型別化與相依安全性修復 (Test Typing Cleanup & Dependency Vulnerability Remediation)**：
+  - 拆分 `TradeListingView.test.tsx` (268 行) 與 `AffixFilterList.test.tsx` (254 行) 為模組化子測試，單檔全數 $\le 132$ 行 ([#160](https://github.com/saijo0404/POE-tool/issues/160), [#163](https://github.com/saijo0404/POE-tool/pull/163))。
+  - 消除 `TradeListingView.test.tsx` 中殘留之 `let writeTextMock: any;` 與 `as any` 強制轉型，達成全專案 0 顯式 `any`。
+  - 修剪無用依賴並升級 `nanoid` 至 3.3.18，消除所有安全性弱點警告（`npm audit` 0 個弱點）。
+
+---
+
 ## [2.11.0] - 2026-09-05
 
 ### ♻️ 重構與品質提升 (Refactored)
@@ -387,7 +406,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.11.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.12.0...HEAD
+[2.12.0]: https://github.com/saijo0404/POE-tool/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/saijo0404/POE-tool/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/saijo0404/POE-tool/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/saijo0404/POE-tool/compare/v2.8.0...v2.9.0
