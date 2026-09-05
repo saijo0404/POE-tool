@@ -23,7 +23,11 @@
     - [階段十一 (v2.10.0)：野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化 (Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)](#階段十一-v2100野獸工藝配方精算凋落聖油套利模擬與探險先祖出價優化-bestiary-beastcrafting-blight-oil-combinator--expedition-haggle-optimizer)
     - [階段十二 (v2.11.0)：核心架構收斂、技術債清理與 UI 原語重構 (Core Refactoring, Tech Debt Cleanup & UI Primitives)](#階段十二-v2110核心架構收斂技術債清理與-ui-原語重構-core-refactoring-tech-debt-cleanup--ui-primitives)
     - [階段十三 (v2.12.0)：PoE 1 終極架構收斂與後端模組化 (PoE 1 Final Convergence & Rust Modularization)](#階段十三-v2120poe-1-終極架構收斂與後端模組化-poe-1-final-convergence--rust-modularization)
-    - [階段十四 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段十四-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
+    - [階段十四 (v3.0.0)：PoE 2 次世代雙核心架構基礎 (PoE 2 Dual Engine Core Foundation)](#階段十四-v300poe-2-次世代雙核心架構基礎-poe-2-dual-engine-core-foundation)
+    - [階段十五 (v3.1.0)：PoE 2 官方市集對接與專屬詞綴數據字典 (PoE 2 Official Trade API & Stat Dictionary)](#階段十五-v310poe-2-官方市集對接與專屬詞綴數據字典-poe-2-official-trade-api--stat-dictionary)
+    - [階段十六 (v3.2.0)：PoE 2 雙武器配置與技能切換輔助系統 (Dual Weapon Sets, Skill Binding & Dual Spec HUD)](#階段十六-v320poe-2-雙武器配置與技能切換輔助系統-dual-weapon-sets-skill-binding--dual-spec-hud)
+    - [階段十七 (v3.3.0)：PoE 2 銘刻地圖與深淵終局刷圖追蹤結算 (PoE 2 Waystone & Endgame Mapping Analytics)](#階段十七-v330poe-2-銘刻地圖與深淵終局刷圖追蹤結算-poe-2-waystone--endgame-mapping-analytics)
+    - [階段十八 (v3.4.0)：PoE 2 符文工藝、未切割寶石切割期望與黑市交易 (PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)](#階段十八-v340poe-2-符文工藝未切割寶石切割期望與黑市交易-poe-2-rune-crafting-uncut-gem-cutting--black-market)
 5. [🤝 參與貢獻與協作規範](#5--參與貢獻與協作規範)
 
 ---
@@ -58,7 +62,11 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.10.0** | **野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化** *(Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)* | ✅ 已發布 | [Milestone v2.10.0](https://github.com/saijo0404/POE-tool/milestone/13) |
 | 🟢 **v2.11.0** | **核心架構收斂、技術債清理與 UI 原語重構** *(Core Refactoring, Tech Debt Cleanup & UI Primitives)* | ✅ 已發布 | [Milestone v2.11.0](https://github.com/saijo0404/POE-tool/milestone/14) |
 | 🟢 **v2.12.0** | **PoE 1 終極架構收斂與後端模組化** *(PoE 1 Final Convergence & Rust Modularization)* | ✅ 已發布 | [Milestone v2.12.0](https://github.com/saijo0404/POE-tool/milestone/15) |
-| 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
+| 🟢 **v3.0.0** | **PoE 2 次世代雙核心架構基礎** *(PoE 2 Dual Engine Core Foundation)* | ✅ 已發布 | [Milestone v3.0.0](https://github.com/saijo0404/POE-tool/milestone/16) |
+| 🚀 **v3.1.0** | **PoE 2 官方市集對接與專屬詞綴數據字典** *(PoE 2 Official Trade API & Stat Dictionary)* | 🎯 規劃中 | 官方 Trade2 API、精魂/符文雙向字典、智慧查價 |
+| 🔮 **v3.2.0** | **PoE 2 雙武器配置與技能切換輔助系統** *(Dual Weapon Sets, Skill Binding & Dual Spec HUD)* | 🔭 規劃中 | 武器組 A/B 自動切換、專屬天賦樹配置、屬性即時差額 |
+| 🔮 **v3.3.0** | **PoE 2 銘刻地圖與深淵終局刷圖追蹤結算** *(PoE 2 Waystone & Endgame Mapping Analytics)* | 🔭 規劃中 | 銘刻地圖危險評級、終局刷圖收益日誌、金幣掉落統計 |
+| 🔮 **v3.4.0** | **PoE 2 符文工藝、未切割寶石切割期望與黑市交易** *(PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)* | 🔭 規劃中 | 符文雕刻工藝精算、未切割寶石價值矩陣、黑市金幣套利 |
 
 ---
 
@@ -129,10 +137,26 @@ gantt
     Rust 核心服務與超長測試模組化拆分 (#158/#161)        :done,    m15_1, 2026-09-05, 2026-09-05
     UI 原語元件全面普及與設計 Token 收斂 (#159/#162)       :done,    m15_2, 2026-09-05, 2026-09-05
     前端遺留測試嚴格型別化與相依安全性修復 (#160/#163)     :done,    m15_3, 2026-09-05, 2026-09-05
-    section v3.0.0 次世代雙核心
+    section v3.0.0 雙核心基礎 (已完成)
     雙引擎狀態機與進程偵測抽象架構 (#166/#169)       :done,    m16_1, 2026-09-05, 2026-09-05
     雙引擎物品解析工廠與 PoE 2 剪貼簿解析 (#167/#170) :done,    m16_2, 2026-09-05, 2026-09-05
-    全域雙核心切換器與 PoE 2 檢視適配 (#168)    :active,  m16_3, 2026-09-05, 2026-09-06
+    全域雙核心切換器與 PoE 2 檢視適配 (#168/#171)   :done,    m16_3, 2026-09-05, 2026-09-05
+    section v3.1.0 市集與詞綴字典 (規劃中)
+    PoE 2 官方市集 API Client 與多引擎適配器         :crit, active, m17_1, 2026-09-06, 2026-09-08
+    PoE 2 專屬詞綴與基底雙向對照字典庫             :m17_2, 2026-09-07, 2026-09-09
+    PoE 2 剪貼簿一鍵智慧查價與篩選產生器           :m17_3, 2026-09-08, 2026-09-10
+    section v3.2.0 雙武器與技能輔助 (規劃中)
+    雙武器組與雙天賦分配領域模型                   :m18_1, 2026-09-10, 2026-09-12
+    雙武器組屬性差額與技能輸出即時對比引擎           :m18_2, 2026-09-11, 2026-09-13
+    遊戲內雙武器即時切換懸浮指引與狀態條           :m18_3, 2026-09-12, 2026-09-14
+    section v3.3.0 銘刻地圖與終局結算 (規劃中)
+    銘刻地圖詞綴危險度評級與洗圖成本精算           :m19_1, 2026-09-15, 2026-09-17
+    PoE 2 日誌解析與金幣/終局資產收益追蹤          :m19_2, 2026-09-16, 2026-09-18
+    PoE 2 終局地圖塔台與生物群落策略輔助           :m19_3, 2026-09-17, 2026-09-19
+    section v3.4.0 符文工藝與黑市交易 (規劃中)
+    符文鑲嵌、雕刻工藝成本與屬性期望精算器           :m20_1, 2026-09-20, 2026-09-22
+    未切割寶石切割期望與高階技能溢價分析           :m20_2, 2026-09-21, 2026-09-23
+    PoE 2 黑市拍賣行即時行情與金幣套利精算          :m20_3, 2026-09-22, 2026-09-24
 ```
 
 ---
@@ -446,9 +470,9 @@ gantt
 
 ---
 
-### 階段十四 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
+### 階段十四 (v3.0.0)：PoE 2 次世代雙核心架構基礎 (PoE 2 Dual Engine Core Foundation) `[已發布]`
 
-> **核心目標**：在《Path of Exile 2》正式發布且 API 穩定後，提供 PoE 1 與 PoE 2 雙引擎無縫切換體驗。
+> **核心目標**：建立《Path of Exile 2》次世代雙核心獨立架構，支援遊戲視窗自動識別、雙引擎解析器工廠、資料隔離與 PoE 2 專屬屬性（精魂、符文、銘刻地圖）適配。
 
 #### 📦 交付功能與關鍵項目
 
@@ -461,10 +485,91 @@ gantt
    - 抽象化物品解析工廠 `ItemParserFactory` 與 `ItemParserStrategy` 策略介面。
    - 實作 `Poe2ItemParser`：支援精魂 (Spirit) 保留消耗、符文插槽 (Rune Sockets)、無打孔裝備與技能石階級 (Uncut Gem Tier)、銘刻地圖 (Waystone)。
    - 關聯 PR/Issue：[#167](https://github.com/saijo0404/POE-tool/issues/167), [#170](https://github.com/saijo0404/POE-tool/pull/170)
-3. **🎨 全域雙核心切換器與 PoE 2 檢視適配 (Engine Switcher & PoE 2 Attributes UI)** `[進行中]`
-   - 在導覽列整合 `EngineSwitcher`，提供即時切換開關與鎖定狀態指示。
-   - 裝備評鑑與查價介面自適應展示精魂成本、金幣定價標記與雙天賦/武器組標記。
-   - 關聯 PR/Issue：[#168](https://github.com/saijo0404/POE-tool/issues/168)
+3. **🎨 全域雙核心切換器與 PoE 2 檢視適配 (Engine Switcher & PoE 2 Attributes UI)** `[已交付/已發布]`
+   - 在導覽列整合 `EngineSwitcher`，提供即時切換開關、自動感應模式與進程鎖定指示。
+   - 裝備評鑑與查價介面自適應展示精魂成本、銘刻地圖階級、未切割寶石階級、符文插槽與 PoE 2 引擎徽章。
+   - 關聯 PR/Issue：[#168](https://github.com/saijo0404/POE-tool/issues/168), [#171](https://github.com/saijo0404/POE-tool/pull/171)
+
+---
+
+### 階段十五 (v3.1.0)：PoE 2 官方市集對接與專屬詞綴數據字典 (PoE 2 Official Trade API & Stat Dictionary)
+
+> **核心目標**：全面打通 PoE 2 官方市集 API (`/api/trade2/`)，建立 PoE 2 專屬雙向繁中/英文詞綴與基底資料庫，並提供剪貼簿一鍵智慧查價與自訂篩選器生成。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🌐 PoE 2 官方市集 API Client 與多引擎請求分發器 (PoE 2 Trade API Client & Multi-Engine Dispatcher)** `[規劃中]`
+   - 擴充 Rust 後端與 TypeScript 前端 API Client，依 `GameEngine` 狀態動態路由請求至 PoE 2 Trade API 端點（`/api/trade2/search/{league}` 與台服對應端點）。
+   - 實作 PoE 2 專屬聯盟清單快取、隔離的 Rate Limiter 速率通道與階梯退避。
+   - 支援 PoE 2 特有之查詢 Payloads（精魂需求、符文孔位、銘刻地圖階級、未切割寶石階級過濾）。
+2. **📖 PoE 2 專屬詞綴與基底雙向對照字典庫 (PoE 2 Stat Dictionary & Bi-directional Lookup)** `[規劃中]`
+   - 建立 PoE 2 專屬詞綴映射庫（收錄精魂保留、施法/攻擊速度分離、翻滾冷卻、能量護盾充能等新屬性）。
+   - 擴充繁中/英文雙向模糊匹配與 Rust Aho-Corasick 高速比對引擎。
+   - 支援銘刻地圖（Waystone）與未切割技能/輔助寶石（Uncut Gem）基底類型反查。
+3. **🔍 PoE 2 剪貼簿一鍵智慧查價與篩選產生器 (PoE 2 Smart Price Checker & Filter Generator)** `[規劃中]`
+   - 整合 `Poe2ItemParser`，將複製的 PoE 2 裝備即時轉譯為精準 Trade2 搜尋查詢。
+   - 智慧過濾基礎數值並自動賦予合理公差區間（如精魂 $\ge 90\%$、抗性總和等）。
+   - 查價懸浮窗自適應顯示 PoE 2 即時掛牌價、中位數與抗壓價建議售價。
+
+---
+
+### 階段十六 (v3.2.0)：PoE 2 雙武器配置與技能切換輔助系統 (Dual Weapon Sets, Skill Binding & Dual Spec HUD)
+
+> **核心目標**：因應 PoE 2 革命性的「雙武器配置 (Weapon Swap Set 1 & 2)」與「技能自動切換武器/雙重天賦點數」機制，提供即時配置追蹤、雙配裝屬性差額與連段輸出增益精算。
+
+#### 📦 交付功能與關鍵項目
+
+1. **⚔️ 雙武器組與雙天賦分配領域模型 (Dual Weapon Sets & Dual Spec Domain Model)** `[規劃中]`
+   - 建立 `WeaponSet` (`'Set1' | 'Set2'`) 與 `DualSpecAllocation` 領域模型。
+   - 支援技能與武器組的綁定解析（例如：近戰技能自動切換長柄武器，法術技能自動切換法杖/魔杖）。
+   - 支援武器專屬天賦點數（Weapon-specific passives）與全域天賦點數的分離解析與合法性校驗。
+2. **⚖️ 雙武器組屬性差額與技能輸出即時對比引擎 (Dual Setup Stat Delta & Skill Synergy Engine)** `[規劃中]`
+   - 對比兩組武器在不同技能情境（如清圖拓荒 vs 攻堅王戰）下的期望效益與屬性覆蓋。
+   - 精算更換特定武器對全套連段機制（Combo Chain）的連鎖屬性增減。
+3. **🎮 遊戲內雙武器即時切換懸浮指引與狀態條 (Weapon Swap In-Game HUD & Active Setup Overlay)** `[規劃中]`
+   - 懸浮窗即時顯示當前啟動中的武器組配置與主動技能相容性狀態。
+   - 提供武器切換按鍵快捷提示、武器耐久/狀態指示與屬性差額快速切換卡片。
+
+---
+
+### 階段十七 (v3.3.0)：PoE 2 銘刻地圖與深淵終局刷圖追蹤結算 (PoE 2 Waystone & Endgame Mapping Analytics)
+
+> **核心目標**：針對 PoE 2 終局地圖系統「銘刻地圖 (Waystone)」與遠古方尖碑/生物群落機制，提供地圖風險評級、洗圖成本精算與收益自動結算。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🗺️ 銘刻地圖詞綴危險度評級與洗圖成本精算器 (Waystone Mod Risk Rating & Rolling Cost Forecaster)** `[規劃中]`
+   - 收錄 PoE 2 銘刻地圖專屬詞綴（怪物增益、環境危害、首領額外技能、地形修正）。
+   - 建立玩家機體弱點比對引擎，標記致命詞綴（Instant Rip Warnings）與推薦規避詞綴。
+   - 精算使用各類 PoE 2 專屬洗圖通貨洗出高掉落且安全銘刻地圖的平均期望成本。
+2. **📊 PoE 2 遊戲日誌解析與金幣/終局資產收益追蹤器 (PoE 2 Game Log Parser & Gold/Drop Profit Tracker)** `[規劃中]`
+   - 適配 PoE 2 遊戲日誌格式，自動偵測進入/離開銘刻地圖、區域切換與首領擊殺事件。
+   - 即時追蹤單場金幣 (Gold) 掉落量、先祖貨幣與終局裝備資產差額。
+   - 產生單場時薪、金幣時薪、累積淨收益報表與時薪回報曲線圖。
+3. **🧭 PoE 2 終局地圖塔台與生物群落策略輔助 (Waystone Towers & Biome Strategy Optimizer)** `[規劃中]`
+   - 提供 PoE 2 終局輿圖地圖塔台（Precursor Towers）增益效果與相鄰區域連線加成模擬。
+   - 根據當前區域生物群落（Biome）推薦最佳銘刻地圖階級與附加道具組合。
+
+---
+
+### 階段十八 (v3.4.0)：PoE 2 符文工藝、未切割寶石切割期望與黑市交易 (PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)
+
+> **核心目標**：深化 PoE 2 全新工藝系統（符文鑲嵌雕刻、未切割寶石切割選擇）與官方大宗黑市通貨/物品拍賣場之套利精算。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🔨 符文鑲嵌、雕刻工藝成本與屬性期望精算器 (Rune Socketing & Carving EV Forecaster)** `[規劃中]`
+   - 收錄 PoE 2 全系列符文（Runes）之固定屬性與特殊技能輔助效果。
+   - 模擬符文雕刻（Carving）至裝備空插槽的屬性覆蓋與不可逆工藝成本。
+   - 提供最佳符文搭配推薦與套裝效益評估。
+2. **💎 未切割寶石切割期望與高階技能溢價分析 (Uncut Gem Cutting Strategy & Skill Market Matrix)** `[規劃中]`
+   - 收錄各階級未切割技能寶石（Uncut Skill Gem Tier 1~20）與輔助寶石（Uncut Support Gem）可切割選項庫。
+   - 結合當前市集價格，即時計算將未切割寶石切割為特定技能/輔助寶石之市場溢價與期望套利空間。
+   - 推薦最高轉化利潤 Top 5 技能寶石。
+3. **🪙 PoE 2 黑市拍賣行即時行情與金幣套利精算器 (PoE 2 Black Market Instant Rates & Gold Arbitrage)** `[規劃中]`
+   - 對接 PoE 2 官方即時黑市拍賣場數據。
+   - 計算金幣 (Gold) 與各類通貨/裝備之動態兌換比率與手續費最佳化。
+   - 提供拍賣場掛單出價策略與快速變現建議。
 
 ---
 
