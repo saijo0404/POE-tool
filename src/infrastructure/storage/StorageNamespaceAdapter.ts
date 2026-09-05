@@ -1,5 +1,7 @@
 import type { IStoragePort } from '../../application/ports/IStoragePort';
 import type { GameEngine } from '../../domain/engine/types';
+import { defaultStorage } from './LocalStorageAdapter';
+import { defaultGameEngineStore } from '../../application/engine/gameEngineStore';
 
 export interface StorageNamespaceOptions {
   readonly sharedKeys?: readonly string[];
@@ -64,10 +66,29 @@ export class StorageNamespaceAdapter implements IStoragePort {
   }
 
   private isLegacyFallbackEligible(key: string): boolean {
-    return (
-      this.enableLegacyFallback &&
-      !this.sharedKeySet.has(key) &&
-      this.getNamespace() === 'poe1'
-    );
+    if (!this.enableLegacyFallback) return false;
+    if (this.sharedKeySet.has(key)) return true;
+    return this.getNamespace() === 'poe1';
   }
 }
+
+
+export const DEFAULT_SHARED_STORAGE_KEYS: readonly string[] = [
+  'poe_settings_cache',
+  'poe_overlay_pin_state',
+  'poe_device_profile_mode',
+  'poe_hotkey_bindings',
+  'poe_tool_trade_whisper_config',
+  'poe_game_engine_store',
+  'poe_tool:settings',
+  'poe_tool:hotkeys'
+];
+
+export const namespacedStorage: IStoragePort = new StorageNamespaceAdapter(
+  defaultStorage,
+  () => defaultGameEngineStore.getState().currentEngine,
+  {
+    sharedKeys: DEFAULT_SHARED_STORAGE_KEYS,
+    enableLegacyFallback: true
+  }
+);
