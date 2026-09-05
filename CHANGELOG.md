@@ -10,6 +10,23 @@
 
 ---
 
+## [2.11.0] - 2026-09-05
+
+### ♻️ 重構與品質提升 (Refactored)
+- **測試套件模組化拆分與 100% 行數健康度達標 (Test Suite Modularization & Limit Compliance)**：
+  - 拆分 8 個超長測試檔案為細粒度情境模組（渲染、互動、計算邏輯、API 隔離等），全專案 100% 測試檔案與生產檔案全數合規（Domain/Hooks/Utils/Tests $\le 200$ 行，UI $\le 300$ 行）([#152](https://github.com/saijo0404/POE-tool/issues/152), [#155](https://github.com/saijo0404/POE-tool/pull/155))。
+- **App.tsx 路由解耦與全域監聽器抽象化 (App Router Extraction & Global Hotkey Hook)**：
+  - 抽離 `AppRouter.tsx`，消除 9 層巢狀三元運算子分頁渲染，採用宣告式分頁調度並封裝加載骨架 ([#153](https://github.com/saijo0404/POE-tool/issues/153), [#156](https://github.com/saijo0404/POE-tool/pull/156))。
+  - 封裝 `useGlobalHotkeys.ts` 處理全域按鍵監聽，並抽離 `isHotkeyTriggered` 純邏輯校驗。
+  - 封裝 `useToastNotification.ts` 處理 Toast 狀態、重置防抖與自動定時消除。
+  - `App.tsx` 行數由 193 行精簡至 115 行，所有函式 $\le 20$ 行。
+- **統一 UI 設計系統原子元件與樣式收斂 (UI Design System Primitives & Token Unification)**：
+  - 於 `src/components/ui/` 封裝核心原子元件庫：`Card.tsx`、`Badge.tsx`、`StatBadge.tsx`、`Button.tsx` ([#154](https://github.com/saijo0404/POE-tool/issues/154), [#157](https://github.com/saijo0404/POE-tool/pull/157))。
+  - 替換 `BestiaryCraftCard.tsx`、`BlightOilCard.tsx` 與 `ExpeditionOptimizerCard.tsx` 等重複的內嵌容器與按鈕樣式。
+  - 新增 `uiPrimitives.test.tsx` 完整測試套件。
+
+---
+
 ## [2.10.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -370,7 +387,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.10.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.11.0...HEAD
+[2.11.0]: https://github.com/saijo0404/POE-tool/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/saijo0404/POE-tool/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/saijo0404/POE-tool/compare/v2.8.0...v2.9.0
 [2.8.0]: https://github.com/saijo0404/POE-tool/compare/v2.7.0...v2.8.0
