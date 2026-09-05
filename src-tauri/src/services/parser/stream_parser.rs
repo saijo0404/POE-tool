@@ -131,6 +131,11 @@ pub fn parse_pob_or_stream_item(clean_text: &str, is_zh: bool, language: &str) -
         implicits,
         explicits,
         raw_text: clean_text.to_string(),
+        engine: Some("poe1".to_string()),
+        spirit: None,
+        waystone_tier: None,
+        uncut_tier: None,
+        rune_sockets: None,
     }
 }
 

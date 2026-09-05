@@ -1,6 +1,7 @@
 pub mod header_parser;
 pub mod line_filter;
 pub mod mod_parser;
+pub mod poe2_parser;
 pub mod roll_range_extractor;
 pub mod stream_parser;
 
@@ -33,6 +34,18 @@ pub fn parse_item_text(text: &str) -> ParsedItem {
         return parse_pob_or_stream_item(clean_text, is_zh, language);
     }
 
+    let is_poe2 = poe2_parser::is_poe2_item_text(clean_text);
+    let poe2_fields = if is_poe2 {
+        poe2_parser::extract_poe2_fields(clean_text)
+    } else {
+        poe2_parser::Poe2ExtractedFields::default()
+    };
+    let engine = if is_poe2 {
+        Some("poe2".to_string())
+    } else {
+        Some("poe1".to_string())
+    };
+
     let sections: Vec<&str> = SECTION_RE.split(clean_text).collect();
     let header = extract_header_info(clean_text, is_zh, sections.first());
 
@@ -51,6 +64,11 @@ pub fn parse_item_text(text: &str) -> ParsedItem {
         implicits,
         explicits,
         raw_text: clean_text.to_string(),
+        engine,
+        spirit: poe2_fields.spirit,
+        waystone_tier: poe2_fields.waystone_tier,
+        uncut_tier: poe2_fields.uncut_tier,
+        rune_sockets: poe2_fields.rune_sockets,
     }
 }
 

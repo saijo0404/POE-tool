@@ -47,6 +47,16 @@ pub struct ParsedItem {
     pub implicits: Vec<ParsedItemMod>,
     pub explicits: Vec<ParsedItemMod>,
     pub raw_text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub engine: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub spirit: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub waystone_tier: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uncut_tier: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rune_sockets: Option<String>,
 }
 
 impl ParsedItem {
@@ -64,6 +74,11 @@ impl ParsedItem {
             implicits: Vec::new(),
             explicits: Vec::new(),
             raw_text: clean_text.to_string(),
+            engine: None,
+            spirit: None,
+            waystone_tier: None,
+            uncut_tier: None,
+            rune_sockets: None,
         }
     }
 }
