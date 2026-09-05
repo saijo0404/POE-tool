@@ -3,6 +3,7 @@ import { useExpeditionOptimizer } from '../../hooks/useExpeditionOptimizer';
 import { TujenHaggleSection } from './expedition/TujenHaggleSection';
 import { DannigExchangeSection } from './expedition/DannigExchangeSection';
 import { LogbookEvSection } from './expedition/LogbookEvSection';
+import { Card, Button } from '../ui';
 
 export const ExpeditionOptimizerCard: React.FC = () => {
   const {
@@ -33,12 +34,9 @@ export const ExpeditionOptimizerCard: React.FC = () => {
   } = useExpeditionOptimizer();
 
   return (
-    <div
+    <Card
+      variant="bordered"
       style={{
-        background: '#161b22',
-        border: '1px solid #30363d',
-        borderRadius: '8px',
-        padding: '16px',
         color: '#c9d1d9',
         fontSize: '13px',
       }}
@@ -78,7 +76,7 @@ export const ExpeditionOptimizerCard: React.FC = () => {
           ev={logbookEv}
         />
       )}
-    </div>
+    </Card>
   );
 };
 
@@ -91,45 +89,27 @@ const ExpeditionHeader: React.FC<ExpeditionHeaderProps> = ({ activeTab, onTabCha
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
     <h3 style={{ margin: 0, color: '#f0883e', fontSize: '15px' }}>🧭 探險先祖出價最佳化與日誌收益精算器</h3>
     <div style={{ display: 'flex', gap: '6px' }}>
-      <button
+      <Button
+        size="sm"
+        variant={activeTab === 'tujen' ? 'primary' : 'secondary'}
         onClick={() => onTabChange('tujen')}
-        style={{
-          padding: '4px 10px',
-          borderRadius: '4px',
-          border: 'none',
-          background: activeTab === 'tujen' ? '#1f6feb' : '#21262d',
-          color: '#fff',
-          cursor: 'pointer',
-        }}
       >
         圖貞出價談判
-      </button>
-      <button
+      </Button>
+      <Button
+        size="sm"
+        variant={activeTab === 'dannig' ? 'primary' : 'secondary'}
         onClick={() => onTabChange('dannig')}
-        style={{
-          padding: '4px 10px',
-          borderRadius: '4px',
-          border: 'none',
-          background: activeTab === 'dannig' ? '#1f6feb' : '#21262d',
-          color: '#fff',
-          cursor: 'pointer',
-        }}
       >
         丹尼格文物換算
-      </button>
-      <button
+      </Button>
+      <Button
+        size="sm"
+        variant={activeTab === 'logbook' ? 'primary' : 'secondary'}
         onClick={() => onTabChange('logbook')}
-        style={{
-          padding: '4px 10px',
-          borderRadius: '4px',
-          border: 'none',
-          background: activeTab === 'logbook' ? '#1f6feb' : '#21262d',
-          color: '#fff',
-          cursor: 'pointer',
-        }}
       >
         探險日誌收益 EV
-      </button>
+      </Button>
     </div>
   </div>
 );
