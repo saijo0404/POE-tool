@@ -2,6 +2,7 @@ import React from 'react';
 import { Play, RotateCcw, Sparkles, Dices } from 'lucide-react';
 import { CraftingItemPreview } from './CraftingItemPreview';
 import type { CraftingMethodType, SimulatedItem } from '../../domain/crafting/types';
+import { Card, Button } from '../ui';
 
 interface CraftingSimulatorCardProps {
   selectedMethod: CraftingMethodType;
@@ -27,7 +28,7 @@ export const CraftingSimulatorCard: React.FC<CraftingSimulatorCardProps> = ({
   const spentDivine = Number((spentChaos / divineRate).toFixed(2));
 
   return (
-    <div className="poe-card" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Dices size={18} color="var(--text-gold)" />
@@ -45,49 +46,47 @@ export const CraftingSimulatorCard: React.FC<CraftingSimulatorCardProps> = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ display: 'flex', gap: '6px' }}>
           {(['essence', 'fossil', 'harvest', 'chaos'] as const).map(method => (
-            <button
+            <Button
               key={method}
-              type="button"
+              size="sm"
+              variant={selectedMethod === method ? 'primary' : 'secondary'}
               onClick={() => onMethodChange(method)}
-              className={selectedMethod === method ? 'poe-button' : 'poe-button-secondary'}
-              style={{ padding: '4px 10px', fontSize: '0.78rem', borderRadius: '4px' }}
             >
               {method === 'essence' ? '精髓' : method === 'fossil' ? '化石' : method === 'harvest' ? '收割' : '混沌石'}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="sm"
             onClick={onRollOnce}
-            className="poe-button"
-            style={{ padding: '6px 14px', fontSize: '0.82rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            icon={<Play size={14} />}
           >
-            <Play size={14} /> 試骰 1 次
-          </button>
-          <button
-            type="button"
+            試骰 1 次
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onRollUntilHit}
-            className="poe-button-secondary"
-            style={{ padding: '6px 14px', fontSize: '0.82rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px', borderColor: '#2ecc71', color: '#2ecc71' }}
+            icon={<Sparkles size={14} />}
+            style={{ borderColor: '#2ecc71', color: '#2ecc71' }}
           >
-            <Sparkles size={14} /> 點到命中 (上限100)
-          </button>
-          <button
-            type="button"
+            點到命中 (上限100)
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onReset}
-            className="poe-button-secondary"
-            style={{ padding: '6px 10px', fontSize: '0.82rem', borderRadius: '6px' }}
+            icon={<RotateCcw size={14} />}
             title="重置模擬器"
-          >
-            <RotateCcw size={14} />
-          </button>
+          />
         </div>
       </div>
 
       {/* Item Tooltip Preview */}
       <CraftingItemPreview item={simulatedItem} />
-    </div>
+    </Card>
   );
 };

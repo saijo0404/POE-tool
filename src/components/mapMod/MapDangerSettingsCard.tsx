@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ShieldAlert, Volume2, Plus, X, Sparkles, Check } from 'lucide-react';
 import type { MapDangerConfig } from '../../domain/mapMod/types';
 import { MAP_DANGER_MODS, BUILD_ARCHETYPE_PRESETS } from '../../domain/mapMod/dangerPresets';
+import { Card, Button } from '../ui';
 
 interface MapDangerSettingsCardProps {
   config: MapDangerConfig;
@@ -33,21 +34,21 @@ export const MapDangerSettingsCard: React.FC<MapDangerSettingsCardProps> = ({
   };
 
   return (
-    <div className="poe-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Card variant="default" padding="md" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '12px' }}>
         <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <ShieldAlert size={18} color="#e55039" /> 流派致命詞綴黑名單配置
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button
-            type="button"
-            className="poe-button-secondary"
+          <Button
+            size="sm"
+            variant="secondary"
             onClick={onTestSound}
-            style={{ padding: '4px 10px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+            icon={<Volume2 size={13} />}
             title="測試警示音效"
           >
-            <Volume2 size={13} /> 測試音效
-          </button>
+            測試音效
+          </Button>
           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.82rem', color: 'var(--text-main)' }}>
             <input
               type="checkbox"
@@ -68,26 +69,20 @@ export const MapDangerSettingsCard: React.FC<MapDangerSettingsCardProps> = ({
           {BUILD_ARCHETYPE_PRESETS.map(preset => {
             const isActive = config.activePresetId === preset.id;
             return (
-              <button
+              <Button
                 key={preset.id}
-                type="button"
+                size="sm"
+                variant={isActive ? 'primary' : 'secondary'}
                 onClick={() => onApplyPreset(preset.id)}
-                className={isActive ? 'poe-button' : 'poe-button-secondary'}
+                icon={<span>{preset.icon}</span>}
                 style={{
-                  padding: '5px 10px',
-                  fontSize: '0.78rem',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
                   borderColor: isActive ? '#f3d179' : undefined
                 }}
                 title={preset.descriptionZh}
               >
-                <span>{preset.icon}</span>
                 <span>{preset.nameZh}</span>
                 {isActive && <Check size={12} color="#f3d179" />}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -185,6 +180,6 @@ export const MapDangerSettingsCard: React.FC<MapDangerSettingsCardProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

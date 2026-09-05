@@ -3,6 +3,7 @@ import { TreePine, ShieldCheck, Sparkles, AlertCircle, Award } from 'lucide-reac
 import type { WildwoodAscendancyClass, CharmSlotInput, WildwoodConfig, WildwoodEvaluationResult } from '../../domain/wildwood/types';
 import { WILDWOOD_NODES, CHARM_AFFIXES } from '../../domain/wildwood/wildwoodData';
 import { evaluateWildwoodBuild } from '../../domain/wildwood/charmEvaluator';
+import { Card, Button } from '../ui';
 
 export const WildwoodCharmsCard: React.FC = () => {
   const [ascendancy, setAscendancy] = useState<WildwoodAscendancyClass>('primalist');
@@ -22,13 +23,13 @@ export const WildwoodCharmsCard: React.FC = () => {
   const handleUpdateCharm = (idx: number, patch: Partial<CharmSlotInput>) => setCharms(p => p.map((c, i) => i === idx ? { ...c, ...patch } : c));
 
   return (
-    <div className="poe-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <CardHeader tier={evaluation.fitTier} score={evaluation.fitScore} />
       <AscendancyTabs active={ascendancy} onChange={(asc) => { setAscendancy(asc); setAllocatedNodes([]); }} />
       <MajorNodesSelector ascendancy={ascendancy} allocated={allocatedNodes} onToggle={handleToggleNode} />
       {ascendancy === 'primalist' && <CharmSlotsList charms={charms} onUpdate={handleUpdateCharm} />}
       <EvaluationSummaryPanel evaluation={evaluation} />
-    </div>
+    </Card>
   );
 };
 
@@ -50,15 +51,27 @@ const AscendancyTabs: React.FC<{
   onChange: (asc: WildwoodAscendancyClass) => void;
 }> = ({ active, onChange }) => (
   <div style={{ display: 'flex', gap: '8px' }}>
-    <button type="button" className={`btn-filter ${active === 'warden' ? 'active' : ''}`} onClick={() => onChange('warden')}>
+    <Button
+      variant={active === 'warden' ? 'primary' : 'secondary'}
+      size="sm"
+      onClick={() => onChange('warden')}
+    >
       典獄長 (Warden)
-    </button>
-    <button type="button" className={`btn-filter ${active === 'warlock' ? 'active' : ''}`} onClick={() => onChange('warlock')}>
+    </Button>
+    <Button
+      variant={active === 'warlock' ? 'primary' : 'secondary'}
+      size="sm"
+      onClick={() => onChange('warlock')}
+    >
       咒術師 (Warlock)
-    </button>
-    <button type="button" className={`btn-filter ${active === 'primalist' ? 'active' : ''}`} onClick={() => onChange('primalist')}>
+    </Button>
+    <Button
+      variant={active === 'primalist' ? 'primary' : 'secondary'}
+      size="sm"
+      onClick={() => onChange('primalist')}
+    >
       荒野追獵者 (Primalist)
-    </button>
+    </Button>
   </div>
 );
 

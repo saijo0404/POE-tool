@@ -6,6 +6,7 @@ import {
   parseTimelessJewelText
 } from '../../domain/jewel/timelessEvaluator';
 import type { TimelessJewelType } from '../../domain/jewel/types';
+import { Card, Button } from '../ui';
 
 interface TimelessJewelCardProps {
   divineRate?: number;
@@ -56,22 +57,14 @@ function LeaderSelector({
       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>將領/神明 (Leader / Conquered by):</div>
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {leaders.map(l => (
-          <button
+          <Button
             key={l.id}
-            type="button"
+            size="sm"
+            variant={selectedId === l.id ? 'primary' : 'secondary'}
             onClick={() => onSelect(l.id)}
-            style={{
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontSize: '0.75rem',
-              background: selectedId === l.id ? 'var(--gold-gradient)' : 'rgba(255,255,255,0.05)',
-              color: selectedId === l.id ? '#000' : 'var(--text-light)',
-              fontWeight: selectedId === l.id ? 700 : 500,
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}
           >
             {l.nameZh}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -172,13 +165,14 @@ function CardHeader({ isOpen, onToggle, nameZh }: { isOpen: boolean; onToggle: (
 function ClipboardButton({ onPaste }: { onPaste: () => void }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <button
-        type="button"
+      <Button
+        size="sm"
+        variant="secondary"
         onClick={onPaste}
-        style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-light)', cursor: 'pointer' }}
+        icon={<Clipboard size={13} />}
       >
-        <Clipboard size={13} /> 讀取剪貼簿 (Ctrl+C 自動解析)
-      </button>
+        讀取剪貼簿 (Ctrl+C 自動解析)
+      </Button>
     </div>
   );
 }
@@ -213,7 +207,7 @@ export const TimelessJewelCard: React.FC<TimelessJewelCardProps> = ({
   };
 
   return (
-    <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <CardHeader isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} nameZh={jewelDef.nameZh} />
       {isOpen && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -224,7 +218,7 @@ export const TimelessJewelCard: React.FC<TimelessJewelCardProps> = ({
           <SeedInput seed={seedNumber} onChange={setSeedNumber} min={jewelDef.minSeed} max={jewelDef.maxSeed} />
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

@@ -3,6 +3,7 @@ import { ShieldAlert, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react
 import { calculateUltimatumEv } from '../../domain/ultimatum/ultimatumEvEngine';
 import { ULTIMATUM_MODS } from '../../domain/ultimatum/ultimatumMods';
 import type { ActiveModSelection, PlayerWeaknessConfig, UltimatumRecommendation } from '../../domain/ultimatum/types';
+import { Card } from '../ui';
 
 interface UltimatumEvCardProps {
   divineRate?: number;
@@ -184,7 +185,7 @@ export const UltimatumEvCard: React.FC<UltimatumEvCardProps> = ({ divineRate = 1
   }, [currentRound, accumulatedReward, activeMods, weaknesses]);
 
   return (
-    <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => setIsOpen(!isOpen)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <ShieldAlert size={18} color="#f97316" />
@@ -203,7 +204,7 @@ export const UltimatumEvCard: React.FC<UltimatumEvCardProps> = ({ divineRate = 1
           <ModPickerSection activeMods={activeMods} onAdd={(m, t) => !activeMods.some(x => x.modId === m) && setActiveMods(p => [...p, { modId: m, tier: t }])} onRemove={m => setActiveMods(p => p.filter(x => x.modId !== m))} />
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

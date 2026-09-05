@@ -5,6 +5,7 @@ import {
   calculateDeviceCraftBreakEven,
   type DeviceCraftForecastResult
 } from '../../domain/mapping/deviceCraftBreakEven';
+import { Card, Button } from '../ui';
 
 interface DeviceBreakEvenCardProps {
   onApplyCraftCost?: (costChaos: number) => void;
@@ -59,7 +60,7 @@ export const DeviceBreakEvenCard: React.FC<DeviceBreakEvenCardProps> = ({
   const recBadge = getRecommendationBadge(forecast.recommendationLevel);
 
   return (
-    <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -237,25 +238,17 @@ export const DeviceBreakEvenCard: React.FC<DeviceBreakEvenCardProps> = ({
         </div>
 
         {onApplyCraftCost && (
-          <button
-            type="button"
-            className="poe-button"
+          <Button
+            variant="primary"
+            size="sm"
             onClick={() => onApplyCraftCost(forecast.effectiveCostChaos)}
-            style={{
-              fontSize: '0.8rem',
-              padding: '5px 12px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
+            icon={<Coins size={14} />}
           >
-            <Coins size={14} />
             套用工藝成本 ({forecast.effectiveCostChaos} C)
             {currentCraftCost === forecast.effectiveCostChaos && ' [已套用]'}
-          </button>
+          </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

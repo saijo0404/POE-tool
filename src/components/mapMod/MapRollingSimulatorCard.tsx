@@ -4,6 +4,7 @@ import {
   compareRollingStrategies,
   type RollingStrategyType
 } from '../../domain/mapMod/mapRollingSimulator';
+import { Card } from '../ui';
 
 interface MapRollingSimulatorCardProps {
   initialForbiddenCount?: number;
@@ -32,7 +33,7 @@ export const MapRollingSimulatorCard: React.FC<MapRollingSimulatorCardProps> = (
   const activeResult = comparisons.find(c => c.strategy === selectedStrategy) || comparisons[0];
 
   return (
-    <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -240,6 +241,6 @@ export const MapRollingSimulatorCard: React.FC<MapRollingSimulatorCardProps> = (
           {activeResult.verdictNote}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

@@ -3,6 +3,7 @@ import { Shield, Share2, RefreshCw } from 'lucide-react';
 import type { BuildCostResult } from '../../domain/build/types';
 import { CATEGORY_CONFIG, DIVINE_ICON_URL } from '../../domain/build/constants';
 import { getImageUrl } from '../../utils/image';
+import { Card, Button } from '../ui';
 
 interface BuildHeaderCardProps {
   costResult: BuildCostResult;
@@ -23,7 +24,7 @@ export const BuildHeaderCard: React.FC<BuildHeaderCardProps> = ({
   const categories = costResult.categories;
 
   return (
-    <div className="poe-card" style={{ marginBottom: '16px' }}>
+    <Card variant="default" style={{ marginBottom: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px', marginBottom: '16px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -42,28 +43,27 @@ export const BuildHeaderCard: React.FC<BuildHeaderCardProps> = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           {onSyncAll && (
-            <button
-              type="button"
-              className="poe-button"
+            <Button
+              variant="primary"
+              size="sm"
               onClick={onSyncAll}
               disabled={syncingAll}
-              style={{ padding: '8px 14px', fontSize: '0.82rem' }}
+              icon={<RefreshCw size={14} className={syncingAll ? 'spin' : ''} />}
               title="一鍵連線官方市集同步所有物品即時現貨價"
             >
-              <RefreshCw size={14} className={syncingAll ? 'spin' : ''} />
               {syncingAll ? `同步中 (${syncProgress?.current}/${syncProgress?.total})` : '一鍵同步官方現貨'}
-            </button>
+            </Button>
           )}
 
-          <button
-            type="button"
-            className="poe-button-secondary"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onExportMarkdown}
-            style={{ padding: '8px 12px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+            icon={<Share2 size={14} />}
             title="複製 Markdown 造價報表"
           >
-            <Share2 size={14} /> 複製報表
-          </button>
+            複製報表
+          </Button>
 
           <div style={{ textAlign: 'right', marginLeft: '6px' }}>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>總造價預估</div>
@@ -99,6 +99,6 @@ export const BuildHeaderCard: React.FC<BuildHeaderCardProps> = ({
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 };

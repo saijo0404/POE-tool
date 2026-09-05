@@ -2,6 +2,7 @@ import React from 'react';
 import { TrendingUp, RefreshCw, Clock, Coins, Trash2, Download, Share2, Boxes } from 'lucide-react';
 import type { WealthSnapshot, StashProgress } from '../../types/poe';
 import { getImageUrl } from '../../utils/image';
+import { Card, Button } from '../ui';
 
 interface WealthHeaderCardProps {
   latestSnapshot: WealthSnapshot | null;
@@ -36,7 +37,7 @@ export const WealthHeaderCard: React.FC<WealthHeaderCardProps> = ({
   const chaosIconUrl = getImageUrl('https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxSYXJlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/d119a0d734/CurrencyRerollRare.png');
 
   return (
-    <div className="poe-card" style={{ marginBottom: '20px' }}>
+    <Card variant="default" style={{ marginBottom: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
         <div>
           <h2 className="poe-font" style={{ fontSize: '1.4rem', color: 'var(--text-gold)', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -49,42 +50,47 @@ export const WealthHeaderCard: React.FC<WealthHeaderCardProps> = ({
         </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onCopyDiscordSummary}
             disabled={snapshotsCount === 0}
-            className="poe-button-secondary"
-            style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            icon={<Share2 size={15} />}
             title="複製 Discord Markdown 格式"
           >
-            <Share2 size={15} /> 分享 Discord
-          </button>
-          <button
+            分享 Discord
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onExportCSV}
             disabled={snapshotsCount === 0}
-            className="poe-button-secondary"
-            style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            icon={<Download size={15} />}
             title="下載完整歷程 CSV 報表"
           >
-            <Download size={15} /> 匯出 CSV
-          </button>
-          <button
+            匯出 CSV
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onClearHistory}
             disabled={snapshotsCount === 0 || snapshotting}
-            className="poe-button-secondary"
-            style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444' }}
+            icon={<Trash2 size={15} />}
+            style={{ color: '#ef4444' }}
             title="重置快照紀錄"
           >
-            <Trash2 size={15} /> 清除紀錄
-          </button>
-          <button
+            清除紀錄
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
             onClick={onCreateSnapshot}
             disabled={snapshotting}
-            className="poe-button"
-            style={{ padding: '8px 20px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+            loading={snapshotting}
+            icon={!snapshotting ? <RefreshCw size={16} /> : undefined}
           >
-            <RefreshCw size={16} className={snapshotting ? 'spin' : ''} />
             {snapshotting ? '正在掃描倉庫與角色...' : '立即計算目前資產快照'}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -164,14 +170,15 @@ export const WealthHeaderCard: React.FC<WealthHeaderCardProps> = ({
               { value: 1.2, label: '1.2x 批發 (+20%)' },
               { value: 1.4, label: '1.4x 頂配大宗 (+40%)' }
             ].map(opt => (
-              <button
+              <Button
                 key={opt.value}
+                variant={bulkMultiplier === opt.value ? 'primary' : 'secondary'}
+                size="sm"
                 onClick={() => onChangeBulkMultiplier?.(opt.value)}
-                className={bulkMultiplier === opt.value ? 'poe-button' : 'poe-button-secondary'}
                 style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '4px' }}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -182,6 +189,6 @@ export const WealthHeaderCard: React.FC<WealthHeaderCardProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

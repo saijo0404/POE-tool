@@ -2,6 +2,7 @@ import React from 'react';
 import { Terminal, Copy, Check, AlertTriangle, Filter, Globe } from 'lucide-react';
 import type { MapRegexOptions, MapRegexResult } from '../../domain/mapMod/types';
 import { MAP_DANGER_MODS } from '../../domain/mapMod/dangerPresets';
+import { Card, Button } from '../ui';
 
 interface MapRegexGeneratorCardProps {
   options: MapRegexOptions;
@@ -21,7 +22,7 @@ export const MapRegexGeneratorCard: React.FC<MapRegexGeneratorCardProps> = ({
   const isZh = options.language === 'zh';
 
   return (
-    <div className="poe-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Card variant="default" padding="md" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '12px' }}>
         <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Terminal size={18} color="var(--text-gold)" /> PoE 倉庫/市集超短 Regex 產生器
@@ -164,16 +165,14 @@ export const MapRegexGeneratorCard: React.FC<MapRegexGeneratorCardProps> = ({
           <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
             💡 複製後在遊戲內倉庫搜尋列按 Ctrl+V 貼上即可高亮符合地圖
           </span>
-          <button
-            type="button"
-            className="poe-button"
+          <Button
+            variant="primary"
             onClick={onCopy}
             disabled={!result.regexString}
-            style={{ padding: '8px 18px', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            icon={copied ? <Check size={15} color="#2ecc71" /> : <Copy size={15} />}
           >
-            {copied ? <Check size={15} color="#2ecc71" /> : <Copy size={15} />}
             {copied ? '已複製到剪貼簿！' : '一鍵複製 Regex'}
-          </button>
+          </Button>
         </div>
 
         {/* Split Regex Parts when exceeding limit */}
@@ -185,19 +184,19 @@ export const MapRegexGeneratorCard: React.FC<MapRegexGeneratorCardProps> = ({
             {result.subRegexes.map((sub, idx) => (
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', fontFamily: 'monospace', color: '#f3d179', padding: '3px 0' }}>
                 <span>分段 {idx + 1} ({sub.length} 字元): <code>{sub}</code></span>
-                <button
-                  type="button"
-                  className="poe-button-secondary"
+                <Button
+                  size="sm"
+                  variant="secondary"
                   onClick={() => navigator.clipboard.writeText(sub)}
                   style={{ padding: '2px 6px', fontSize: '0.72rem' }}
                 >
                   複製
-                </button>
+                </Button>
               </div>
             ))}
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

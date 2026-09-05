@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { CloudFog, ChevronDown, ChevronUp, Shield, Sparkles } from 'lucide-react';
 import { simulateDeliriumEv } from '../../domain/delirium/deliriumEvEngine';
 import type { DeliriumPercent, DeliriumRewardType, DeliriumRecommendation } from '../../domain/delirium/types';
+import { Card, Button } from '../ui';
 
 interface DeliriumForecasterCardProps {
   divineRate?: number;
@@ -34,22 +35,14 @@ function PercentSelector({ value, onChange }: { value: DeliriumPercent; onChange
       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>瞻妄度 (Delirium %):</div>
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {options.map(p => (
-          <button
+          <Button
             key={p}
-            type="button"
+            size="sm"
+            variant={value === p ? 'primary' : 'secondary'}
             onClick={() => onChange(p)}
-            style={{
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontSize: '0.75rem',
-              background: value === p ? 'var(--gold-gradient)' : 'rgba(255,255,255,0.05)',
-              color: value === p ? '#000' : 'var(--text-light)',
-              fontWeight: value === p ? 700 : 500,
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}
           >
             {p === 0 ? '0% (迷霧鏡)' : `${p}% (${p / 20} 顆)`}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -173,7 +166,7 @@ export const DeliriumForecasterCard: React.FC<DeliriumForecasterCardProps> = ({
   }, [deliriumPercent, rewardType, kills, orbCost, divineRate]);
 
   return (
-    <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <CardHeader isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} percent={deliriumPercent} />
       {isOpen && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -186,7 +179,7 @@ export const DeliriumForecasterCard: React.FC<DeliriumForecasterCardProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 
