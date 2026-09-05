@@ -14,6 +14,7 @@ import { AtlasEmptyStateCard } from './atlas/AtlasEmptyStateCard';
 import { AtlasHubHeader } from './atlas/AtlasHubHeader';
 import { ScarabSynergyCard } from './atlas/ScarabSynergyCard';
 import { ScarabStockAuditCard } from './scarab/ScarabStockAuditCard';
+import { BlightOilCard } from './atlas/BlightOilCard';
 import { recommendScarabCombination } from '../domain/atlas/scarabSynergyEngine';
 
 interface AtlasStrategyHubProps {
@@ -97,6 +98,7 @@ const MainGrid: React.FC<{
     </div>
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <AtlasCostSummaryCard summary={ash.calculationSummary!} divineRate={divineRate} onUpdateRevenue={v => ash.updateCurrentTier(t => ({ ...t, estimatedRevenuePerMapChaos: v }))} onUpdateMapsPerHour={v => ash.updateCurrentTier(t => ({ ...t, mapsPerHour: v }))} />
+      <BlightOilCard divineRate={divineRate} />
       <AtlasBulkShoppingCard tier={ash.currentTier!} strategyName={ash.currentStrategy?.name} divineRate={divineRate} ninjaRates={ash.ninjaRates} onShowToast={onShowToast} />
       <AtlasBatchPlanner summary={ash.calculationSummary!} batchSize={ash.batchSize} onSelectBatchSize={ash.setBatchSize} onCopyShoppingList={ash.copyShoppingList} onCopyTradeKeywords={ash.copyTradeKeywords} onCopyPoeItemFormat={ash.copyPoeItemFormat} league={league} divineRate={divineRate} />
     </div>
