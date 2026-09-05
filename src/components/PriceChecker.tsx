@@ -13,9 +13,12 @@ import { TradeSummaryCard } from './price/TradeSummaryCard';
 import { TradeListingView } from './price/TradeListingView';
 import { PriceCheckerDebugPanel } from './price/PriceCheckerDebugPanel';
 import { GearInspectorCard } from './gear/GearInspectorCard';
+import { BuildFitScoreBadge } from './buildFit/BuildFitScoreBadge';
+import { useBuildFit } from '../hooks/useBuildFit';
 import { PriceSnapshotBadge } from './price/PriceSnapshotBadge';
 import { loadPriceSnapshot, savePriceSnapshot } from '../infrastructure/storage/priceSnapshotStorage';
 import type { PriceSnapshot } from '../domain/price/priceSnapshotEngine';
+import type { ParsedItem } from '../types/poe';
 
 const MOCK_SAMPLE_ZH_ITEM = `物品種類: 頭部
 稀有度: 稀有
@@ -183,7 +186,10 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
       )}
 
       {parsedItem && (parsedItem.rarity === 'Rare' || parsedItem.rarity === 'Magic') && (
-        <GearInspectorCard item={parsedItem} />
+        <>
+          <GearInspectorCard item={parsedItem} />
+          <BuildFitSection item={parsedItem} />
+        </>
       )}
 
       {parsedItem && (
@@ -246,6 +252,18 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
         />
       )}
     </div>
+  );
+};
+
+const BuildFitSection: React.FC<{ item: ParsedItem }> = ({ item }) => {
+  const { evaluation, presets, selectedPresetId, handleSelectPreset } = useBuildFit(item);
+  return (
+    <BuildFitScoreBadge
+      evaluation={evaluation}
+      presets={presets}
+      selectedPresetId={selectedPresetId}
+      onSelectPreset={handleSelectPreset}
+    />
   );
 };
 
