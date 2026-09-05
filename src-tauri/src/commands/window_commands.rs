@@ -37,7 +37,7 @@ pub fn get_foreground_window_info_internal() -> WindowInfo {
     use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowTextW};
     unsafe {
         let hwnd = GetForegroundWindow();
-        if hwnd.0 == 0 {
+        if hwnd.0.is_null() {
             return WindowInfo::default();
         }
         let mut buffer = [0u16; 512];
