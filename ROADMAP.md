@@ -47,7 +47,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.4.0** | **跨平台適配、增量物價引擎與輿圖大宗採購精算** *(Cross-Platform HUD, Incremental Price Engine & Bulk Shopping)* | ✅ 已發布 | [Milestone v2.4.0](https://github.com/saijo0404/POE-tool/milestone/7) |
 | 🟢 **v2.5.0** | **流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析** *(Build Fit Scoring, Fair Price Advisor & Gear Comparison)* | ✅ 已發布 | [Milestone v2.5.0](https://github.com/saijo0404/POE-tool/milestone/8) |
 | 🟢 **v2.6.0** | **輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬** *(Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)* | ✅ 已發布 | [Milestone v2.6.0](https://github.com/saijo0404/POE-tool/milestone/9) |
-| 🟡 **v2.7.0** | **地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵** *(Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)* | 🚀 進行中 | [Milestone v2.7.0](https://github.com/saijo0404/POE-tool/milestone/10) |
+| 🟢 **v2.7.0** | **地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵** *(Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)* | ✅ 已發布 | [Milestone v2.7.0](https://github.com/saijo0404/POE-tool/milestone/10) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -280,21 +280,21 @@ gantt
 
 #### 📦 交付功能與關鍵項目
 
-1. **🗺️ 地圖歷史掉落價值分析與地形收益熱力圖 (Map Drops Value Analytics & Tier Performance Heatmap)**
+1. **🗺️ 地圖歷史掉落價值分析與地形收益熱力圖 (Map Drops Value Analytics & Tier Performance Heatmap)** `[已交付/已發布]`
    - 聚合歷史 Session 中的地圖場次，依地圖基底（Map Name）與階級分組。
    - 計算每張地圖的總場次、平均淨利（Chaos/Map）、神聖石時薪貢獻與頂級掉落（Top Drops）佔比。
    - 產生收益熱力指數（Yield Score 0~100）與推薦星級（1~5 星），並於歷史分析面板提供視覺化熱力圖。
-   - 關聯 PR/Issue：[#128](https://github.com/saijo0404/POE-tool/issues/128)
-2. **⚖️ 通牒命運試煉期望回報精算與致命詞綴風險評級引擎 (Ultimatum Trial & EV Risk Engine)**
+   - 關聯 PR/Issue：[#128](https://github.com/saijo0404/POE-tool/issues/128), [#131](https://github.com/saijo0404/POE-tool/pull/131)
+2. **⚖️ 通牒命運試煉期望回報精算與致命詞綴風險評級引擎 (Ultimatum Trial & EV Risk Engine)** `[已交付/已發布]`
    - 收錄通牒 1~10 輪獎勵池模型與 20+ 種通牒負面詞綴危險度權重。
    - 輸入當前已累積獎勵價值（Chaos）與角色機體弱點（無法回血、持續傷害、降抗等），精算挺進下一輪的成功期望值與風險報酬比。
    - 提供「繼續挺進 / 見好就收」決策建議與輪次風險曲線面板。
-   - 關聯 PR/Issue：[#129](https://github.com/saijo0404/POE-tool/issues/129)
-3. **⌨️ 自訂全域快捷鍵綁定管理與懸浮視窗自適應釘選 (Custom Global Hotkey Manager & Overlay Pinning)**
+   - 關聯 PR/Issue：[#129](https://github.com/saijo0404/POE-tool/issues/129), [#132](https://github.com/saijo0404/POE-tool/pull/132)
+3. **⌨️ 自訂全域快捷鍵綁定管理與懸浮視窗自適應釘選 (Custom Global Hotkey Manager & Overlay Pinning)** `[已交付/已發布]`
    - 支援單鍵、雙組合鍵與三組合鍵（Ctrl / Shift / Alt + Key）合法性校驗與防衝突檢測。
    - 內建 5 種預設快捷方案（標準查價、單手左手操作、MMO 數字側鍵、手把映射等）。
    - 設定中心整合即時按鍵錄製（Press-to-record）與懸浮窗一鍵置頂釘選。
-   - 關聯 PR/Issue：[#130](https://github.com/saijo0404/POE-tool/issues/130)
+   - 關聯 PR/Issue：[#130](https://github.com/saijo0404/POE-tool/issues/130), [#133](https://github.com/saijo0404/POE-tool/pull/133)
 
 ---
 

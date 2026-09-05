@@ -10,6 +10,23 @@
 
 ---
 
+## [2.7.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **地圖歷史掉落價值分析與地形收益熱力圖 (Map Drops Value Analytics & Tier Performance Heatmap)**：
+  - 純領域熱力圖評估核心 (`mapDropHeatmap.ts`)，依據歷史刷圖場次按地圖名稱與階級自動聚合分析，精算平均淨利、時薪 Divine/hr、星級評等與綜合熱力指數 ([#128](https://github.com/saijo0404/POE-tool/issues/128), [#131](https://github.com/saijo0404/POE-tool/pull/131))。
+  - 收益熱力圖卡片組件 (`MapPerformanceHeatmap.tsx`)，視覺化展示各地形收益條與頂級掉落紀錄，智慧標示首選刷圖地形。
+- **通牒命運試煉期望回報精算與致命詞綴風險評級引擎 (Ultimatum Trial & EV Risk Engine)**：
+  - 純領域通牒精算核心 (`ultimatumEvEngine.ts`, `ultimatumMods.ts`)，完整收錄通牒 1~10 輪獎勵池模型與 22 種負面致命詞綴危險度階級權重 ([#129](https://github.com/saijo0404/POE-tool/issues/129), [#132](https://github.com/saijo0404/POE-tool/pull/132))。
+  - 結合機體弱點勾選（禁回、低抗、位移緩慢等）即時檢測致命衝突與發出警示，精算挺進下一輪的期望淨利 (EV)、通關機率與風險報酬比，提供「強烈挺進 / 謹慎挑戰 / 見好就收」決策建議。
+  - 試煉精算卡片 (`UltimatumEvCard.tsx`)，整合至刷圖收益面板，提供快速輪次選擇、獎勵試算與 10 輪生存率預測。
+- **自訂全域快捷鍵綁定管理與懸浮視窗自適應釘選 (Custom Global Hotkey Manager & Overlay Pinning)**：
+  - 純領域快捷鍵核心 (`hotkeyManager.ts`, `hotkeyPresets.ts`)，支援單鍵、雙鍵與三鍵組合（Ctrl / Alt / Shift + Key）正規化、按鍵校驗與衝突檢測器 ([#130](https://github.com/saijo0404/POE-tool/issues/130), [#133](https://github.com/saijo0404/POE-tool/pull/133))。
+  - 內建 5 種快捷方案（標準經典、左手人體工學、MMO 數字側鍵、Alt 映射、F 功能鍵直覺）。
+  - 快捷鍵管理卡片 (`HotkeySettingsCard.tsx`)，整合至系統設定中心，支援即時按鍵錄製（Press-to-record）、衝突警示、懸浮視窗一鍵置頂釘選與透光度滑動調節。
+
+---
+
 ## [2.6.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -296,7 +313,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/saijo0404/POE-tool/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/saijo0404/POE-tool/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/saijo0404/POE-tool/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/saijo0404/POE-tool/compare/v2.3.0...v2.4.0
