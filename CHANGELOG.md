@@ -10,6 +10,27 @@
 
 ---
 
+## [2.10.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **魔物園獵捕效益精算與野獸工藝配方查詢器 (Bestiary Beastcrafting & Mission EV Engine)**：
+  - 純領域野獸工藝精算核心 (`beastcraftingEngine.ts`, `bestiaryData.ts`)，完整收錄 4 大勢力傳奇紅野獸庫與 7 大核心工藝配方（拓印魔法物品、分裂、加前綴移後綴、瓦爾 30% 品質等）([#146](https://github.com/saijo0404/POE-tool/issues/146), [#149](https://github.com/saijo0404/POE-tool/pull/149))。
+  - 精算野獸工藝成本、利潤空間、ROI 評等與一鍵產生大宗紅野獸採購密語。
+  - 建立白/黃/紅圖魔物園任務掉落機率模型，精算單場任務期望總產值 (EV) 與淨回報。
+  - 野獸工藝卡片組件 (`BestiaryCraftCard.tsx`)，整合至工藝模擬中心，支援配方分類篩選與即時搜尋。
+- **凋落聖油提煉配比與真菌地圖收益期望精算器 (Blight Oil Combinator & Blighted Map EV Forecaster)**：
+  - 純領域聖油精算核心 (`blightOilEngine.ts`, `blightData.ts`)，收錄 13 種聖油階級階梯與 3:1 向上升級轉換率，精算直接販售 vs 向上提煉之套利價差與建議標籤 ([#147](https://github.com/saijo0404/POE-tool/issues/147), [#150](https://github.com/saijo0404/POE-tool/pull/150))。
+  - 支援主流關鍵天賦塗油配方反向查詢（輸入天賦名稱即可查出所需 3 聖油組合）。
+  - 精算凋落圖 (3聖油) 與凋落蔓延圖 (9聖油) 組合之掉落數量、怪群規模、幸運寶箱與預期淨回報 (EV)。
+  - 凋落精算卡片組件 (`BlightOilCard.tsx`)，整合至輿圖規劃中心。
+- **探險先祖秘寶出價談判最佳化與日誌收益精算器 (Expedition Haggle Optimizer & Logbook EV Forecaster)**：
+  - 純領域探險精算核心 (`expeditionEngine.ts`, `expeditionData.ts`)，建立圖貞 (Tujen) 議價出價區間最佳化模型，計算第一次安全出價 (52%)、進取出價 (45%) 與回價 (68%) 之成交率與文物節省期望值 ([#148](https://github.com/saijo0404/POE-tool/issues/148), [#151](https://github.com/saijo0404/POE-tool/pull/151))。
+  - 丹尼格 (Dannig) 文物匯率換算器，精算以太陽文物向丹尼格折扣兌換黑鐮/卡古爾/秩序文物的套利淨值。
+  - 探險日誌殘骸詞綴（Remnants）權重與期望回報模型，自動檢測致命不可打詞綴（免疫元素/混沌/物理）並發出警示。
+  - 探險精算卡片組件 (`ExpeditionOptimizerCard.tsx`)，整合至刷圖收益中心。
+
+---
+
 ## [2.9.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -349,7 +370,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.9.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.10.0...HEAD
+[2.10.0]: https://github.com/saijo0404/POE-tool/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/saijo0404/POE-tool/compare/v2.8.0...v2.9.0
 [2.8.0]: https://github.com/saijo0404/POE-tool/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/saijo0404/POE-tool/compare/v2.6.0...v2.7.0
