@@ -10,6 +10,23 @@
 
 ---
 
+## [3.0.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **PoE 2 次世代雙核心獨立架構 (PoE 2 Next-Gen Dual Engine Architecture)**：
+  - 建立 `GameEngine` 領域模型 (`'poe1' | 'poe2'`) 與全域狀態機 `GameEngineStore`，支援手動鎖定與自動感應雙模式 ([#166](https://github.com/saijo0404/POE-tool/issues/166), [#169](https://github.com/saijo0404/POE-tool/pull/169))。
+  - Rust 後端微核心跨平台實作 `get_foreground_window_info`，監控前景視窗進程名稱與標題以實現無縫自動引擎識別。
+  - 抽象化 `ItemParserStrategy` 與 `ItemParserFactory` 工廠模式，實作前端 `Poe2ItemParser` 與後端 `poe2_parser.rs`，支援精魂 (Spirit)、符文插槽 (Rune Sockets)、銘刻地圖 (Waystone) 與未切割寶石 (Uncut Gem) ([#167](https://github.com/saijo0404/POE-tool/issues/167), [#170](https://github.com/saijo0404/POE-tool/pull/170))。
+  - 打造 `EngineSwitcher` 全域切換器並整合至導覽列 `Navbar`，裝備檢視卡片 `GearInspectorCard` 與估價表頭 `ParsedItemHeader` 全面適配 PoE 2 專屬欄位與引擎徽章 ([#168](https://github.com/saijo0404/POE-tool/issues/168), [#171](https://github.com/saijo0404/POE-tool/pull/171))。
+
+### ♻️ 重構與架構收斂 (Refactored)
+- **儲存命名空間隔離與型別健全性 (Storage Namespace Isolation & Typing Remediation)**：
+  - 實作 `StorageNamespaceAdapter` 並匯出 `namespacedStorage`，將物價快照、增量快取與剪貼簿歷史按遊戲引擎獨立隔離，並提供 Legacy 舊資料平滑相容 ([#173](https://github.com/saijo0404/POE-tool/issues/173), [#174](https://github.com/saijo0404/POE-tool/pull/174))。
+  - 清理 `src/utils/tauri.test.ts` 弱型別技術債，全專案達到 100% 零顯式 `any`。
+  - 專案依賴與設定全數升級至 `v3.0.0`。
+
+---
+
 ## [2.12.0] - 2026-09-05
 
 ### ♻️ 重構與架構收斂 (Refactored & Architectural Convergence)
@@ -406,7 +423,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.12.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/saijo0404/POE-tool/compare/v2.12.0...v3.0.0
 [2.12.0]: https://github.com/saijo0404/POE-tool/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/saijo0404/POE-tool/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/saijo0404/POE-tool/compare/v2.9.0...v2.10.0
