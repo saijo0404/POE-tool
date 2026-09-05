@@ -27,4 +27,9 @@ export interface ParsedItem {
   implicits: ParsedItemMod[];
   explicits: ParsedItemMod[];
   rawText: string;
+  engine?: import('../engine/types').GameEngine;
+  spirit?: number;
+  waystoneTier?: number;
+  uncutTier?: number;
+  runeSockets?: string;
 }
