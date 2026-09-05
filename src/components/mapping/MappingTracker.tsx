@@ -11,6 +11,7 @@ import { MappingHistoryAnalyticsCard } from './MappingHistoryAnalyticsCard';
 import { DeviceBreakEvenCard } from './DeviceBreakEvenCard';
 import { MapPerformanceHeatmap } from './MapPerformanceHeatmap';
 import { UltimatumEvCard } from '../ultimatum/UltimatumEvCard';
+import { DeliriumForecasterCard } from '../delirium/DeliriumForecasterCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -107,6 +108,9 @@ export const MappingTracker: React.FC<MappingTrackerProps> = ({
 
       {/* Ultimatum Trial EV & Risk Engine (Issue #129) */}
       <UltimatumEvCard divineRate={divineRate} onShowToast={onShowToast} />
+
+      {/* Delirium Fog Layer EV & Splinter Forecaster (Issue #134) */}
+      <DeliriumForecasterCard divineRate={divineRate} onShowToast={onShowToast} />
 
       {/* Timer & Live Settle Card */}
       <MappingTimerCard
