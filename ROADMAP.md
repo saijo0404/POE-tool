@@ -16,7 +16,8 @@
    - [階段四 (v2.3.0)：離線容災快取、自訂密語範本與刷圖歷史分析 (Offline Fallback, Whisper Templates & Mapping Analytics)](#階段四-v230離線容災快取自訂密語範本與刷圖歷史分析-offline-fallback-whisper-templates--mapping-analytics)
    - [階段五 (v2.4.0)：跨平台適配、增量物價引擎與輿圖大宗採購精算 (Cross-Platform HUD, Incremental Price Engine & Bulk Shopping)](#階段五-v240跨平台適配增量物價引擎與輿圖大宗採購精算-cross-platform-hud-incremental-price-engine--bulk-shopping)
    - [階段六 (v2.5.0)：流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析 (Build Fit Scoring, Fair Price Advisor & Gear Comparison)](#階段六-v250流派契合度精算抗壓價市集估值與穿戴裝備即時差額分析-build-fit-scoring-fair-price-advisor--gear-comparison)
-   - [階段七 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段七-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
+   - [階段七 (v2.6.0)：輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬 (Atlas Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)](#階段七-v260輿圖聖甲蟲組合協同地圖工藝損益預測與地圖洗詞期望模擬-atlas-scarab-synergy-device-craft-forecaster--map-rolling-simulator)
+   - [階段八 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段八-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
 5. [🤝 參與貢獻與協作規範](#5--參與貢獻與協作規範)
 
 ---
@@ -44,6 +45,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.3.0** | **離線容災快取、自訂密語範本與刷圖歷史分析** *(Offline Fallback, Whisper Templates & Mapping Analytics)* | ✅ 已發布 | [Milestone v2.3.0](https://github.com/saijo0404/POE-tool/milestone/6) |
 | 🟢 **v2.4.0** | **跨平台適配、增量物價引擎與輿圖大宗採購精算** *(Cross-Platform HUD, Incremental Price Engine & Bulk Shopping)* | ✅ 已發布 | [Milestone v2.4.0](https://github.com/saijo0404/POE-tool/milestone/7) |
 | 🟢 **v2.5.0** | **流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析** *(Build Fit Scoring, Fair Price Advisor & Gear Comparison)* | ✅ 已發布 | [Milestone v2.5.0](https://github.com/saijo0404/POE-tool/milestone/8) |
+| 🟡 **v2.6.0** | **輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬** *(Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)* | 🚀 進行中 | [Milestone v2.6.0](https://github.com/saijo0404/POE-tool/milestone/9) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -87,8 +89,12 @@ gantt
     流派自訂詞綴權重精算與契合度評分 (#116/#119)  :done,    m8_1, 2026-09-05, 2026-09-05
     市集掛牌四分位距統計與抗壓價估值 (#117/#120)  :done,    m8_2, 2026-09-05, 2026-09-05
     穿戴裝備即時差額對比與屬性盈虧 (#118/#121)    :done,    m8_3, 2026-09-05, 2026-09-05
+    section v2.6.0 輿圖協同與洗詞模擬 (進行中)
+    輿圖天賦配置與聖甲蟲組合協同推薦 (#122)          :active,  m9_1, 2026-09-05, 2026-09-06
+    地圖儀工藝成本收益損益平衡預測 (#123)          :         m9_2, 2026-09-05, 2026-09-06
+    地圖洗詞期望成本精算與安全詞綴模擬 (#124)        :         m9_3, 2026-09-05, 2026-09-06
     section v3.0.0+ 次世代藍圖
-    PoE 2 次世代獨立雙核心模組架構           :         m9_1, 2027-02-15, 2027-05-01
+    PoE 2 次世代獨立雙核心模組架構           :         m10_1, 2027-02-15, 2027-05-01
 ```
 
 ---
@@ -239,7 +245,30 @@ gantt
 
 ---
 
-### 階段七 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
+### 階段七 (v2.6.0)：輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬 (Atlas Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)
+
+> **核心目標**：深化進階打寶刷圖體驗，提供輿圖天賦與聖甲蟲組合相乘效益推薦、地圖儀工藝收支損益預測，以及地圖洗詞安全詞綴期望成本模擬。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🗺️ 輿圖天賦配置與聖甲蟲組合協同推薦引擎 (Atlas Tree & Scarab Synergy Recommender)**
+   - 分析當前策略聚焦之機制標籤（軍團、收割、先祖秘寶、精髓等），自聖甲蟲資料庫中推薦相乘增益最高之 4~5 顆聖甲蟲組合。
+   - 計算甲蟲組合相容性、效益倍率（Synergy Multiplier）與槽位防呆校驗（不可重複放入限制 1 顆的特定甲蟲）。
+   - 關聯 PR/Issue：[#122](https://github.com/saijo0404/POE-tool/issues/122)
+2. **⚖️ 地圖儀工藝成本收益損益平衡預測精算器 (Map Device Craft Break-even Forecaster)**
+   - 精算地圖儀詞綴工藝（如混沌石工藝：超越、支配、先祖等）附加成本。
+   - 根據地圖基底階級、怪群規模加成與機制基礎掉落模型，計算預期淨回報與損益平衡點（Break-even Point）。
+   - 提供「投資推薦度」評級（強烈推薦 / 保守打平 / 高風險虧損）。
+   - 關聯 PR/Issue：[#123](https://github.com/saijo0404/POE-tool/issues/123)
+3. **🎲 地圖洗詞期望成本精算與安全詞綴模擬器 (Map Rolling Simulator & Currency Cost Estimator)**
+   - 根據使用者選定的「不可打危險詞綴」清單與「最低目標要求」（例如：怪群規模 $\ge 25\%$、掉落數量 $\ge 80\%$）。
+   - 建立洗圖策略數學模型（蛻變/改造/重鑄 vs 點金/混沌 vs 崇高點綴），精算洗出一張合格安全地圖的平均通貨成本與標準差。
+   - 支援批次（如 50 張圖）洗詞通貨消耗預估與實機試洗模擬。
+   - 關聯 PR/Issue：[#124](https://github.com/saijo0404/POE-tool/issues/124)
+
+---
+
+### 階段八 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
 
 > **核心目標**：在《Path of Exile 2》正式發布且 API 穩定後，提供 PoE 1 與 PoE 2 雙引擎無縫切換體驗。
 
