@@ -19,4 +19,26 @@ export interface SettingsContextType {
   logout: () => Promise<void>;
 }
 
+export const DEFAULT_SETTINGS: AppSettings = {
+  league: 'Auto',
+  poesessid: '',
+  accountName: '',
+  autoSnapshotEnabled: true,
+  autoSnapshotIntervalMinutes: 60,
+  useDemoData: false,
+  poetoken: '',
+  cf_clearance: '',
+  userAgent: '',
+  hotkey: 'ctrl+c+d'
+};
+
+export function loadSettingsCache(): AppSettings {
+  try {
+    const cached = localStorage.getItem('poe_settings_cache');
+    if (cached) return { ...DEFAULT_SETTINGS, ...JSON.parse(cached) };
+  } catch {}
+  return DEFAULT_SETTINGS;
+}
+
 export const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+

@@ -1,30 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { AppSettings, CharacterInfo, SessionHealthInfo } from '../types/poe';
 import { poeApi } from '../services/api';
-import { SettingsContext } from './settingsContextDef';
+import { SettingsContext, loadSettingsCache } from './settingsContextDef';
 export type { SettingsContextType } from './settingsContextDef';
 
-const defaultSettings: AppSettings = {
-  league: 'Auto',
-  poesessid: '',
-  accountName: '',
-  autoSnapshotEnabled: true,
-  autoSnapshotIntervalMinutes: 60,
-  useDemoData: false,
-  poetoken: '',
-  cf_clearance: '',
-  userAgent: '',
-  hotkey: 'ctrl+c+d'
-};
-
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<AppSettings>(() => {
-    try {
-      const cached = localStorage.getItem('poe_settings_cache');
-      if (cached) return { ...defaultSettings, ...JSON.parse(cached) };
-    } catch {}
-    return defaultSettings;
-  });
+  const [settings, setSettings] = useState<AppSettings>(loadSettingsCache);
   const [characters, setCharacters] = useState<CharacterInfo[]>([]);
   const [sessionHealth, setSessionHealth] = useState<SessionHealthInfo | null>(null);
   const [divineRate, setDivineRate] = useState<number>(150);
