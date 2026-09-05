@@ -37,6 +37,7 @@ pub fn run() {
             commands::show_main_window,
             commands::hide_main_window,
             commands::get_app_version,
+            commands::get_foreground_window_info,
             // Logger Commands
             commands::get_log_contents,
             commands::get_log_file_path,
