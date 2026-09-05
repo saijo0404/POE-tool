@@ -10,6 +10,7 @@ import { MappingInvestmentModal } from './MappingInvestmentModal';
 import { MappingHistoryAnalyticsCard } from './MappingHistoryAnalyticsCard';
 import { DeviceBreakEvenCard } from './DeviceBreakEvenCard';
 import { MapPerformanceHeatmap } from './MapPerformanceHeatmap';
+import { UltimatumEvCard } from '../ultimatum/UltimatumEvCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -103,6 +104,9 @@ export const MappingTracker: React.FC<MappingTrackerProps> = ({
           onShowToast(`已套用地圖儀工藝成本：${cost} C`);
         }}
       />
+
+      {/* Ultimatum Trial EV & Risk Engine (Issue #129) */}
+      <UltimatumEvCard divineRate={divineRate} onShowToast={onShowToast} />
 
       {/* Timer & Live Settle Card */}
       <MappingTimerCard
