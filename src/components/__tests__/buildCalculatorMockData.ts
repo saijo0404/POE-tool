@@ -1,12 +1,12 @@
 import { vi } from 'vitest';
-import type { BuildCalculationResult } from '../../types/poe';
+import type { BuildCostResult } from '../../types/poe';
 
 export const defaultProps = {
   league: 'Settlers',
   onShowToast: vi.fn(),
 };
 
-export const mockBuildResult: BuildCalculationResult = {
+export const mockBuildResult: BuildCostResult = {
   character: {
     account: 'TestAccount',
     name: 'SlayerGod',
@@ -100,7 +100,7 @@ export const mockBuildResult: BuildCalculationResult = {
   }
 };
 
-export const mockBuildWithMods: BuildCalculationResult = {
+export const mockBuildWithMods: BuildCostResult = {
   ...mockBuildResult,
   categories: {
     ...mockBuildResult.categories,
