@@ -21,7 +21,8 @@
     - [階段九 (v2.8.0)：迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列 (Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)](#階段九-v280迷霧瞻妄層數期望精算軍團永恆珠寶種子鑑定與多物品比價暫存列-delirium-ev-forecaster-timeless-jewel-evaluator--comparison-tray)
     - [階段十 (v2.9.0)：荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點 (Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)](#階段十-v290荒野昇華符咒精算禁忌聖所聖物評估與聖甲蟲庫存套裝盤點-wildwood-charms-evaluator-sanctum-relic-evaluator--scarab-stock-audit)
     - [階段十一 (v2.10.0)：野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化 (Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)](#階段十一-v2100野獸工藝配方精算凋落聖油套利模擬與探險先祖出價優化-bestiary-beastcrafting-blight-oil-combinator--expedition-haggle-optimizer)
-    - [階段十二 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段十二-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
+    - [階段十二 (v2.11.0)：核心架構收斂、技術債清理與 UI 原語重構 (Core Refactoring, Tech Debt Cleanup & UI Primitives)](#階段十二-v2110核心架構收斂技術債清理與-ui-原語重構-core-refactoring-tech-debt-cleanup--ui-primitives)
+    - [階段十三 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段十三-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
 5. [🤝 參與貢獻與協作規範](#5--參與貢獻與協作規範)
 
 ---
@@ -54,6 +55,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.8.0** | **迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列** *(Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)* | ✅ 已發布 | [Milestone v2.8.0](https://github.com/saijo0404/POE-tool/milestone/11) |
 | 🟢 **v2.9.0** | **荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點** *(Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)* | ✅ 已發布 | [Milestone v2.9.0](https://github.com/saijo0404/POE-tool/milestone/12) |
 | 🟢 **v2.10.0** | **野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化** *(Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)* | ✅ 已發布 | [Milestone v2.10.0](https://github.com/saijo0404/POE-tool/milestone/13) |
+| 🟡 **v2.11.0** | **核心架構收斂、技術債清理與 UI 原語重構** *(Core Refactoring, Tech Debt Cleanup & UI Primitives)* | 📋 規劃中 | [Milestone v2.11.0](https://github.com/saijo0404/POE-tool/milestone/14) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -117,8 +119,12 @@ gantt
     魔物園獵捕效益精算與野獸工藝配方查詢 (#146/#149)       :done,    m13_1, 2026-09-05, 2026-09-05
     凋落聖油提煉配比與真菌地圖收益期望精算 (#147/#150)   :done,    m13_2, 2026-09-05, 2026-09-05
     探險先祖秘寶出價談判最佳化與日誌收益精算 (#148/#151) :done,    m13_3, 2026-09-05, 2026-09-05
+    section v2.11.0 架構重構與品質收斂 (進行中)
+    測試套件模組化拆分與 100% 規格達標     :active,  m14_1, 2026-09-05, 2026-09-08
+    App.tsx 路由解耦與全域快捷鍵 Hook 抽離   :         m14_2, 2026-09-08, 2026-09-10
+    UI 設計系統原語封裝與樣式收斂           :         m14_3, 2026-09-10, 2026-09-12
     section v3.0.0+ 次世代藍圖
-    PoE 2 次世代獨立雙核心模組架構           :         m14_1, 2027-02-15, 2027-05-01
+    PoE 2 次世代獨立雙核心模組架構           :         m15_1, 2027-02-15, 2027-05-01
 ```
 
 ---
@@ -388,7 +394,28 @@ gantt
 
 ---
 
-### 階段十二 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
+### 階段十二 (v2.11.0)：核心架構收斂、技術債清理與 UI 原語重構 (Core Refactoring, Tech Debt Cleanup & UI Primitives)
+
+> **核心目標**：在邁入 v3.0.0 重大版本前，消除專案歷史累積之技術債，達成 100% 測試檔案合規、解耦根元件路由與事件處理，並建立統一的 UI 設計系統元件庫。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🧪 測試套件模組化拆分與 100% 行數健康度達標 (Test Suite Modularization & Limit Compliance)** `[待開發]`
+   - 拆分 8 個超過行數上限之測試檔案（`BuildCalculator.test.tsx`、`usePriceChecker.test.ts`、`api.test.ts`、`mappingCalculator.test.ts`、`atlasHelpers.test.ts`、`clipboardHistoryManager.test.ts`、`useClipboardSync.test.ts`、`wealthCalculator.test.ts`）。
+   - 按測試情境（渲染、互動、邊界條件、計算邏輯）重構為單檔 $\le 200$ 行（UI 測試 $\le 300$ 行）之精準測試模組，達成全專案 100% 測試與生產程式碼全數符合健康度標準。
+   - 關聯 PR/Issue：[#152](https://github.com/saijo0404/POE-tool/issues/152)
+2. **🧭 App.tsx 路由解耦與全域監聽器抽象化 (App Router Extraction & Global Hotkey Hook)** `[待開發]`
+   - 抽離 `App.tsx` 中過長之 9 層巢狀三元運算子路由邏輯，建立專屬 `AppRouter.tsx`。
+   - 封裝 `useGlobalHotkeys.ts` 與 `useToastNotification.ts` 自訂 Hook，將全域事件監聽與定時器邏輯自根元件剝離，使 `App.tsx` 保持極簡與宣告式架構。
+   - 關聯 PR/Issue：[#153](https://github.com/saijo0404/POE-tool/issues/153)
+3. **🎨 統一 UI 設計系統原子元件與樣式收斂 (UI Design System Primitives & Token Unification)** `[待開發]`
+   - 於 `src/components/ui/` 封裝高頻複用之 UI 原語（`Card.tsx`、`Badge.tsx`、`Button.tsx`、`StatBadge.tsx`）。
+   - 替換散落於各功能模組中的手動內聯樣式（Inline Styles）與寫死十六進位色碼（Hex Colors），統一採用 CSS 變數與設計規範，降低維護成本並確保視覺一致性。
+   - 關聯 PR/Issue：[#154](https://github.com/saijo0404/POE-tool/issues/154)
+
+---
+
+### 階段十三 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
 
 > **核心目標**：在《Path of Exile 2》正式發布且 API 穩定後，提供 PoE 1 與 PoE 2 雙引擎無縫切換體驗。
 
