@@ -10,6 +10,24 @@
 
 ---
 
+## [2.8.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **幻境瞻妄階級層數回報模擬與迷霧寶珠成本效益精算器 (Delirium Fog Layer EV & Simulacrum Splinter Forecaster)**：
+  - 純領域瞻妄精算核心 (`deliriumEvEngine.ts`)，完整支援瞻妄擊殺進度階梯模型、各階層獎勵期望值（EV）與 17 種迷霧寶珠加成成本效益計算 ([#134](https://github.com/saijo0404/POE-tool/issues/134), [#137](https://github.com/saijo0404/POE-tool/pull/137))。
+  - 精算幻境裂片掉落機率與整張門票折算淨回報，產出投資建議評級（強烈推薦 / 保守打平 / 高風險虧損）。
+  - 瞻妄精算卡片組件 (`DeliriumForecasterCard.tsx`)，整合至刷圖收益記錄器，支援一鍵套用寶珠成本至刷圖門票。
+- **永恆軍團珠寶種子碼鑑定與核心基石變更查詢器 (Timeless Jewel Seed Evaluator & Keystone Lookup)**：
+  - 純領域鑑定核心 (`timelessEvaluator.ts`, `timelessData.ts`)，完整收錄 5 大軍團勢力、所有歷史將領與其對應核心基石效果 ([#135](https://github.com/saijo0404/POE-tool/issues/135), [#138](https://github.com/saijo0404/POE-tool/pull/138))。
+  - 支援種子碼數值雜湊與被動點額外天賦加成推估，產出主流流派契合度評級（S/A/B/C）與市場參考身價。
+  - 軍團珠寶鑑定卡片 (`TimelessJewelCard.tsx`)，整合至流派配裝面板，支援即時搜尋與勢力過濾。
+- **遊戲內剪貼簿歷史回溯面板與多物品比價暫存列 (Clipboard History Log & Multi-Item Comparison Tray)**：
+  - 純領域剪貼簿歷史管理器 (`clipboardHistoryManager.ts`)，提供 FIFO 佇列自動保留最新 20 筆查價紀錄，支援重複去重與本機持久化 ([#136](https://github.com/saijo0404/POE-tool/issues/136), [#139](https://github.com/saijo0404/POE-tool/pull/139))。
+  - 多物品比價暫存列（最多 4 件），即時計算多物品價格中位數、物等區間與各詞綴卷值橫向對比表格。
+  - 剪貼簿歷史卡片 (`ClipboardHistoryTray.tsx`) 與地圖危險警示條 (`MapDangerBanner.tsx`) 整合至查價中心，支援一鍵回溯重查與快速清空。
+
+---
+
 ## [2.7.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -313,7 +331,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.8.0...HEAD
+[2.8.0]: https://github.com/saijo0404/POE-tool/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/saijo0404/POE-tool/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/saijo0404/POE-tool/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/saijo0404/POE-tool/compare/v2.4.0...v2.5.0
