@@ -91,4 +91,9 @@ describe('StorageNamespaceAdapter', () => {
     adapter.removeItem('temp_data');
     expect(memory.has('poe_tool:poe1:temp_data')).toBe(false);
   });
+
+  it('falls back to legacy key for shared keys if shared namespace is empty', () => {
+    memory.setItem('active_theme', 'solarized');
+    expect(adapter.getItem('active_theme', 'default')).toBe('solarized');
+  });
 });

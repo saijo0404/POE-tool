@@ -1,18 +1,18 @@
 import type { IStoragePort } from '../../application/ports/IStoragePort';
-import { defaultStorage } from './LocalStorageAdapter';
+import { namespacedStorage } from './StorageNamespaceAdapter';
 import type { PriceDelta } from '../../domain/price/incrementalCache';
 
 const STORAGE_KEY_DELTAS = 'poe_incremental_price_deltas';
 
 export function savePriceDeltas(
   deltas: PriceDelta[],
-  storage: IStoragePort = defaultStorage
+  storage: IStoragePort = namespacedStorage
 ): void {
   storage.setItem(STORAGE_KEY_DELTAS, JSON.stringify(deltas));
 }
 
 export function loadPriceDeltas(
-  storage: IStoragePort = defaultStorage
+  storage: IStoragePort = namespacedStorage
 ): PriceDelta[] {
   const raw = storage.getItem<string | null>(STORAGE_KEY_DELTAS, null);
   if (!raw) return [];
@@ -27,7 +27,7 @@ export function loadPriceDeltas(
 export function appendPriceDelta(
   delta: PriceDelta,
   maxDeltas: number = 20,
-  storage: IStoragePort = defaultStorage
+  storage: IStoragePort = namespacedStorage
 ): void {
   const existing = loadPriceDeltas(storage);
   const updated = [...existing, delta].slice(-maxDeltas);
@@ -35,7 +35,7 @@ export function appendPriceDelta(
 }
 
 export function clearPriceDeltas(
-  storage: IStoragePort = defaultStorage
+  storage: IStoragePort = namespacedStorage
 ): void {
   storage.removeItem(STORAGE_KEY_DELTAS);
 }

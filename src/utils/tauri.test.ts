@@ -1,16 +1,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { isTauri, toggleAlwaysOnTop, showMainWindow, hideMainWindow, getTauriAppVersion } from './tauri';
 
+type WindowWithTauri = Window & {
+  __TAURI_INTERNALS__?: Record<string, unknown>;
+  __TAURI__?: Record<string, unknown>;
+};
+
+const tauriWindow = window as unknown as WindowWithTauri;
+
 describe('tauri utility functions', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    delete (window as any).__TAURI_INTERNALS__;
-    delete (window as any).__TAURI__;
+    delete tauriWindow.__TAURI_INTERNALS__;
+    delete tauriWindow.__TAURI__;
   });
 
   afterEach(() => {
-    delete (window as any).__TAURI_INTERNALS__;
-    delete (window as any).__TAURI__;
+    delete tauriWindow.__TAURI_INTERNALS__;
+    delete tauriWindow.__TAURI__;
   });
 
   describe('Non-Tauri (Web) environment', () => {
@@ -39,7 +46,7 @@ describe('tauri utility functions', () => {
 
   describe('Tauri environment', () => {
     beforeEach(() => {
-      (window as any).__TAURI_INTERNALS__ = {};
+      tauriWindow.__TAURI_INTERNALS__ = {};
     });
 
     it('isTauri returns true', () => {
