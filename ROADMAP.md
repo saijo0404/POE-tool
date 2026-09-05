@@ -18,8 +18,10 @@
    - [階段六 (v2.5.0)：流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析 (Build Fit Scoring, Fair Price Advisor & Gear Comparison)](#階段六-v250流派契合度精算抗壓價市集估值與穿戴裝備即時差額分析-build-fit-scoring-fair-price-advisor--gear-comparison)
    - [階段七 (v2.6.0)：輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬 (Atlas Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)](#階段七-v260輿圖聖甲蟲組合協同地圖工藝損益預測與地圖洗詞期望模擬-atlas-scarab-synergy-device-craft-forecaster--map-rolling-simulator)
    - [階段八 (v2.7.0)：地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵 (Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)](#階段八-v270地圖歷史掉落熱力圖通牒命運試煉精算與自訂置頂快捷鍵-map-drop-heatmap-ultimatum-ev--custom-hotkey-pinning)
-   - [階段九 (v2.8.0)：迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列 (Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)](#階段九-v280迷霧瞻妄層數期望精算軍團永恆珠寶種子鑑定與多物品比價暫存列-delirium-ev-forecaster-timeless-jewel-evaluator--comparison-tray)
-   - [階段十 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段十-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
+    - [階段九 (v2.8.0)：迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列 (Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)](#階段九-v280迷霧瞻妄層數期望精算軍團永恆珠寶種子鑑定與多物品比價暫存列-delirium-ev-forecaster-timeless-jewel-evaluator--comparison-tray)
+    - [階段十 (v2.9.0)：荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點 (Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)](#階段十-v290荒野昇華符咒精算禁忌聖所聖物評估與聖甲蟲庫存套裝盤點-wildwood-charms-evaluator-sanctum-relic-evaluator--scarab-stock-audit)
+    - [階段十一 (v2.10.0)：野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化 (Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)](#階段十一-v2100野獸工藝配方精算凋落聖油套利模擬與探險先祖出價優化-bestiary-beastcrafting-blight-oil-combinator--expedition-haggle-optimizer)
+    - [階段十二 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段十二-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
 5. [🤝 參與貢獻與協作規範](#5--參與貢獻與協作規範)
 
 ---
@@ -51,6 +53,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.7.0** | **地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵** *(Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)* | ✅ 已發布 | [Milestone v2.7.0](https://github.com/saijo0404/POE-tool/milestone/10) |
 | 🟢 **v2.8.0** | **迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列** *(Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)* | ✅ 已發布 | [Milestone v2.8.0](https://github.com/saijo0404/POE-tool/milestone/11) |
 | 🟢 **v2.9.0** | **荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點** *(Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)* | ✅ 已發布 | [Milestone v2.9.0](https://github.com/saijo0404/POE-tool/milestone/12) |
+| 🟡 **v2.10.0** | **野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化** *(Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)* | 🚀 進行中 | [Milestone v2.10.0](https://github.com/saijo0404/POE-tool/milestone/13) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -110,8 +113,12 @@ gantt
     荒野野靈荒野昇華天賦與符咒效果精算 (#140/#143)       :done,    m12_1, 2026-09-05, 2026-09-05
     禁忌聖所試煉聖物詞綴相乘評估與房型收益 (#141/#144)   :done,    m12_2, 2026-09-05, 2026-09-05
     聖甲蟲庫存自動盤點與套裝成套率精算 (#142/#145)       :done,    m12_3, 2026-09-05, 2026-09-05
+    section v2.10.0 野獸、凋落與探險精算 (進行中)
+    魔物園獵捕效益精算與野獸工藝配方查詢 (#146)       :active,  m13_1, 2026-09-05, 2026-09-06
+    凋落聖油提煉配比與真菌地圖收益期望精算 (#147)   :         m13_2, 2026-09-05, 2026-09-06
+    探險先祖秘寶出價談判最佳化與日誌收益精算 (#148) :         m13_3, 2026-09-05, 2026-09-06
     section v3.0.0+ 次世代藍圖
-    PoE 2 次世代獨立雙核心模組架構           :         m13_1, 2027-02-15, 2027-05-01
+    PoE 2 次世代獨立雙核心模組架構           :         m14_1, 2027-02-15, 2027-05-01
 ```
 
 ---
@@ -357,7 +364,31 @@ gantt
 
 ---
 
-### 階段十一 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
+### 階段十一 (v2.10.0)：野獸工藝配方精算、凋落聖油套利模擬與探險先祖出價優化 (Bestiary Beastcrafting, Blight Oil Combinator & Expedition Haggle Optimizer)
+
+> **核心目標**：深化野獸工藝成本收益與魔物園任務期望精算，提供凋落聖油 3:1 升級套利比對與凋落蔓延圖期望收益，並精算探險四大 NPC 出價談判模型與日誌收益最大化。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🦁 魔物園獵捕效益精算與野獸工藝配方查詢器 (Bestiary Beastcrafting & Mission EV Engine)**
+   - 收錄 4 大勢力傳奇紅野獸庫（深海巨獸、芬斯羅斯、法拉爾、薩恩等）與高階工藝配方（拓印魔法物品、分裂、加後洗前、瓦爾 30% 品等）。
+   - 結合當前紅野獸與黃野獸市場價格，精算各配方製作成本、成品產值與淨期望利潤 (EV)。
+   - 建立魔物園白/黃/紅圖任務掉落機率模型，推估單場魔物園任務的期望收益。
+   - 關聯 PR/Issue：[#146](https://github.com/saijo0404/POE-tool/issues/146)
+2. **💧 凋落聖油提煉配比與真菌地圖收益期望精算器 (Blight Oil Combinator & Blighted Map EV Forecaster)**
+   - 收錄 13 種聖油階級階梯與 3:1 向上升級轉換率，精算直接販售 vs 向上提煉之套利價差。
+   - 支援主流關鍵天賦塗油配方反向查詢（輸入天賦名稱即可查出所需 3 聖油組合）。
+   - 精算凋落圖與凋落蔓延圖（Blighted & Blight-Ravaged Maps）3~9 聖油組合之掉落數量、幸運寶箱與淨回報率。
+   - 關聯 PR/Issue：[#147](https://github.com/saijo0404/POE-tool/issues/147)
+3. **🧭 探險先祖秘寶出價談判最佳化與日誌收益精算器 (Expedition Haggle Optimizer & Logbook EV Forecaster)**
+   - 圖貞 (Tujen) 議價出價區間最佳化模型：根據開價滑桿位置，計算第一次安全出價與第二次回價之成功率與文物節省期望值。
+   - 丹尼格 (Dannig) 文物匯率換算器：計算折扣兌換黑鐮/卡古爾/秩序文物的最佳折算比與套利淨值。
+   - 探險日誌殘骸詞綴（Remnants）權重與期望回報模型，分析掉落日誌加成%、符文怪群相乘倍率與單張日誌期望產值。
+   - 關聯 PR/Issue：[#148](https://github.com/saijo0404/POE-tool/issues/148)
+
+---
+
+### 階段十二 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
 
 > **核心目標**：在《Path of Exile 2》正式發布且 API 穩定後，提供 PoE 1 與 PoE 2 雙引擎無縫切換體驗。
 
