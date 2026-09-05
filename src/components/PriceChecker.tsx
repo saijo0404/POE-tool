@@ -13,6 +13,7 @@ import { TradeSummaryCard } from './price/TradeSummaryCard';
 import { TradeListingView } from './price/TradeListingView';
 import { PriceCheckerDebugPanel } from './price/PriceCheckerDebugPanel';
 import { GearInspectorCard } from './gear/GearInspectorCard';
+import { GearComparisonView } from './gear/GearComparisonView';
 import { BuildFitScoreBadge } from './buildFit/BuildFitScoreBadge';
 import { useBuildFit } from '../hooks/useBuildFit';
 import { PriceSnapshotBadge } from './price/PriceSnapshotBadge';
@@ -189,6 +190,7 @@ export const PriceChecker: React.FC<PriceCheckerProps> = ({
         <>
           <GearInspectorCard item={parsedItem} />
           <BuildFitSection item={parsedItem} />
+          <GearComparisonView item={parsedItem} />
         </>
       )}
 
