@@ -9,6 +9,7 @@ import { MappingRunsTable } from './MappingRunsTable';
 import { MappingInvestmentModal } from './MappingInvestmentModal';
 import { MappingHistoryAnalyticsCard } from './MappingHistoryAnalyticsCard';
 import { DeviceBreakEvenCard } from './DeviceBreakEvenCard';
+import { MapPerformanceHeatmap } from './MapPerformanceHeatmap';
 
 interface MappingTrackerProps {
   league: string;
@@ -79,6 +80,12 @@ export const MappingTracker: React.FC<MappingTrackerProps> = ({
         sessions={sessions}
         divineRate={divineRate}
         currentLeague={league}
+      />
+
+      {/* Map Drop Performance Heatmap (Issue #128) */}
+      <MapPerformanceHeatmap
+        runs={sessions.flatMap(s => s.runs)}
+        divineRate={divineRate}
       />
 
       {/* Device Craft Break-even Forecaster (Issue #123) */}
