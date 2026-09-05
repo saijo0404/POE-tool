@@ -12,6 +12,7 @@ import { DeviceBreakEvenCard } from './DeviceBreakEvenCard';
 import { MapPerformanceHeatmap } from './MapPerformanceHeatmap';
 import { UltimatumEvCard } from '../ultimatum/UltimatumEvCard';
 import { DeliriumForecasterCard } from '../delirium/DeliriumForecasterCard';
+import { SanctumRelicCard } from '../sanctum/SanctumRelicCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -19,136 +20,72 @@ interface MappingTrackerProps {
   onShowToast: (msg: string) => void;
 }
 
-export const MappingTracker: React.FC<MappingTrackerProps> = ({
-  league,
-  divineRate = 150,
-  onShowToast
-}) => {
-  const [isInvestmentModalOpen, setIsInvestmentModalOpen] = useState<boolean>(false);
-
-  const {
-    sessions,
-    activeSession,
-    activeSessionId,
-    setActiveSessionId,
-    timerState,
-    snapshotting,
-    snapshotA,
-    availableTabs,
-    stats,
-    handleStartMap,
-    handlePauseMap,
-    handleResumeMap,
-    handleResetTimer,
-    handleTakeSnapshotA,
-    handleFinishAndSettle,
-    handleDeleteRun,
-    handleClearRuns,
-    handleUpdateInvestment,
-    handleUpdateSelectedTabs,
-    handleCreateSession,
-    handleExportDiscord,
-    handleExportCsv
-  } = useMappingTracker({ league, divineRate, onShowToast });
+export const MappingTracker: React.FC<MappingTrackerProps> = ({ league, divineRate = 150, onShowToast }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const mt = useMappingTracker({ league, divineRate, onShowToast });
 
   return (
-    <div
-      style={{
-        padding: '20px',
-        maxWidth: '1400px',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px'
-      }}
-    >
-      {/* Top Header & Session Management */}
+    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <MappingHeaderBar
-        sessions={sessions}
-        activeSessionId={activeSessionId}
-        onSelectSession={setActiveSessionId}
-        onCreateSession={handleCreateSession}
-        onExportDiscord={handleExportDiscord}
-        onExportCsv={handleExportCsv}
-        onClearRuns={handleClearRuns}
-        onOpenInvestmentModal={() => setIsInvestmentModalOpen(true)}
+        sessions={mt.sessions} activeSessionId={mt.activeSessionId} onSelectSession={mt.setActiveSessionId}
+        onCreateSession={mt.handleCreateSession} onExportDiscord={mt.handleExportDiscord} onExportCsv={mt.handleExportCsv}
+        onClearRuns={mt.handleClearRuns} onOpenInvestmentModal={() => setIsModalOpen(true)}
       />
-
-      {/* KPI Metrics Summary */}
-      <MappingSummaryCard stats={stats} />
-
-      {/* Historical Macro Analytics & Strategy Comparison */}
-      <MappingHistoryAnalyticsCard
-        sessions={sessions}
-        divineRate={divineRate}
-        currentLeague={league}
-      />
-
-      {/* Map Drop Performance Heatmap (Issue #128) */}
-      <MapPerformanceHeatmap
-        runs={sessions.flatMap(s => s.runs)}
-        divineRate={divineRate}
-      />
-
-      {/* Device Craft Break-even Forecaster (Issue #123) */}
-      <DeviceBreakEvenCard
-        currentCraftCost={activeSession.defaultInvestment?.craftCostChaos}
-        onApplyCraftCost={cost => {
-          const prev = activeSession.defaultInvestment;
-          const totalC = (prev?.mapCostChaos || 0) + (prev?.scarabsCostChaos || 0) + cost + (prev?.otherCostChaos || 0);
-          handleUpdateInvestment({
-            ...prev,
-            craftCostChaos: cost,
-            totalCostChaos: totalC,
-            totalCostDivine: Math.round((totalC / divineRate) * 100) / 100
-          });
-          onShowToast(`已套用地圖儀工藝成本：${cost} C`);
-        }}
-      />
-
-      {/* Ultimatum Trial EV & Risk Engine (Issue #129) */}
-      <UltimatumEvCard divineRate={divineRate} onShowToast={onShowToast} />
-
-      {/* Delirium Fog Layer EV & Splinter Forecaster (Issue #134) */}
-      <DeliriumForecasterCard divineRate={divineRate} onShowToast={onShowToast} />
-
-      {/* Timer & Live Settle Card */}
-      <MappingTimerCard
-        timerState={timerState}
-        snapshotting={snapshotting}
-        snapshotA={snapshotA}
-        strategyName={activeSession.strategyName}
-        onStartMap={handleStartMap}
-        onPauseMap={handlePauseMap}
-        onResumeMap={handleResumeMap}
-        onResetTimer={handleResetTimer}
-        onTakeSnapshotA={handleTakeSnapshotA}
-        onFinishAndSettle={handleFinishAndSettle}
-      />
-
-      {/* Dump Tab Configuration */}
-      <MappingTabSelector
-        availableTabs={availableTabs}
-        selectedTabs={activeSession.selectedTabNames}
-        onUpdateSelectedTabs={handleUpdateSelectedTabs}
-      />
-
-      {/* Cumulative Profit Chart */}
-      <MappingProfitChart runs={activeSession.runs} />
-
-      {/* Completed Runs History & Drop Items */}
-      <MappingRunsTable runs={activeSession.runs} onDeleteRun={handleDeleteRun} />
-
-      {/* Investment Cost Configuration Modal */}
+      <AnalyticsSection mt={mt} league={league} divineRate={divineRate} />
+      <EndgameMechanicsSection mt={mt} divineRate={divineRate} onShowToast={onShowToast} />
+      <RunsTrackerSection mt={mt} />
       <MappingInvestmentModal
-        isOpen={isInvestmentModalOpen}
-        investment={activeSession.defaultInvestment}
-        divineRate={divineRate}
-        onClose={() => setIsInvestmentModalOpen(false)}
-        onSave={handleUpdateInvestment}
+        isOpen={isModalOpen} investment={mt.activeSession.defaultInvestment} divineRate={divineRate}
+        onClose={() => setIsModalOpen(false)} onSave={mt.handleUpdateInvestment}
       />
     </div>
   );
 };
+
+const AnalyticsSection: React.FC<{ mt: ReturnType<typeof useMappingTracker>; league: string; divineRate: number }> = ({ mt, league, divineRate }) => (
+  <>
+    <MappingSummaryCard stats={mt.stats} />
+    <MappingHistoryAnalyticsCard sessions={mt.sessions} divineRate={divineRate} currentLeague={league} />
+    <MapPerformanceHeatmap runs={mt.sessions.flatMap(s => s.runs)} divineRate={divineRate} />
+  </>
+);
+
+const EndgameMechanicsSection: React.FC<{
+  mt: ReturnType<typeof useMappingTracker>;
+  divineRate: number;
+  onShowToast: (msg: string) => void;
+}> = ({ mt, divineRate, onShowToast }) => {
+  const handleApplyCraft = (cost: number) => {
+    const prev = mt.activeSession.defaultInvestment;
+    const totalC = (prev?.mapCostChaos || 0) + (prev?.scarabsCostChaos || 0) + cost + (prev?.otherCostChaos || 0);
+    mt.handleUpdateInvestment({
+      ...prev, craftCostChaos: cost, totalCostChaos: totalC, totalCostDivine: Math.round((totalC / divineRate) * 100) / 100
+    });
+    onShowToast(`已套用地圖儀工藝成本：${cost} C`);
+  };
+
+  return (
+    <>
+      <DeviceBreakEvenCard currentCraftCost={mt.activeSession.defaultInvestment?.craftCostChaos} onApplyCraftCost={handleApplyCraft} />
+      <UltimatumEvCard divineRate={divineRate} onShowToast={onShowToast} />
+      <DeliriumForecasterCard divineRate={divineRate} onShowToast={onShowToast} />
+      <SanctumRelicCard />
+    </>
+  );
+};
+
+const RunsTrackerSection: React.FC<{ mt: ReturnType<typeof useMappingTracker> }> = ({ mt }) => (
+  <>
+    <MappingTimerCard
+      timerState={mt.timerState} snapshotting={mt.snapshotting} snapshotA={mt.snapshotA}
+      strategyName={mt.activeSession.strategyName} onStartMap={mt.handleStartMap} onPauseMap={mt.handlePauseMap}
+      onResumeMap={mt.handleResumeMap} onResetTimer={mt.handleResetTimer} onTakeSnapshotA={mt.handleTakeSnapshotA}
+      onFinishAndSettle={mt.handleFinishAndSettle}
+    />
+    <MappingTabSelector availableTabs={mt.availableTabs} selectedTabs={mt.activeSession.selectedTabNames} onUpdateSelectedTabs={mt.handleUpdateSelectedTabs} />
+    <MappingProfitChart runs={mt.activeSession.runs} />
+    <MappingRunsTable runs={mt.activeSession.runs} onDeleteRun={mt.handleDeleteRun} />
+  </>
+);
 
 export default MappingTracker;
