@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAtlasStrategy } from '../hooks/useAtlasStrategy';
 import { AtlasStrategySelector } from './atlas/AtlasStrategySelector';
 import { AtlasTierSelector } from './atlas/AtlasTierSelector';
@@ -13,6 +13,7 @@ import { AtlasCommunityHubModal } from './atlas/AtlasCommunityHubModal';
 import { AtlasEmptyStateCard } from './atlas/AtlasEmptyStateCard';
 import { AtlasHubHeader } from './atlas/AtlasHubHeader';
 import { ScarabSynergyCard } from './atlas/ScarabSynergyCard';
+import { ScarabStockAuditCard } from './scarab/ScarabStockAuditCard';
 import { recommendScarabCombination } from '../domain/atlas/scarabSynergyEngine';
 
 interface AtlasStrategyHubProps {
@@ -21,236 +22,106 @@ interface AtlasStrategyHubProps {
   onShowToast: (msg: string) => void;
 }
 
-export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({
-  league,
-  divineRate = 150,
-  onShowToast
-}) => {
-  const {
-    strategies,
-    currentStrategy,
-    currentTier,
-    selectedStrategyId,
-    setSelectedStrategyId,
-    selectedTierId,
-    setSelectedTierId,
-    filterCategory,
-    setFilterCategory,
-    searchQuery,
-    setSearchQuery,
-    filteredStrategies,
-    batchSize,
-    setBatchSize,
-    calculationSummary,
-    ninjaRates,
-    isRatesLoading,
-    editingStrategy,
-    setEditingStrategy,
-    isEditModalOpen,
-    setIsEditModalOpen,
-    // Operations
-    updateCurrentTier,
-    updateAllocatedNodes,
-    addScarab,
-    removeScarab,
-    updateScarab,
-    addExtraItem,
-    removeExtraItem,
-    updateExtraItem,
-    addTier,
-    duplicateTier,
-    deleteTier,
-    renameTier,
-    createNewStrategy,
-    saveStrategyEdit,
-    duplicateStrategy,
-    deleteStrategy,
-    deleteCategory,
-    clearAllStrategies,
-    copyShoppingList,
-    copyTradeKeywords,
-    copyPoeItemFormat,
-    exportToJson,
-    importFromJson
-  } = useAtlasStrategy({
-    league,
-    divineRate,
-    onShowToast
-  });
+export const AtlasStrategyHub: React.FC<AtlasStrategyHubProps> = ({ league, divineRate = 150, onShowToast }) => {
+  const ash = useAtlasStrategy({ league, divineRate, onShowToast });
+  const [isCommunityModalOpen, setIsCommunityModalOpen] = useState(false);
 
-  const [isCommunityModalOpen, setIsCommunityModalOpen] = React.useState(false);
-
-  const scarabSynergyRec = React.useMemo(() => {
-    if (!currentTier || !currentStrategy) return null;
+  const scarabSynergyRec = useMemo(() => {
+    if (!ash.currentTier || !ash.currentStrategy) return null;
     return recommendScarabCombination({
-      allocatedNodeIds: currentTier.allocatedNodes,
-      primaryCategory: currentStrategy.category,
-      strategyTags: currentStrategy.tags,
-      ninjaRates
+      allocatedNodeIds: ash.currentTier.allocatedNodes, primaryCategory: ash.currentStrategy.category,
+      strategyTags: ash.currentStrategy.tags, ninjaRates: ash.ninjaRates
     });
-  }, [currentTier, currentStrategy, ninjaRates]);
+  }, [ash.currentTier, ash.currentStrategy, ash.ninjaRates]);
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <AtlasHubHeader
-        league={league}
-        divineRate={divineRate}
-        isRatesLoading={isRatesLoading}
-        onOpenCommunity={() => setIsCommunityModalOpen(true)}
-      />
-
-      {/* 1. Strategy Selector & Category Filter Carousel */}
-      <AtlasStrategySelector
-        strategies={filteredStrategies}
-        selectedStrategyId={selectedStrategyId}
-        onSelectStrategy={setSelectedStrategyId}
-        filterCategory={filterCategory}
-        onFilterCategory={setFilterCategory}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onNewStrategy={createNewStrategy}
-        onEditStrategy={(strat) => {
-          setEditingStrategy(strat);
-          setIsEditModalOpen(true);
-        }}
-        onDeleteStrategy={deleteStrategy}
-        onDeleteCategory={deleteCategory}
-        onClearAllStrategies={clearAllStrategies}
-        onExportJson={exportToJson}
-        onImportJson={importFromJson}
-      />
-
-      {/* Global Empty State Hero Card */}
-      {strategies.length === 0 && (
-        <AtlasEmptyStateCard
-          onCreateStrategy={createNewStrategy}
-          onOpenCommunityHub={() => setIsCommunityModalOpen(true)}
-        />
+      <AtlasHubHeader league={league} divineRate={divineRate} isRatesLoading={ash.isRatesLoading} onOpenCommunity={() => setIsCommunityModalOpen(true)} />
+      <StrategySelectorSection ash={ash} />
+      {ash.strategies.length === 0 && <AtlasEmptyStateCard onCreateStrategy={ash.createNewStrategy} onOpenCommunityHub={() => setIsCommunityModalOpen(true)} />}
+      <TierAndDetailsSection ash={ash} onShowToast={onShowToast} />
+      {ash.currentTier && ash.calculationSummary && (
+        <MainGrid ash={ash} scarabSynergyRec={scarabSynergyRec} divineRate={divineRate} league={league} onShowToast={onShowToast} />
       )}
-
-      {/* 2. Multi-Tier Selector */}
-      {currentStrategy && currentStrategy.tiers && currentStrategy.tiers.length > 0 && (
-        <AtlasTierSelector
-          tiers={currentStrategy.tiers}
-          selectedTierId={selectedTierId || currentStrategy.tiers[0].id}
-          onSelectTier={setSelectedTierId}
-          onAddTier={addTier}
-          onDuplicateTier={duplicateTier}
-          onDeleteTier={deleteTier}
-          onRenameTier={renameTier}
-        />
-      )}
-
-      {/* 3. Strategy Header Details */}
-      {currentStrategy && currentTier && (
-        <AtlasStrategyDetails
-          strategy={currentStrategy}
-          currentTier={currentTier}
-          onEditStrategy={() => {
-            setEditingStrategy(currentStrategy);
-            setIsEditModalOpen(true);
-          }}
-          onDuplicateStrategy={() => duplicateStrategy(currentStrategy.id)}
-          onDeleteStrategy={() => deleteStrategy(currentStrategy.id)}
-          onSaveAllocatedNodes={updateAllocatedNodes}
-          onShowToast={onShowToast}
-        />
-      )}
-
-      {/* 4. Main Configuration & Calculator Grid */}
-      {currentTier && calculationSummary && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(540px, 1fr))', gap: '16px' }}>
-          {/* Left Column: Scarabs & Extra Items Configuration */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Scarab Synergy Recommender Card (Issue #122) */}
-            {scarabSynergyRec && (
-              <ScarabSynergyCard
-                recommendation={scarabSynergyRec}
-                onApplyToCurrentTier={newScarabs => updateCurrentTier(t => ({ ...t, scarabs: newScarabs }))}
-                divineRate={divineRate}
-              />
-            )}
-
-            {/* Scarabs Config */}
-            <AtlasScarabConfig
-              scarabs={currentTier.scarabs}
-              onAddScarab={addScarab}
-              onRemoveScarab={removeScarab}
-              onUpdateScarab={updateScarab}
-              ninjaRates={ninjaRates}
-              divineRate={divineRate}
-            />
-
-            {/* Extra Items & Craft Config */}
-            <AtlasExtraItemsConfig
-              extraItems={currentTier.extraItems}
-              onAddExtraItem={addExtraItem}
-              onRemoveExtraItem={removeExtraItem}
-              onUpdateExtraItem={updateExtraItem}
-              ninjaRates={ninjaRates}
-              divineRate={divineRate}
-            />
-          </div>
-
-          {/* Right Column: Cost & Profit Hub + Batch Planner */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Single Map Cost & Profit Estimator */}
-            <AtlasCostSummaryCard
-              summary={calculationSummary}
-              divineRate={divineRate}
-              onUpdateRevenue={val => updateCurrentTier(t => ({ ...t, estimatedRevenuePerMapChaos: val }))}
-              onUpdateMapsPerHour={val => updateCurrentTier(t => ({ ...t, mapsPerHour: val }))}
-            />
-
-            {/* Bulk Materials Shopping & Faustus Gold Fee Card (Issue #108) */}
-            <AtlasBulkShoppingCard
-              tier={currentTier}
-              strategyName={currentStrategy?.name}
-              divineRate={divineRate}
-              ninjaRates={ninjaRates}
-              onShowToast={onShowToast}
-            />
-
-            {/* Batch Materials & Shopping List Planner */}
-            <AtlasBatchPlanner
-              summary={calculationSummary}
-              batchSize={batchSize}
-              onSelectBatchSize={setBatchSize}
-              onCopyShoppingList={copyShoppingList}
-              onCopyTradeKeywords={copyTradeKeywords}
-              onCopyPoeItemFormat={copyPoeItemFormat}
-              league={league}
-              divineRate={divineRate}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 5. Edit Strategy Modal */}
-      {isEditModalOpen && (
-        <AtlasEditStrategyModal
-          isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingStrategy(null);
-          }}
-          strategy={editingStrategy}
-          onSave={saveStrategyEdit}
-          onDelete={deleteStrategy}
-        />
-      )}
-
-      {/* 6. Community Hub Modal */}
-      {isCommunityModalOpen && (
-        <AtlasCommunityHubModal
-          isOpen={isCommunityModalOpen}
-          onClose={() => setIsCommunityModalOpen(false)}
-          onImportStrategy={saveStrategyEdit}
-          currentStrategy={currentStrategy}
-        />
-      )}
+      <ModalsSection ash={ash} isCommunityOpen={isCommunityModalOpen} onCloseCommunity={() => setIsCommunityModalOpen(false)} />
     </div>
   );
 };
+
+const StrategySelectorSection: React.FC<{ ash: ReturnType<typeof useAtlasStrategy> }> = ({ ash }) => (
+  <AtlasStrategySelector
+    strategies={ash.filteredStrategies} selectedStrategyId={ash.selectedStrategyId} onSelectStrategy={ash.setSelectedStrategyId}
+    filterCategory={ash.filterCategory} onFilterCategory={ash.setFilterCategory} searchQuery={ash.searchQuery} onSearchChange={ash.setSearchQuery}
+    onNewStrategy={ash.createNewStrategy} onEditStrategy={(s) => { ash.setEditingStrategy(s); ash.setIsEditModalOpen(true); }}
+    onDeleteStrategy={ash.deleteStrategy} onDeleteCategory={ash.deleteCategory} onClearAllStrategies={ash.clearAllStrategies}
+    onExportJson={ash.exportToJson} onImportJson={ash.importFromJson}
+  />
+);
+
+const TierAndDetailsSection: React.FC<{ ash: ReturnType<typeof useAtlasStrategy>; onShowToast: (msg: string) => void }> = ({ ash, onShowToast }) => (
+  <>
+    {ash.currentStrategy && ash.currentStrategy.tiers?.length > 0 && (
+      <AtlasTierSelector
+        tiers={ash.currentStrategy.tiers} selectedTierId={ash.selectedTierId || ash.currentStrategy.tiers[0].id}
+        onSelectTier={ash.setSelectedTierId} onAddTier={ash.addTier} onDuplicateTier={ash.duplicateTier}
+        onDeleteTier={ash.deleteTier} onRenameTier={ash.renameTier}
+      />
+    )}
+    {ash.currentStrategy && ash.currentTier && (
+      <AtlasStrategyDetails
+        strategy={ash.currentStrategy} currentTier={ash.currentTier}
+        onEditStrategy={() => { ash.setEditingStrategy(ash.currentStrategy); ash.setIsEditModalOpen(true); }}
+        onDuplicateStrategy={() => ash.duplicateStrategy(ash.currentStrategy!.id)}
+        onDeleteStrategy={() => ash.deleteStrategy(ash.currentStrategy!.id)}
+        onSaveAllocatedNodes={ash.updateAllocatedNodes} onShowToast={onShowToast}
+      />
+    )}
+  </>
+);
+
+const MainGrid: React.FC<{
+  ash: ReturnType<typeof useAtlasStrategy>;
+  scarabSynergyRec: ReturnType<typeof recommendScarabCombination> | null;
+  divineRate: number;
+  league: string;
+  onShowToast: (msg: string) => void;
+}> = ({ ash, scarabSynergyRec, divineRate, league, onShowToast }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(540px, 1fr))', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {scarabSynergyRec && (
+        <ScarabSynergyCard recommendation={scarabSynergyRec} onApplyToCurrentTier={s => ash.updateCurrentTier(t => ({ ...t, scarabs: s }))} divineRate={divineRate} />
+      )}
+      <ScarabStockAuditCard divineRate={divineRate} onShowToast={onShowToast} />
+      <AtlasScarabConfig scarabs={ash.currentTier!.scarabs} onAddScarab={ash.addScarab} onRemoveScarab={ash.removeScarab} onUpdateScarab={ash.updateScarab} ninjaRates={ash.ninjaRates} divineRate={divineRate} />
+      <AtlasExtraItemsConfig extraItems={ash.currentTier!.extraItems} onAddExtraItem={ash.addExtraItem} onRemoveExtraItem={ash.removeExtraItem} onUpdateExtraItem={ash.updateExtraItem} ninjaRates={ash.ninjaRates} divineRate={divineRate} />
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <AtlasCostSummaryCard summary={ash.calculationSummary!} divineRate={divineRate} onUpdateRevenue={v => ash.updateCurrentTier(t => ({ ...t, estimatedRevenuePerMapChaos: v }))} onUpdateMapsPerHour={v => ash.updateCurrentTier(t => ({ ...t, mapsPerHour: v }))} />
+      <AtlasBulkShoppingCard tier={ash.currentTier!} strategyName={ash.currentStrategy?.name} divineRate={divineRate} ninjaRates={ash.ninjaRates} onShowToast={onShowToast} />
+      <AtlasBatchPlanner summary={ash.calculationSummary!} batchSize={ash.batchSize} onSelectBatchSize={ash.setBatchSize} onCopyShoppingList={ash.copyShoppingList} onCopyTradeKeywords={ash.copyTradeKeywords} onCopyPoeItemFormat={ash.copyPoeItemFormat} league={league} divineRate={divineRate} />
+    </div>
+  </div>
+);
+
+const ModalsSection: React.FC<{
+  ash: ReturnType<typeof useAtlasStrategy>;
+  isCommunityOpen: boolean;
+  onCloseCommunity: () => void;
+}> = ({ ash, isCommunityOpen, onCloseCommunity }) => (
+  <>
+    {ash.isEditModalOpen && (
+      <AtlasEditStrategyModal
+        isOpen={ash.isEditModalOpen} onClose={() => { ash.setIsEditModalOpen(false); ash.setEditingStrategy(null); }}
+        strategy={ash.editingStrategy} onSave={ash.saveStrategyEdit} onDelete={ash.deleteStrategy}
+      />
+    )}
+    {isCommunityOpen && (
+      <AtlasCommunityHubModal
+        isOpen={isCommunityOpen} onClose={onCloseCommunity}
+        onImportStrategy={ash.saveStrategyEdit} currentStrategy={ash.currentStrategy}
+      />
+    )}
+  </>
+);
 
 export default AtlasStrategyHub;
