@@ -13,6 +13,7 @@ import { MapPerformanceHeatmap } from './MapPerformanceHeatmap';
 import { UltimatumEvCard } from '../ultimatum/UltimatumEvCard';
 import { DeliriumForecasterCard } from '../delirium/DeliriumForecasterCard';
 import { SanctumRelicCard } from '../sanctum/SanctumRelicCard';
+import { ExpeditionOptimizerCard } from './ExpeditionOptimizerCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -70,6 +71,7 @@ const EndgameMechanicsSection: React.FC<{
       <UltimatumEvCard divineRate={divineRate} onShowToast={onShowToast} />
       <DeliriumForecasterCard divineRate={divineRate} onShowToast={onShowToast} />
       <SanctumRelicCard />
+      <ExpeditionOptimizerCard />
     </>
   );
 };
