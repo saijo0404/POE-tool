@@ -17,6 +17,19 @@ pub fn lookup_english_base_type(zh_base_type: &str) -> Option<String> {
     None
 }
 
+pub fn lookup_chinese_base_type(en_base_type: &str) -> Option<String> {
+    if en_base_type.is_empty() {
+        return None;
+    }
+    let clean = en_base_type.trim();
+    if let Ok(state) = DICTIONARY_STATE.read() {
+        if let Some(zh) = state.item_dict_rev.get(&clean.to_lowercase()) {
+            return Some(zh.clone());
+        }
+    }
+    None
+}
+
 pub fn get_common_item_map() -> HashMap<String, String> {
     let mut map = HashMap::new();
     let pairs = [

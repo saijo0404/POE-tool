@@ -43,7 +43,9 @@ pub struct DictionaryState {
     pub stat_weapon_local_map: HashMap<String, u32>,
     pub stat_local_map: HashMap<String, u32>,
     pub item_dict: HashMap<String, String>,
+    pub item_dict_rev: HashMap<String, String>,
     pub stat_ac_matcher: StatAcMatcher,
+    pub poe2_ac_matcher: StatAcMatcher,
 }
 
 impl Default for DictionaryState {
@@ -61,7 +63,9 @@ impl DictionaryState {
             stat_weapon_local_map: HashMap::new(),
             stat_local_map: HashMap::new(),
             item_dict: HashMap::new(),
+            item_dict_rev: HashMap::new(),
             stat_ac_matcher: StatAcMatcher::default(),
+            poe2_ac_matcher: StatAcMatcher::default(),
         };
         state.init();
         state
@@ -70,7 +74,9 @@ impl DictionaryState {
     pub fn init(&mut self) {
         self.load_precomputed_stat_cache();
         self.load_precomputed_item_cache();
+        self.load_poe2_data();
         self.load_custom_user_overrides();
+        self.build_reverse_item_map();
     }
 
     fn load_precomputed_stat_cache(&mut self) {
@@ -91,6 +97,38 @@ impl DictionaryState {
         }
         for (k, v) in super::base_types::get_common_item_map() {
             self.item_dict.insert(k, v);
+        }
+    }
+
+    fn load_poe2_data(&mut self) {
+        for (zh, en) in super::poe2_bases::get_poe2_item_map() {
+            self.item_dict.insert(zh, en);
+        }
+
+        let poe2_stats = super::poe2_stats::get_poe2_stat_dict();
+        let start_idx = self.stat_dict.len() as u32;
+        self.poe2_ac_matcher = StatAcMatcher::build_from_stats_with_offset(&poe2_stats, start_idx);
+        for entry in poe2_stats {
+            let idx = self.stat_dict.len() as u32;
+            self.index_single_entry(idx, &entry);
+            self.stat_dict.push(entry);
+        }
+    }
+
+    pub fn build_reverse_item_map(&mut self) {
+        self.item_dict_rev.clear();
+        for (k, v) in &self.item_dict {
+            if k != v {
+                self.item_dict_rev.insert(v.to_lowercase(), k.clone());
+            }
+        }
+        for (zh, en) in super::base_types::get_common_item_map() {
+            if zh != en {
+                self.item_dict_rev.insert(en.to_lowercase(), zh);
+            }
+        }
+        for (zh, en) in super::poe2_bases::get_poe2_canonical_pairs() {
+            self.item_dict_rev.insert(en.to_lowercase(), zh);
         }
     }
 

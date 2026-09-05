@@ -24,10 +24,15 @@ impl StatAcMatcher {
 
     /// Builds an Aho-Corasick automaton dynamically from a list of stat dictionary entries.
     pub fn build_from_stats(stats: &[StatDictionaryEntry]) -> Self {
+        Self::build_from_stats_with_offset(stats, 0)
+    }
+
+    /// Builds an Aho-Corasick automaton with a stat index offset.
+    pub fn build_from_stats_with_offset(stats: &[StatDictionaryEntry], offset: u32) -> Self {
         let mut pattern_map: HashMap<String, (u32, i32)> = HashMap::new();
 
         for (idx, entry) in stats.iter().enumerate() {
-            let stat_idx = idx as u32;
+            let stat_idx = offset + idx as u32;
             let prio = entry_priority(&entry.id);
             Self::insert_entry_patterns(&mut pattern_map, entry, stat_idx, prio);
         }

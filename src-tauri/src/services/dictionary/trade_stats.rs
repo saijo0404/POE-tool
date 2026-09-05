@@ -1,4 +1,4 @@
-use super::patterns::{normalize_pattern, NUM_RE};
+use super::patterns::{normalize_pattern, strip_weapon_set_prefix, NUM_RE};
 use super::state::{DictionaryState, StatDictionaryEntry, StatMatchResult};
 use super::DICTIONARY_STATE;
 
@@ -11,8 +11,9 @@ pub fn lookup_stat_with_context(
         return None;
     }
 
+    let line_for_num = strip_weapon_set_prefix(clean_line);
     let mut numbers = Vec::new();
-    for cap in NUM_RE.captures_iter(clean_line) {
+    for cap in NUM_RE.captures_iter(line_for_num) {
         if let Some(m) = cap.get(0) {
             if let Ok(num) = m.as_str().parse::<f64>() {
                 numbers.push(num);
@@ -70,9 +71,36 @@ fn fallback_substring_search(
     normalized: &str,
     primary_val: Option<f64>,
 ) -> Option<StatMatchResult> {
-    let stat_idx = state
+    let match1 = state
         .stat_ac_matcher
-        .find_best_match(normalized, &state.stat_dict)?;
+        .find_best_match(normalized, &state.stat_dict);
+    let match2 = state
+        .poe2_ac_matcher
+        .find_best_match(normalized, &state.stat_dict);
+
+    let stat_idx = match (match1, match2) {
+        (Some(idx1), Some(idx2)) => {
+            let prio1 = state
+                .stat_dict
+                .get(idx1)
+                .map(|e| super::patterns::entry_priority(&e.id))
+                .unwrap_or(0);
+            let prio2 = state
+                .stat_dict
+                .get(idx2)
+                .map(|e| super::patterns::entry_priority(&e.id))
+                .unwrap_or(0);
+            if prio2 > prio1 {
+                idx2
+            } else {
+                idx1
+            }
+        }
+        (Some(idx1), None) => idx1,
+        (None, Some(idx2)) => idx2,
+        (None, None) => return None,
+    };
+
     let entry = state.stat_dict.get(stat_idx)?;
     Some(build_match_result(entry, primary_val))
 }
