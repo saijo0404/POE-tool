@@ -9,9 +9,11 @@ export interface AppSettings {
   cf_clearance?: string;
   userAgent?: string;
   hotkey?: string;
+  hotkeyBindings?: import('../hotkey/types').HotkeyBindingMap;
   selectedStashTabs?: number[];
   maxStashTabs?: number;
   overlayEnabled?: boolean;
+  overlayPinned?: boolean;
   overlayOpacity?: number;
   overlayClickThrough?: boolean;
   overlayAutoCloseOnBlur?: boolean;
