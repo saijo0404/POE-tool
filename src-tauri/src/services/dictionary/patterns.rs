@@ -5,12 +5,39 @@ lazy_static! {
     pub static ref NUM_RE: Regex = Regex::new(r"[+-]?\d+(?:\.\d+)?").unwrap();
     pub static ref PATTERN_NORM_RE: Regex = Regex::new(r"[+-]?\d+(?:\.\d+)?|[+-]?#").unwrap();
     pub static ref TAG_PREFIX_RE: Regex = Regex::new(r"(?i)^\{[^}]+\}\s*|^\([^)]+\)\s*").unwrap();
+    pub static ref WEAPON_SET_PREFIX_RE: Regex =
+        Regex::new(r"(?i)^(?:武器配置\s*[12]:?|weapon set\s*[12]:?)\s*").unwrap();
+}
+
+pub fn strip_weapon_set_prefix(text: &str) -> &str {
+    if let Some(m) = WEAPON_SET_PREFIX_RE.find(text) {
+        &text[m.end()..]
+    } else {
+        text
+    }
 }
 
 pub fn normalize_pattern(text: &str) -> String {
     let clean = TAG_PREFIX_RE.replace_all(text, "");
-    let s = PATTERN_NORM_RE.replace_all(&clean, "#");
-    s.split_whitespace()
+    let protected = clean
+        .replace("武器配置 1", "武器配置_SETONE_")
+        .replace("武器配置 2", "武器配置_SETTWO_")
+        .replace("武器配置1", "武器配置_SETONE_")
+        .replace("武器配置2", "武器配置_SETTWO_")
+        .replace("Weapon Set 1", "weapon_set_SETONE_")
+        .replace("Weapon Set 2", "weapon_set_SETTWO_")
+        .replace("weapon set 1", "weapon_set_SETONE_")
+        .replace("weapon set 2", "weapon_set_SETTWO_");
+
+    let s = PATTERN_NORM_RE.replace_all(&protected, "#");
+    let restored = s
+        .replace("武器配置_SETONE_", "武器配置 1")
+        .replace("武器配置_SETTWO_", "武器配置 2")
+        .replace("weapon_set_SETONE_", "weapon set 1")
+        .replace("weapon_set_SETTWO_", "weapon set 2");
+
+    restored
+        .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ")
         .to_lowercase()

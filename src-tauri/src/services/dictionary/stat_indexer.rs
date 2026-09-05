@@ -14,23 +14,26 @@ impl DictionaryState {
 
         let entries = self.stat_dict.clone();
         for (idx, entry) in entries.iter().enumerate() {
-            let idx = idx as u32;
-            let is_local = entry.en_text.contains("(Local)")
-                || entry.en_text.contains("(local)")
-                || entry.zh_text.contains("(部分)")
-                || entry.zh_text.contains("(局部)");
-            let is_armour = check_stat_is_armour(&entry.en_text, &entry.zh_text);
-            let is_weapon = check_stat_is_weapon(&entry.en_text, &entry.zh_text);
-            let clean_zh = strip_local_tags(&entry.zh_text);
-            let clean_en = strip_local_tags(&entry.en_text);
-
-            if is_local {
-                self.index_local_entry(idx, entry, &clean_zh, &clean_en, is_armour, is_weapon);
-            } else {
-                self.index_global_entry(idx, entry);
-            }
+            self.index_single_entry(idx as u32, entry);
         }
         self.stat_ac_matcher = StatAcMatcher::build_from_stats(&self.stat_dict);
+    }
+
+    pub fn index_single_entry(&mut self, idx: u32, entry: &StatDictionaryEntry) {
+        let is_local = entry.en_text.contains("(Local)")
+            || entry.en_text.contains("(local)")
+            || entry.zh_text.contains("(部分)")
+            || entry.zh_text.contains("(局部)");
+        let is_armour = check_stat_is_armour(&entry.en_text, &entry.zh_text);
+        let is_weapon = check_stat_is_weapon(&entry.en_text, &entry.zh_text);
+        let clean_zh = strip_local_tags(&entry.zh_text);
+        let clean_en = strip_local_tags(&entry.en_text);
+
+        if is_local {
+            self.index_local_entry(idx, entry, &clean_zh, &clean_en, is_armour, is_weapon);
+        } else {
+            self.index_global_entry(idx, entry);
+        }
     }
 
     fn index_local_entry(

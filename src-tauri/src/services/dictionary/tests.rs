@@ -137,3 +137,120 @@ fn test_unmatched_stat_lookup_performance() {
         max_allowed_us
     );
 }
+
+#[test]
+fn test_poe2_stat_lookups() {
+    // 1. Spirit (精魂)
+    let res_zh = lookup_stat_by_text("+30 最大精魂").expect("Should match zh spirit");
+    assert_eq!(res_zh.id, "explicit.stat_spirit");
+    assert_eq!(res_zh.value, Some(30.0));
+
+    let res_en = lookup_stat_by_text("+30 to maximum Spirit").expect("Should match en spirit");
+    assert_eq!(res_en.id, "explicit.stat_spirit");
+
+    // 2. Dodge roll (翻滾)
+    let roll_zh = lookup_stat_by_text("增加 15% 翻滾冷卻回復率").expect("Should match zh roll");
+    assert_eq!(roll_zh.id, "explicit.stat_dodge_roll_recovery_rate");
+
+    let roll_en = lookup_stat_by_text("15% increased Dodge Roll Recovery Rate")
+        .expect("Should match en roll");
+    assert_eq!(roll_en.id, "explicit.stat_dodge_roll_recovery_rate");
+
+    // 3. Sockets & Buildup & Weapon Sets
+    let socket = lookup_stat_by_text("+2 個符文插槽").expect("Should match rune sockets");
+    assert_eq!(socket.id, "explicit.stat_rune_sockets");
+
+    let freeze = lookup_stat_by_text("+15% 冰凍積蓄").expect("Should match freeze buildup");
+    assert_eq!(freeze.id, "explicit.stat_freeze_buildup");
+
+    let weapon =
+        lookup_stat_by_text("武器配置 1: 增加 25% 物理傷害").expect("Should match weapon set 1");
+    assert_eq!(weapon.id, "explicit.stat_weapon_set_1_phys");
+    assert_eq!(weapon.value, Some(25.0));
+
+    let weapon2 =
+        lookup_stat_by_text("武器配置 2: 增加 35% 物理傷害").expect("Should match weapon set 2");
+    assert_eq!(weapon2.id, "explicit.stat_weapon_set_2_phys");
+    assert_eq!(weapon2.value, Some(35.0));
+
+    // Performance assertion: Lookup should be < 5ms (5000 µs)
+    let start = Instant::now();
+    for _ in 0..100 {
+        let _ = lookup_stat_by_text("+30 最大精魂");
+        let _ = lookup_stat_by_text("15% increased Dodge Roll Recovery Rate");
+    }
+    let elapsed = start.elapsed();
+    let per_lookup_us = elapsed.as_micros() as f64 / 200.0;
+    assert!(
+        per_lookup_us < 5000.0,
+        "PoE 2 lookup took too long: {:.2} µs (expected < 5000 µs)",
+        per_lookup_us
+    );
+}
+
+#[test]
+fn test_poe2_fallback_substring_matching() {
+    let noisy = "前綴 額外獲得了 +40 最大精魂 魔法屬性";
+    let matched = lookup_stat_by_text(noisy).expect("Should substring match spirit");
+    assert_eq!(matched.id, "explicit.stat_spirit");
+    assert_eq!(matched.value, Some(40.0));
+
+    let noisy_roll = "Crafted 20% increased Dodge Roll Recovery Rate On Boots";
+    let matched_roll = lookup_stat_by_text(noisy_roll).expect("Should substring match roll");
+    assert_eq!(matched_roll.id, "explicit.stat_dodge_roll_recovery_rate");
+}
+
+#[test]
+fn test_poe2_bidirectional_base_type_lookups() {
+    // Waystone Tiers 1-16
+    assert_eq!(
+        lookup_english_base_type("尋路石 (階級 1)"),
+        Some("Waystone (Tier 1)".to_string())
+    );
+    assert_eq!(
+        lookup_chinese_base_type("Waystone (Tier 1)"),
+        Some("尋路石 (階級 1)".to_string())
+    );
+    assert_eq!(
+        lookup_english_base_type("尋路石 T16"),
+        Some("Waystone (Tier 16)".to_string())
+    );
+    assert_eq!(
+        lookup_chinese_base_type("Waystone (Tier 16)"),
+        Some("尋路石 (階級 16)".to_string())
+    );
+
+    // Uncut Gems T1-T20
+    assert_eq!(
+        lookup_english_base_type("未切割寶石 (階級 1)"),
+        Some("Uncut Gem (Tier 1)".to_string())
+    );
+    assert_eq!(
+        lookup_chinese_base_type("Uncut Gem (Tier 1)"),
+        Some("未切割寶石 (階級 1)".to_string())
+    );
+    assert_eq!(
+        lookup_english_base_type("未切割寶石 T20"),
+        Some("Uncut Gem (Tier 20)".to_string())
+    );
+    assert_eq!(
+        lookup_chinese_base_type("Uncut Gem (Tier 20)"),
+        Some("未切割寶石 (階級 20)".to_string())
+    );
+
+    // Runes & Currency
+    assert_eq!(
+        lookup_english_base_type("太陽符文"),
+        Some("Sun Rune".to_string())
+    );
+    assert_eq!(
+        lookup_chinese_base_type("Sun Rune"),
+        Some("太陽符文".to_string())
+    );
+    assert_eq!(lookup_english_base_type("金幣"), Some("Gold".to_string()));
+    assert_eq!(lookup_chinese_base_type("Gold"), Some("金幣".to_string()));
+    assert_eq!(
+        lookup_chinese_base_type("Divine Orb"),
+        Some("神聖石".to_string())
+    );
+}
