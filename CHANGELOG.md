@@ -10,6 +10,24 @@
 
 ---
 
+## [3.1.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **PoE 2 官方市集 API Client 與多引擎請求分發器 (PoE 2 Official Trade API Client & Multi-Engine Dispatcher)**：
+  - 擴充 Rust 後端 `trade_urls.rs`、`trade_client.rs` 與前端 `ApiClientFactory`、`useTradeSearchExecution`，依 `GameEngine` 狀態動態路由請求至 PoE 2 Trade API 端點（`/api/trade2/search/{league}` 與台服對應端點）([#175](https://github.com/saijo0404/POE-tool/issues/175), [#178](https://github.com/saijo0404/POE-tool/pull/178))。
+  - 實作 PoE 2 專屬聯盟清單快取、隔離的 Rate Limiter 速率通道與階梯退避防禦。
+  - 支援 PoE 2 特有之查詢 Payloads（精魂需求、符文孔位、銘刻地圖階級、未切割寶石階級過濾）。
+- **PoE 2 專屬基底與雙向繁中/英文詞綴數據字典庫 (PoE 2 Stat Dictionary & Bi-directional Lookup)**：
+  - 建立 PoE 2 專屬詞綴映射庫，收錄精魂保留、翻滾冷卻、能量護盾充能、積蓄、破甲等專屬屬性 ([#176](https://github.com/saijo0404/POE-tool/issues/176), [#180](https://github.com/saijo0404/POE-tool/pull/180))。
+  - 擴充繁中/英文雙向模糊匹配與 Rust Aho-Corasick 高速比對引擎，並支援銘刻地圖（Waystone）與未切割技能/輔助寶石（Uncut Gem）基底類型反查。
+  - 前端導出 `lookupPoe2Stat` 與 `lookupPoe2Base` 提供毫秒級雙向查表。
+- **PoE 2 剪貼簿一鍵智慧查價與自適應篩選 (PoE 2 Clipboard Price Checking & Smart Query Generation)**：
+  - 整合 `Poe2ItemParser`，將剪貼簿解析結果智慧轉譯為官方 Trade2 JSON 查詢結構 ([#177](https://github.com/saijo0404/POE-tool/issues/177), [#181](https://github.com/saijo0404/POE-tool/pull/181))。
+  - 自動套用精魂需求（Spirit）、符文插槽（Rune Sockets）、銘刻地圖/尋路石階級（Waystone Tier T1-T16）與未切割寶石階級（Uncut Gem Tier T1-T20）之數值篩選條件與公差區間。
+  - `OverlayHeader` 與查價介面自適應渲染 PoE 2 專屬徽章與標籤，懸浮查價即時分析中位數與市場行情。
+
+---
+
 ## [3.0.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -423,7 +441,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/saijo0404/POE-tool/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/saijo0404/POE-tool/compare/v2.12.0...v3.0.0
 [2.12.0]: https://github.com/saijo0404/POE-tool/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/saijo0404/POE-tool/compare/v2.10.0...v2.11.0

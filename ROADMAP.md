@@ -63,8 +63,8 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.11.0** | **核心架構收斂、技術債清理與 UI 原語重構** *(Core Refactoring, Tech Debt Cleanup & UI Primitives)* | ✅ 已發布 | [Milestone v2.11.0](https://github.com/saijo0404/POE-tool/milestone/14) |
 | 🟢 **v2.12.0** | **PoE 1 終極架構收斂與後端模組化** *(PoE 1 Final Convergence & Rust Modularization)* | ✅ 已發布 | [Milestone v2.12.0](https://github.com/saijo0404/POE-tool/milestone/15) |
 | 🟢 **v3.0.0** | **PoE 2 次世代雙核心架構基礎** *(PoE 2 Dual Engine Core Foundation)* | ✅ 已發布 | [Milestone v3.0.0](https://github.com/saijo0404/POE-tool/milestone/16) |
-| 🚀 **v3.1.0** | **PoE 2 官方市集對接與專屬詞綴數據字典** *(PoE 2 Official Trade API & Stat Dictionary)* | 🎯 規劃中 | 官方 Trade2 API、精魂/符文雙向字典、智慧查價 |
-| 🔮 **v3.2.0** | **PoE 2 雙武器配置與技能切換輔助系統** *(Dual Weapon Sets, Skill Binding & Dual Spec HUD)* | 🔭 規劃中 | 武器組 A/B 自動切換、專屬天賦樹配置、屬性即時差額 |
+| 🟢 **v3.1.0** | **PoE 2 官方市集對接與專屬詞綴數據字典** *(PoE 2 Official Trade API & Stat Dictionary)* | ✅ 已發布 | [Milestone v3.1.0](https://github.com/saijo0404/POE-tool/milestone/17) |
+| 🚀 **v3.2.0** | **PoE 2 雙武器配置與技能切換輔助系統** *(Dual Weapon Sets, Skill Binding & Dual Spec HUD)* | 🎯 規劃中 | 武器組 A/B 自動切換、專屬天賦樹配置、屬性即時差額 |
 | 🔮 **v3.3.0** | **PoE 2 銘刻地圖與深淵終局刷圖追蹤結算** *(PoE 2 Waystone & Endgame Mapping Analytics)* | 🔭 規劃中 | 銘刻地圖危險評級、終局刷圖收益日誌、金幣掉落統計 |
 | 🔮 **v3.4.0** | **PoE 2 符文工藝、未切割寶石切割期望與黑市交易** *(PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)* | 🔭 規劃中 | 符文雕刻工藝精算、未切割寶石價值矩陣、黑市金幣套利 |
 
@@ -141,14 +141,14 @@ gantt
     雙引擎狀態機與進程偵測抽象架構 (#166/#169)       :done,    m16_1, 2026-09-05, 2026-09-05
     雙引擎物品解析工廠與 PoE 2 剪貼簿解析 (#167/#170) :done,    m16_2, 2026-09-05, 2026-09-05
     全域雙核心切換器與 PoE 2 檢視適配 (#168/#171)   :done,    m16_3, 2026-09-05, 2026-09-05
-    section v3.1.0 市集與詞綴字典 (規劃中)
-    PoE 2 官方市集 API Client 與多引擎適配器         :crit, active, m17_1, 2026-09-06, 2026-09-08
-    PoE 2 專屬詞綴與基底雙向對照字典庫             :m17_2, 2026-09-07, 2026-09-09
-    PoE 2 剪貼簿一鍵智慧查價與篩選產生器           :m17_3, 2026-09-08, 2026-09-10
+    section v3.1.0 市集與詞綴字典 (已完成)
+    PoE 2 官方市集 API Client 與多引擎分發器 (#175/#178) :done,    m17_1, 2026-09-05, 2026-09-05
+    PoE 2 專屬詞綴與基底雙向對照字典庫 (#176/#180)       :done,    m17_2, 2026-09-05, 2026-09-05
+    PoE 2 剪貼簿一鍵智慧查價與自適應篩選 (#177/#181)     :done,    m17_3, 2026-09-05, 2026-09-05
     section v3.2.0 雙武器與技能輔助 (規劃中)
-    雙武器組與雙天賦分配領域模型                   :m18_1, 2026-09-10, 2026-09-12
-    雙武器組屬性差額與技能輸出即時對比引擎           :m18_2, 2026-09-11, 2026-09-13
-    遊戲內雙武器即時切換懸浮指引與狀態條           :m18_3, 2026-09-12, 2026-09-14
+    雙武器組與雙天賦分配領域模型                   :crit, active, m18_1, 2026-09-06, 2026-09-08
+    雙武器組屬性差額與技能輸出即時對比引擎           :m18_2, 2026-09-07, 2026-09-09
+    遊戲內雙武器即時切換懸浮指引與狀態條           :m18_3, 2026-09-08, 2026-09-10
     section v3.3.0 銘刻地圖與終局結算 (規劃中)
     銘刻地圖詞綴危險度評級與洗圖成本精算           :m19_1, 2026-09-15, 2026-09-17
     PoE 2 日誌解析與金幣/終局資產收益追蹤          :m19_2, 2026-09-16, 2026-09-18
@@ -492,24 +492,27 @@ gantt
 
 ---
 
-### 階段十五 (v3.1.0)：PoE 2 官方市集對接與專屬詞綴數據字典 (PoE 2 Official Trade API & Stat Dictionary)
+### 階段十五 (v3.1.0)：PoE 2 官方市集對接與專屬詞綴數據字典 (PoE 2 Official Trade API & Stat Dictionary) `[已發布]`
 
 > **核心目標**：全面打通 PoE 2 官方市集 API (`/api/trade2/`)，建立 PoE 2 專屬雙向繁中/英文詞綴與基底資料庫，並提供剪貼簿一鍵智慧查價與自訂篩選器生成。
 
 #### 📦 交付功能與關鍵項目
 
-1. **🌐 PoE 2 官方市集 API Client 與多引擎請求分發器 (PoE 2 Trade API Client & Multi-Engine Dispatcher)** `[規劃中]`
+1. **🌐 PoE 2 官方市集 API Client 與多引擎請求分發器 (PoE 2 Trade API Client & Multi-Engine Dispatcher)** `[已交付/已發布]`
    - 擴充 Rust 後端與 TypeScript 前端 API Client，依 `GameEngine` 狀態動態路由請求至 PoE 2 Trade API 端點（`/api/trade2/search/{league}` 與台服對應端點）。
    - 實作 PoE 2 專屬聯盟清單快取、隔離的 Rate Limiter 速率通道與階梯退避。
    - 支援 PoE 2 特有之查詢 Payloads（精魂需求、符文孔位、銘刻地圖階級、未切割寶石階級過濾）。
-2. **📖 PoE 2 專屬詞綴與基底雙向對照字典庫 (PoE 2 Stat Dictionary & Bi-directional Lookup)** `[規劃中]`
+   - 關聯 PR/Issue：[#175](https://github.com/saijo0404/POE-tool/issues/175), [#178](https://github.com/saijo0404/POE-tool/pull/178)
+2. **📖 PoE 2 專屬詞綴與基底雙向對照字典庫 (PoE 2 Stat Dictionary & Bi-directional Lookup)** `[已交付/已發布]`
    - 建立 PoE 2 專屬詞綴映射庫（收錄精魂保留、施法/攻擊速度分離、翻滾冷卻、能量護盾充能等新屬性）。
    - 擴充繁中/英文雙向模糊匹配與 Rust Aho-Corasick 高速比對引擎。
    - 支援銘刻地圖（Waystone）與未切割技能/輔助寶石（Uncut Gem）基底類型反查。
-3. **🔍 PoE 2 剪貼簿一鍵智慧查價與篩選產生器 (PoE 2 Smart Price Checker & Filter Generator)** `[規劃中]`
+   - 關聯 PR/Issue：[#176](https://github.com/saijo0404/POE-tool/issues/176), [#180](https://github.com/saijo0404/POE-tool/pull/180)
+3. **🔍 PoE 2 剪貼簿一鍵智慧查價與自適應篩選 (PoE 2 Clipboard Price Checking & Smart Query Generation)** `[已交付/已發布]`
    - 整合 `Poe2ItemParser`，將複製的 PoE 2 裝備即時轉譯為精準 Trade2 搜尋查詢。
    - 智慧過濾基礎數值並自動賦予合理公差區間（如精魂 $\ge 90\%$、抗性總和等）。
    - 查價懸浮窗自適應顯示 PoE 2 即時掛牌價、中位數與抗壓價建議售價。
+   - 關聯 PR/Issue：[#177](https://github.com/saijo0404/POE-tool/issues/177), [#181](https://github.com/saijo0404/POE-tool/pull/181)
 
 ---
 
