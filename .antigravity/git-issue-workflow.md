@@ -350,3 +350,17 @@ git worktree remove ../POE_tool_hotfix
 | **Rust Clippy 靜態分析** | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` | 異動 Rust 後端時 |
 | **Rust 後端單元測試** | `cargo test --manifest-path src-tauri/Cargo.toml` | 異動 Rust 後端時 |
 | **Windows 完整建置驗證** | `npm run tauri:build:win` | 發送 PR 前 / 發布驗證 |
+
+---
+
+## 4. 📦 版本發布與生命週期管理規範 (Release & Versioning Governance)
+
+為維持版本語意與里程碑純潔度，專案嚴格遵循 **SemVer 2.0.0** 與 **反微版本過度膨脹原則**：
+
+1. **語意化版本判定**：
+   - **Major (`vX.0.0`)**：跨世代架構轉折或破壞性資料結構變更（如 v3.0 雙核心架構、v4.0 智慧生態）。
+   - **Minor (`vX.Y.0`)**：完整業務主題 Epic（通常聚合 3~6 個關聯 Issue），禁止為單一小功能跳號。
+   - **Patch (`vX.Y.Z`)**：錯誤修復、熱修補、詞綴數據庫維護與內部重構。
+2. **完整規範手冊**：
+   - 請詳細參閱 [`.antigravity/versioning-policy.md`](file:///home/yijun/Project/POE_tool/.antigravity/versioning-policy.md) 了解發布 SOP 查驗清單與 Milestone 建立門檻。
+

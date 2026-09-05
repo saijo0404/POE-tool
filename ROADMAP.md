@@ -26,8 +26,9 @@
     - [階段十四 (v3.0.0)：PoE 2 次世代雙核心架構基礎 (PoE 2 Dual Engine Core Foundation)](#階段十四-v300poe-2-次世代雙核心架構基礎-poe-2-dual-engine-core-foundation)
     - [階段十五 (v3.1.0)：PoE 2 官方市集對接與專屬詞綴數據字典 (PoE 2 Official Trade API & Stat Dictionary)](#階段十五-v310poe-2-官方市集對接與專屬詞綴數據字典-poe-2-official-trade-api--stat-dictionary)
     - [階段十六 (v3.2.0)：PoE 2 雙武器配置與技能切換輔助系統 (Dual Weapon Sets, Skill Binding & Dual Spec HUD)](#階段十六-v320poe-2-雙武器配置與技能切換輔助系統-dual-weapon-sets-skill-binding--dual-spec-hud)
-    - [階段十七 (v3.3.0)：PoE 2 銘刻地圖與深淵終局刷圖追蹤結算 (PoE 2 Waystone & Endgame Mapping Analytics)](#階段十七-v330poe-2-銘刻地圖與深淵終局刷圖追蹤結算-poe-2-waystone--endgame-mapping-analytics)
-    - [階段十八 (v3.4.0)：PoE 2 符文工藝、未切割寶石切割期望與黑市交易 (PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)](#階段十八-v340poe-2-符文工藝未切割寶石切割期望與黑市交易-poe-2-rune-crafting-uncut-gem-cutting--black-market)
+    - [階段十七 (v3.3.0)：核心體驗重整與工程架構地基 (Core UX Modernization & Engineering Foundation)](#階段十七-v330核心體驗重整與工程架構地基-core-ux-modernization--engineering-foundation)
+    - [階段十八 (v3.4.0)：PoE 2 終局輿圖、深淵刷圖與經濟生態 (PoE 2 Endgame Mapping & Economic Ecosystem)](#階段十八-v340poe-2-終局輿圖深淵刷圖與經濟生態-poe-2-endgame-mapping--economic-ecosystem)
+    - [階段十九 (v4.0.0)：次世代流派智慧推薦與跨平台生態 (Intelligent Build Engine & Universal Platform)](#階段十九-v400次世代流派智慧推薦與跨平台生態-intelligent-build-engine--universal-platform)
 5. [🤝 參與貢獻與協作規範](#5--參與貢獻與協作規範)
 
 ---
@@ -39,7 +40,8 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 - ⚡ **原生極速、零肥大依賴**：基於 Tauri 2.0 + Rust 微核心，記憶體維持在 30~60MB 區間，摒棄肥重的 Electron 或 Node.js 執行期。
 - 🔒 **100% 本地安全與隱私第一**：無遠端數據收集伺服器，憑證與 Session 僅於本機與官方 API 溝通，保障玩家帳號安全。
 - 🇹🇼 **深耕繁體中文與台服市集**：內建 17,600+ 繁中詞綴對照與雙向智慧字典，弭平語言隔閡。
-- 🏛️ **六角架構與高標準工程品質**：模組化解耦（檔案 $\le 200$ 行、函式 $\le 30$ 行）、嚴格型別、全自動化測試保護（330+ 前端測試與 50+ Rust 測試）與 GitHub 標準協作流程。
+- 🏛️ **六角架構與高標準工程品質**：模組化解耦（檔案 $\le 200$ 行、函式 $\le 30$ 行）、嚴格型別、全自動化測試保護（900+ 前端測試與 70+ Rust 測試）與 GitHub 標準協作流程。
+- 📜 **語意化版本與發布治理**：嚴格遵循 [SemVer 2.0.0 與版本發布規範](.antigravity/versioning-policy.md)，杜絕微版本膨脹，以完整業務主題 Epic（Feature Pack）為 Minor 推進單位。
 
 ---
 
@@ -63,9 +65,11 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.11.0** | **核心架構收斂、技術債清理與 UI 原語重構** *(Core Refactoring, Tech Debt Cleanup & UI Primitives)* | ✅ 已發布 | [Milestone v2.11.0](https://github.com/saijo0404/POE-tool/milestone/14) |
 | 🟢 **v2.12.0** | **PoE 1 終極架構收斂與後端模組化** *(PoE 1 Final Convergence & Rust Modularization)* | ✅ 已發布 | [Milestone v2.12.0](https://github.com/saijo0404/POE-tool/milestone/15) |
 | 🟢 **v3.0.0** | **PoE 2 次世代雙核心架構基礎** *(PoE 2 Dual Engine Core Foundation)* | ✅ 已發布 | [Milestone v3.0.0](https://github.com/saijo0404/POE-tool/milestone/16) |
+| 🟢 **v3.1.0** | **PoE 2 官方市集對接與專屬詞綴數據字典** *(PoE 2 Official Trade API & Stat Dictionary)* | ✅ 已發布 | [Milestone v3.1.0](https://github.com/saijo0404/POE-tool/milestone/17) |
 | 🟢 **v3.2.0** | **PoE 2 雙武器配置與技能切換輔助系統** *(Dual Weapon Sets, Skill Binding & Dual Spec HUD)* | ✅ 已發布 | [Milestone v3.2.0](https://github.com/saijo0404/POE-tool/milestone/18) |
-| 🚀 **v3.3.0** | **PoE 2 銘刻地圖與深淵終局刷圖追蹤結算** *(PoE 2 Waystone & Endgame Mapping Analytics)* | 🎯 規劃中 | 銘刻地圖危險評級、終局刷圖收益日誌、金幣掉落統計 |
-| 🔮 **v3.4.0** | **PoE 2 符文工藝、未切割寶石切割期望與黑市交易** *(PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)* | 🔭 規劃中 | 符文雕刻工藝精算、未切割寶石價值矩陣、黑市金幣套利 |
+| 🚀 **v3.3.0** | **核心體驗重整與工程架構地基** *(Core UX Modernization & Engineering Foundation)* | 🎯 進行中 | [Milestone v3.3.0](https://github.com/saijo0404/POE-tool/milestone/19) |
+| 🔮 **v3.4.0** | **PoE 2 終局輿圖、深淵刷圖與經濟生態** *(PoE 2 Endgame Mapping & Economic Ecosystem)* | 🔭 規劃中 | [Milestone v3.4.0](https://github.com/saijo0404/POE-tool/milestone/20) |
+| 🌌 **v4.0.0** | **次世代流派智慧推薦與跨平台全螢幕生態** *(Intelligent Build Engine & Universal Platform)* | 📦 未來展望 | AI 流派契合推薦、跨平台 HUD、社群雲端同步 |
 
 ---
 
@@ -148,14 +152,20 @@ gantt
     雙武器組與雙天賦分配領域模型 (#183/#186)       :done,    m18_1, 2026-09-05, 2026-09-05
     雙武器組屬性差額與技能輸出即時對比引擎 (#184/#187) :done,    m18_2, 2026-09-05, 2026-09-05
     遊戲內雙武器即時切換懸浮指引與狀態條 (#185/#188)   :done,    m18_3, 2026-09-05, 2026-09-05
-    section v3.3.0 銘刻地圖與終局結算 (規劃中)
-    銘刻地圖詞綴危險度評級與洗圖成本精算           :crit, active, m19_1, 2026-09-06, 2026-09-08
-    PoE 2 日誌解析與金幣/終局資產收益追蹤          :m19_2, 2026-09-16, 2026-09-18
-    PoE 2 終局地圖塔台與生物群落策略輔助           :m19_3, 2026-09-17, 2026-09-19
-    section v3.4.0 符文工藝與黑市交易 (規劃中)
-    符文鑲嵌、雕刻工藝成本與屬性期望精算器           :m20_1, 2026-09-20, 2026-09-22
-    未切割寶石切割期望與高階技能溢價分析           :m20_2, 2026-09-21, 2026-09-23
-    PoE 2 黑市拍賣行即時行情與金幣套利精算          :m20_3, 2026-09-22, 2026-09-24
+    section v3.3.0 核心體驗重整與工程地基 (進行中)
+    版本生命週期與發布規範重塑 (#193)             :crit, active, m19_1, 2026-09-06, 2026-09-07
+    PoE 1 vs PoE 2 功能矩陣與自適應分區 (#194)    :m19_2, 2026-09-07, 2026-09-08
+    結構化滾動日誌與大小限制診斷匯出 (#195)         :m19_3, 2026-09-08, 2026-09-09
+    README 翻新與多層級文檔庫模組化 (#196)        :m19_4, 2026-09-09, 2026-09-10
+    應用主版面側邊導覽與首頁儀表板重構 (#197)      :m19_5, 2026-09-10, 2026-09-11
+    section v3.4.0 PoE 2 終局輿圖與經濟生態 (規劃中)
+    銘刻地圖詞綴危險度評級與洗圖成本精算 (#190)    :m20_1, 2026-09-15, 2026-09-17
+    PoE 2 遊戲日誌解析與金幣時薪收益追蹤 (#191)    :m20_2, 2026-09-17, 2026-09-19
+    終局地圖塔台與生物群落策略輔助 (#192)          :m20_3, 2026-09-19, 2026-09-21
+    符文鑲嵌雕刻工藝與黑市金幣套利精算             :m20_4, 2026-09-21, 2026-09-23
+    section v4.0.0 智慧推薦與跨平台生態 (未來展望)
+    神經網路/啟發式流派天賦與裝備契合度推薦        :m21_1, 2026-10-01, 2026-10-15
+    跨平台 HUD 支援與全域社群雲端同步             :m21_2, 2026-10-15, 2026-10-30
 ```
 
 ---
@@ -537,44 +547,74 @@ gantt
 
 ---
 
-### 階段十七 (v3.3.0)：PoE 2 銘刻地圖與深淵終局刷圖追蹤結算 (PoE 2 Waystone & Endgame Mapping Analytics)
+### 階段十七 (v3.3.0)：核心體驗重整與工程架構地基 (Core UX Modernization & Engineering Foundation) `[進行中]`
 
-> **核心目標**：針對 PoE 2 終局地圖系統「銘刻地圖 (Waystone)」與遠古方尖碑/生物群落機制，提供地圖風險評級、洗圖成本精算與收益自動結算。
+> **核心目標**：全面重組版本發布生命週期與 SemVer 治理規範、明確劃分 PoE 1 vs PoE 2 功能矩陣、建立具備檔案大小上限與輪替的結構化日誌系統、規格化拆分 `/docs` 文檔庫，並以左側導覽欄與 Home 總覽儀表板重構應用主畫面，徹底解決視覺與管理雜亂問題。
+
+#### 📦 交付功能與關鍵項目
+
+1. **📜 版本發布生命週期與里程碑架構重整 (Release Lifecycle & Versioning Governance)** `[進行中]`
+   - 制定語意化版本（SemVer 2.0.0）判定標準，杜絕微版本過度膨脹，以完整業務主題 Epic（Feature Pack）為 Minor 推進單位。
+   - 重組 `ROADMAP.md`，整併破碎微版本為高價值里程碑，規範 Milestone 一對一治理門檻與發布 SOP 查驗清單。
+   - 關聯 PR/Issue：[#193](https://github.com/saijo0404/POE-tool/issues/193)
+2. **🎯 PoE 1 vs PoE 2 功能能力矩陣與自適應 UI 分區 (PoE 1 vs PoE 2 Feature Matrix & UI Partitioning)** `[規劃中]`
+   - 建立型別安全領域模型 `FeatureCapabilityMatrix`，嚴格界定每個功能所屬之遊戲世代（PoE 1 專用、PoE 2 專用、雙版本共用）。
+   - 提供 `useFeatureEnabled(featureId)` Hook 與自適應導覽過濾，支援 PoE 2 專注模式（自動隱藏不相容舊賽季分頁）。
+   - 關聯 PR/Issue：[#194](https://github.com/saijo0404/POE-tool/issues/194)
+3. **🪵 結構化滾動日誌系統與檔案大小限制 (Structured Rotating Logger with Size Caps)** `[規劃中]`
+   - 後端 Rust 整合滾動日誌機制，單檔嚴格限制 5MB，最多保留 3~5 份輪替檔案，徹底根絕磁碟無效膨脹。
+   - 自動遮蔽脫敏敏感憑證（`POESESSID`、Token、Cookie）。
+   - 前端提供 `logger` 工具並透過 IPC 寫入統一檔案，介面提供「一鍵匯出診斷日誌」供玩家回報與 Agent 除錯。
+   - 關聯 PR/Issue：[#195](https://github.com/saijo0404/POE-tool/issues/195)
+4. **📚 README 現代化翻新與軟體工程級多層文檔庫 (README Modernization & Modular /docs Architecture)** `[規劃中]`
+   - 精簡 `README.md` 為乾淨現代化的產品入口首頁，更新最新測試數與雙引擎特性。
+   - 規格化拆分文檔庫至 `/docs/`：`user-guide/`（使用者操作手冊）、`features/`（功能矩陣詳解）、`architecture/`（六角架構與安全模型）、`development/`（開發者規範與 PR 流程）。
+   - 關聯 PR/Issue：[#196](https://github.com/saijo0404/POE-tool/issues/196)
+5. **🎨 應用主版面側邊導覽與首頁儀表板重構 (Sidebar Navigation & Home Dashboard Redesign)** `[規劃中]`
+   - 移除頂部過載的水平按鈕列，改採左側模組分組邊欄（【市集與定價】、【輿圖與刷圖】、【流派與工藝】、【資產財務】），支援收合為極簡圖示模式。
+   - 建立現代化 Home 總覽儀表板，提供聯盟經濟看板、快捷操作卡片與最近刷圖收益概況。
+   - 統一設計系統 Token（三層 Surface 階層深度、間距與按鈕語義），根絕視覺雜亂與水平溢出。
+   - 關聯 PR/Issue：[#197](https://github.com/saijo0404/POE-tool/issues/197)
+
+---
+
+### 階段十八 (v3.4.0)：PoE 2 終局輿圖、深淵刷圖與經濟生態 (PoE 2 Endgame Mapping & Economic Ecosystem) `[規劃中]`
+
+> **核心目標**：完整打通 PoE 2 終局地圖系統「銘刻地圖 (Waystone)」、遠古方尖塔台 (Precursor Towers)、生物群落連線加成、遊戲日誌資產收益追蹤，以及符文工藝與黑市拍賣行之深度套利精算。
 
 #### 📦 交付功能與關鍵項目
 
 1. **🗺️ 銘刻地圖詞綴危險度評級與洗圖成本精算器 (Waystone Mod Risk Rating & Rolling Cost Forecaster)** `[規劃中]`
    - 收錄 PoE 2 銘刻地圖專屬詞綴（怪物增益、環境危害、首領額外技能、地形修正）。
-   - 建立玩家機體弱點比對引擎，標記致命詞綴（Instant Rip Warnings）與推薦規避詞綴。
-   - 精算使用各類 PoE 2 專屬洗圖通貨洗出高掉落且安全銘刻地圖的平均期望成本。
+   - 建立機體弱點比對引擎，標記致命詞綴（Instant Rip Warnings）與推薦規避詞綴。
+   - 精算使用各類洗圖通貨洗出高掉落安全地圖的平均期望成本。
+   - 關聯 PR/Issue：[#190](https://github.com/saijo0404/POE-tool/issues/190)
 2. **📊 PoE 2 遊戲日誌解析與金幣/終局資產收益追蹤器 (PoE 2 Game Log Parser & Gold/Drop Profit Tracker)** `[規劃中]`
-   - 適配 PoE 2 遊戲日誌格式，自動偵測進入/離開銘刻地圖、區域切換與首領擊殺事件。
-   - 即時追蹤單場金幣 (Gold) 掉落量、先祖貨幣與終局裝備資產差額。
-   - 產生單場時薪、金幣時薪、累積淨收益報表與時薪回報曲線圖。
+   - 適配 PoE 2 遊戲日誌格式，自動偵測進入/離開銘刻地圖、區域切換、首領擊殺與死亡事件。
+   - 即時追蹤單場金幣 (Gold) 掉落量、先祖貨幣與終局裝備資產差額，產出時薪與金幣時薪報表。
+   - 關聯 PR/Issue：[#191](https://github.com/saijo0404/POE-tool/issues/191)
 3. **🧭 PoE 2 終局地圖塔台與生物群落策略輔助 (Waystone Towers & Biome Strategy Optimizer)** `[規劃中]`
    - 提供 PoE 2 終局輿圖地圖塔台（Precursor Towers）增益效果與相鄰區域連線加成模擬。
-   - 根據當前區域生物群落（Biome）推薦最佳銘刻地圖階級與附加道具組合。
+   - 依據當前區域生物群落（Biome）推薦最佳銘刻地圖階級與附加道具組合。
+   - 關聯 PR/Issue：[#192](https://github.com/saijo0404/POE-tool/issues/192)
+4. **🔨 符文工藝雕刻精算與黑市拍賣行即時行情 (Rune Crafting Forecaster & Black Market Arbitrage)** `[規劃中]`
+   - 模擬符文雕刻（Carving）至裝備空插槽的屬性覆蓋與不可逆工藝成本。
+   - 計算未切割技能/輔助寶石之市場切割期望溢價。
+   - 對接黑市拍賣行數據，計算金幣 (Gold) 動態兌換比率與套利空間。
 
 ---
 
-### 階段十八 (v3.4.0)：PoE 2 符文工藝、未切割寶石切割期望與黑市交易 (PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)
+### 階段十九 (v4.0.0)：次世代流派智慧推薦與跨平台生態 (Intelligent Build Engine & Universal Platform) `[未來展望]`
 
-> **核心目標**：深化 PoE 2 全新工藝系統（符文鑲嵌雕刻、未切割寶石切割選擇）與官方大宗黑市通貨/物品拍賣場之套利精算。
+> **核心目標**：引進啟發式神經網路流派裝備契合度推薦、全面支援 Steam Deck / 移動端 HUD 與社群雲端即時同步。
 
 #### 📦 交付功能與關鍵項目
 
-1. **🔨 符文鑲嵌、雕刻工藝成本與屬性期望精算器 (Rune Socketing & Carving EV Forecaster)** `[規劃中]`
-   - 收錄 PoE 2 全系列符文（Runes）之固定屬性與特殊技能輔助效果。
-   - 模擬符文雕刻（Carving）至裝備空插槽的屬性覆蓋與不可逆工藝成本。
-   - 提供最佳符文搭配推薦與套裝效益評估。
-2. **💎 未切割寶石切割期望與高階技能溢價分析 (Uncut Gem Cutting Strategy & Skill Market Matrix)** `[規劃中]`
-   - 收錄各階級未切割技能寶石（Uncut Skill Gem Tier 1~20）與輔助寶石（Uncut Support Gem）可切割選項庫。
-   - 結合當前市集價格，即時計算將未切割寶石切割為特定技能/輔助寶石之市場溢價與期望套利空間。
-   - 推薦最高轉化利潤 Top 5 技能寶石。
-3. **🪙 PoE 2 黑市拍賣行即時行情與金幣套利精算器 (PoE 2 Black Market Instant Rates & Gold Arbitrage)** `[規劃中]`
-   - 對接 PoE 2 官方即時黑市拍賣場數據。
-   - 計算金幣 (Gold) 與各類通貨/裝備之動態兌換比率與手續費最佳化。
-   - 提供拍賣場掛單出價策略與快速變現建議。
+1. **🧠 AI 流派配裝智慧推薦與屬性瓶頸診斷 (AI Build Optimizer & Gear Diagnostic)** `[未來展望]`
+   - 根據角色目前的天賦樹、珠寶插槽與抗性/傷害面板，智慧推薦性價比最高之替換裝備與市集搜尋條件。
+2. **🎮 跨平台深度適配與行動遠端儀表板 (Universal Platform & Remote Companion)** `[未來展望]`
+   - Steam Deck / Linux 專屬手把操作 HUD 模式與快速輪盤。
+   - 手機/平板端本機區域網路即時檢視倉庫資產與刷圖時薪。
 
 ---
 
