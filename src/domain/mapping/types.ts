@@ -25,6 +25,8 @@ export interface MapDropItem {
 export interface MapRun {
   id: string;
   runNumber: number;
+  mapName?: string;
+  mapTier?: number;
   startTime: number;
   endTime: number;
   durationSeconds: number;
