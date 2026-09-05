@@ -8,6 +8,7 @@ import { MappingProfitChart } from './MappingProfitChart';
 import { MappingRunsTable } from './MappingRunsTable';
 import { MappingInvestmentModal } from './MappingInvestmentModal';
 import { MappingHistoryAnalyticsCard } from './MappingHistoryAnalyticsCard';
+import { DeviceBreakEvenCard } from './DeviceBreakEvenCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -78,6 +79,22 @@ export const MappingTracker: React.FC<MappingTrackerProps> = ({
         sessions={sessions}
         divineRate={divineRate}
         currentLeague={league}
+      />
+
+      {/* Device Craft Break-even Forecaster (Issue #123) */}
+      <DeviceBreakEvenCard
+        currentCraftCost={activeSession.defaultInvestment?.craftCostChaos}
+        onApplyCraftCost={cost => {
+          const prev = activeSession.defaultInvestment;
+          const totalC = (prev?.mapCostChaos || 0) + (prev?.scarabsCostChaos || 0) + cost + (prev?.otherCostChaos || 0);
+          handleUpdateInvestment({
+            ...prev,
+            craftCostChaos: cost,
+            totalCostChaos: totalC,
+            totalCostDivine: Math.round((totalC / divineRate) * 100) / 100
+          });
+          onShowToast(`已套用地圖儀工藝成本：${cost} C`);
+        }}
       />
 
       {/* Timer & Live Settle Card */}
