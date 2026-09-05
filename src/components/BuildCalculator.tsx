@@ -5,6 +5,7 @@ import { BuildInputBar } from './build/BuildInputBar';
 import { BuildHeaderCard } from './build/BuildHeaderCard';
 import { BuildCategoryTabs } from './build/BuildCategoryTabs';
 import { BuildItemRow } from './build/BuildItemRow';
+import { TimelessJewelCard } from './jewel/TimelessJewelCard';
 
 interface BuildCalculatorProps {
   league: string;
@@ -98,6 +99,11 @@ export const BuildCalculator: React.FC<BuildCalculatorProps> = ({ league, onShow
           </div>
         </>
       )}
+
+      {/* Timeless Jewel Seed & Keystone Evaluator (Issue #135) */}
+      <div style={{ marginTop: '20px' }}>
+        <TimelessJewelCard onShowToast={onShowToast} />
+      </div>
     </div>
   );
 };
