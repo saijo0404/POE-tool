@@ -135,9 +135,10 @@ npm run tauri:build:win
 #### 1. 提交 Commit (遵循 Conventional Commits)
 ```bash
 git add .
-git commit -m "[Fix] 修復預設 poeplanner.com 輿圖天賦網址無法在網頁載入之問題 (#2)"
+git commit -m "fix(atlas): repair default poeplanner.com URL loading format"
 ```
-*前綴標準：`[Fix]`, `[Feat]`, `[Refactor]`, `[Perf]`, `[Docs]`, `[CI]`*
+*前綴標準：`feat(scope):`, `fix(scope):`, `refactor(scope):`, `perf(scope):`, `docs(scope):`, `test(scope):`, `ci(scope):`, `chore(scope):`*
+*注意：請勿在 Commit 標題或 PR 標題手動加上 `(#123)`，以免 Squash Merge 時產生重複編號。*
 
 #### 2. 推送至遠端工作分支
 ```bash
@@ -150,7 +151,7 @@ git push -u origin fix/issue-2-poeplanner-atlas-tree-url
 ```bash
 # 正式 PR
 gh pr create \
-  --title "[Fix] 修復預設 poeplanner.com 輿圖天賦網址無法在網頁載入之問題" \
+  --title "fix(atlas): repair default poeplanner.com URL loading format" \
   --body "## 變更摘要
 - 修正 atlasPresets.ts 預設天賦網址為標準連結
 - 加入資料清洗與自動遷移保護

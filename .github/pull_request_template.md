@@ -1,13 +1,19 @@
 <!--
   感謝您為 POE_tool 提交 Pull Request！
   
-  PR 標題格式建議：
-    [Feat] 新增功能 (例如: [Feat] 新增 3.25 輿圖聖甲蟲策略模擬器)
-    [Fix] 修復問題 (例如: [Fix] 修復繁中勢力詞綴解析錯誤)
-    [Refactor] 重構 (例如: [Refactor] 抽離 Trade API 限流器為獨立模組)
-    [Perf] 效能優化 (例如: [Perf] 加快倉庫資產快照載入速度)
-    [Docs] 文檔更新 (例如: [Docs] 更新快速鍵設定與使用說明)
-    [CI] CI/CD 與建置 (例如: [CI] 優化 Windows 打包與 Release 工作流)
+  PR 標題格式必須遵循 Conventional Commits 標準：
+    feat(atlas): 新增 3.25 輿圖聖甲蟲策略模擬器
+    fix(trade): 修復繁中勢力詞綴解析錯誤
+    refactor(parser): 抽離 Trade API 限流器為獨立模組
+    perf(wealth): 加快倉庫資產快照載入速度
+    docs(readme): 更新快速鍵設定與使用說明
+    ci(release): 優化 Windows 打包與 Release 工作流
+    chore(deps): 升級核心依賴套件
+
+  重要提示：
+    1. 請勿在標題使用大括號格式（避免 '[Feat]'、'[Fix]'）。
+    2. 請勿在標題手動輸入 '(#123)' 或 Issue 編號（以防 Squash Merge 時產生重複編號標籤）。
+    3. 關聯 Issue 請寫在下方的「關聯 Issue」欄位（例如：Closes #123 或 Fixes #456）。
 -->
 
 ## 變更摘要 (Summary)

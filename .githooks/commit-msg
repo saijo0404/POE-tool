@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Git commit-msg hook for Conventional Commits enforcement
+# Part of POE_tool Forward-Looking Governance
+
+COMMIT_MSG_FILE="$1"
+FIRST_LINE=$(head -n 1 "$COMMIT_MSG_FILE")
+
+# Allow Merge, Revert or automated commits
+if [[ "$FIRST_LINE" =~ ^Merge ]] || [[ "$FIRST_LINE" =~ ^(Revert\ \") ]] || [[ "$FIRST_LINE" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+  exit 0
+fi
+
+# Reject deprecated bracket format: [Feat], [Fix], etc.
+if [[ "$FIRST_LINE" =~ ^\[(Feat|Fix|Refactor|Perf|Docs|CI|Test|Release)\] ]]; then
+  echo "❌ [Git Hook 錯誤] Commit 訊息不符合 Conventional Commits 規範！"
+  echo "   發現舊式大括號格式: '$FIRST_LINE'"
+  echo "   👉 請改用標準小寫結構，例如: 'feat(atlas): 新增功能' 或 'fix(trade): 修復錯誤'"
+  exit 1
+fi
+
+# Reject double issue citations: (#123) (#456)
+if [[ "$FIRST_LINE" =~ \([#0-9]+\)[[:space:]]+\([#0-9]+\) ]]; then
+  echo "❌ [Git Hook 錯誤] 發現重複的 Issue/PR 編號標籤！"
+  echo "   👉 請勿在 commit 訊息手動附加多重編號，GitHub 在 Squash Merge 時會自動標註 PR 編號。"
+  exit 1
+fi
+
+# Validate Conventional Commits pattern
+CONVENTIONAL_REGEX="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_\.\/-]+\))?: .+$"
+if ! [[ "$FIRST_LINE" =~ $CONVENTIONAL_REGEX ]]; then
+  echo "❌ [Git Hook 錯誤] Commit 訊息格式不正確！"
+  echo "   您的提交: '$FIRST_LINE'"
+  echo ""
+  echo "   標準格式應為: <type>(<optional scope>): <subject>"
+  echo "   合法 Type 包含: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+  echo "   範例:"
+  echo "     feat(atlas): 實作輿圖聖甲蟲套利精算"
+  echo "     fix(trade): 修復市集查詢空數值報錯"
+  echo "     refactor(parser): 模組化裝備解析模組"
+  echo "     chore(release): bump version to v2.12.0"
+  exit 1
+fi
+
+exit 0
