@@ -1,6 +1,12 @@
+import type { GameEngine } from '../engine/types';
 import type { ParsedItem, ParsedItemMod } from '../item/types';
 
 export type TradeStatusOption = 'instant' | 'securable' | 'any_buyout' | 'onlineleague' | 'online' | 'any';
+
+export interface TradeLeagueEntry {
+  id: string;
+  text: string;
+}
 
 export interface TradeQueryFilter {
   statId: string;
@@ -16,6 +22,7 @@ export interface TradeSortConfig {
 
 export interface TradeQueryRequest {
   league?: string;
+  engine?: GameEngine;
   tradeStatus?: TradeStatusOption;
   rarity?: string;
   baseType?: string;
@@ -30,6 +37,10 @@ export interface TradeQueryRequest {
   sort?: TradeSortConfig;
   fetchOffset?: number;
   searchId?: string;
+  spiritMin?: number;
+  runeSocketsMin?: number;
+  waystoneTierMin?: number;
+  uncutGemTierMin?: number;
 }
 
 export interface TradeItemProperty {
@@ -110,6 +121,7 @@ export interface TravelToHideoutPayload {
   league?: string;
   searchId?: string;
   itemId?: string;
+  engine?: GameEngine;
 }
 
 export interface TravelToHideoutResult {

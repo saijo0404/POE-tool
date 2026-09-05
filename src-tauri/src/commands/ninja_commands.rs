@@ -24,6 +24,7 @@ pub async fn calculate_build(ninja_url: String) -> Result<BuildCostResult, Strin
 pub async fn fetch_build_item_live_price(
     league: String,
     query_json: String,
+    engine: Option<String>,
 ) -> Result<crate::models::trade::TradeSearchResult, String> {
-    crate::services::trade::search_trade_raw_json(&league, &query_json).await
+    crate::services::trade::search_trade_raw_json(&league, &query_json, engine.as_deref()).await
 }

@@ -40,11 +40,19 @@ pub async fn search_trade(request: TradeQueryRequest) -> Result<TradeSearchResul
 }
 
 #[tauri::command]
+pub async fn get_trade_leagues(
+    engine: Option<String>,
+) -> Result<Vec<crate::models::trade::TradeLeagueEntry>, String> {
+    Ok(crate::services::trade::league_service::fetch_trade_leagues(engine.as_deref()).await)
+}
+
+#[tauri::command]
 pub async fn send_official_whisper(
     token: String,
     league: Option<String>,
+    engine: Option<String>,
 ) -> Result<String, String> {
-    send_whisper_service(&token, league.as_deref()).await
+    send_whisper_service(&token, league.as_deref(), engine.as_deref()).await
 }
 
 #[tauri::command]
@@ -53,6 +61,7 @@ pub async fn travel_to_hideout(
     token: Option<String>,
     character_name: Option<String>,
     league: Option<String>,
+    engine: Option<String>,
 ) -> Result<TravelResult, String> {
     let hideout_cmd = if let Some(ref char_name) = character_name {
         if !char_name.trim().is_empty() {
@@ -69,7 +78,7 @@ pub async fn travel_to_hideout(
 
     if let Some(tok) = token {
         if !tok.trim().is_empty() {
-            match send_whisper_service(&tok, league.as_deref()).await {
+            match send_whisper_service(&tok, league.as_deref(), engine.as_deref()).await {
                 Ok(_) => {
                     official_whisper_sent = true;
                 }

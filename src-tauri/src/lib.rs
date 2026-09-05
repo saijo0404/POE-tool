@@ -44,6 +44,7 @@ pub fn run() {
             // Trade & Parser Commands
             commands::parse_item,
             commands::search_trade,
+            commands::get_trade_leagues,
             commands::send_official_whisper,
             commands::travel_to_hideout,
             commands::create_trade_search_url,

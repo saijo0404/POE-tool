@@ -7,7 +7,9 @@ import type {
   SessionHealthInfo
 } from '../../domain/settings/types';
 import type { ParsedItem } from '../../domain/item/types';
+import type { GameEngine } from '../../domain/engine/types';
 import type {
+  TradeLeagueEntry,
   TradeQueryRequest,
   TradeSearchResult,
   TravelToHideoutPayload,
@@ -42,10 +44,11 @@ export interface IPoeApiClient {
   // Item & Trade
   parseItem(itemText: string): Promise<ParsedItem>;
   searchTrade(payload: TradeQueryRequest): Promise<TradeSearchResult>;
-  sendOfficialWhisper(token: string, league?: string): Promise<{ success: boolean; message?: string }>;
+  getTradeLeagues(engine?: GameEngine): Promise<TradeLeagueEntry[]>;
+  sendOfficialWhisper(token: string, league?: string, engine?: GameEngine): Promise<{ success: boolean; message?: string }>;
   travelToHideout(payload: TravelToHideoutPayload): Promise<TravelToHideoutResult>;
-  fetchBuildItemLivePrice(league: string, queryJson: string): Promise<TradeSearchResult>;
-  createTradeSearchUrl(league: string, queryJson: string): Promise<string>;
+  fetchBuildItemLivePrice(league: string, queryJson: string, engine?: GameEngine): Promise<TradeSearchResult>;
+  createTradeSearchUrl(league: string, queryJson: string, engine?: GameEngine): Promise<string>;
   openExternalUrl(url: string): Promise<void>;
   openAtlasTreeWindow(url: string, title?: string): Promise<void>;
   triggerInGameCommand(command: string): Promise<boolean>;

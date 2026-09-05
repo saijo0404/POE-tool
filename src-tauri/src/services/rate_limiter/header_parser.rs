@@ -1,5 +1,6 @@
 use super::{
-    set_rate_limit_block, ChannelState, RequestChannel, FETCH_LOCK, SEARCH_LOCK, STASH_LOCK,
+    set_channel_rate_limit_block, ChannelState, RequestChannel, FETCH_LOCK, FETCH_POE2_LOCK,
+    SEARCH_LOCK, SEARCH_POE2_LOCK, STASH_LOCK,
 };
 use tokio::sync::Mutex;
 
@@ -10,7 +11,7 @@ pub fn update_rate_limits_from_headers(
     if let Some(retry_val) = headers.get("retry-after") {
         if let Ok(retry_str) = retry_val.to_str() {
             if let Ok(sec) = retry_str.trim().parse::<u64>() {
-                set_rate_limit_block(sec);
+                set_channel_rate_limit_block(channel, sec);
             }
         }
     }
@@ -58,8 +59,8 @@ pub(crate) fn parse_and_apply_rate_limit(
         .collect();
 
     let mut max_wait_suggested = match channel {
-        RequestChannel::Search => 1500,
-        RequestChannel::Fetch => 1000,
+        RequestChannel::Search | RequestChannel::SearchPoe2 => 1500,
+        RequestChannel::Fetch | RequestChannel::FetchPoe2 => 1000,
         RequestChannel::Stash => 800,
     };
 
@@ -86,6 +87,8 @@ pub(crate) fn parse_and_apply_rate_limit(
         RequestChannel::Search => &SEARCH_LOCK,
         RequestChannel::Fetch => &FETCH_LOCK,
         RequestChannel::Stash => &STASH_LOCK,
+        RequestChannel::SearchPoe2 => &SEARCH_POE2_LOCK,
+        RequestChannel::FetchPoe2 => &FETCH_POE2_LOCK,
     };
 
     if let Ok(mut state) = mutex.try_lock() {

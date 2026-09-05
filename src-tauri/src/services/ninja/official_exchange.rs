@@ -11,7 +11,7 @@ pub async fn fetch_ggg_live_divine_rate(client: &reqwest::Client, league: &str) 
         "https://www.pathofexile.com/api/trade/exchange/{}",
         urlencoding::encode(league)
     );
-    let headers = build_trade_headers(&settings, league, None);
+    let headers = build_trade_headers(&settings, league, None, false);
 
     let payload = json!({
         "exchange": {

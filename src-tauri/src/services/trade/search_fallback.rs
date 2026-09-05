@@ -1,4 +1,5 @@
 use super::trade_headers::build_trade_headers;
+use super::trade_urls::get_trade_search_api_url;
 use crate::models::settings::AppSettings;
 use crate::services::rate_limiter::{acquire_channel_slot, RequestChannel};
 use serde_json::Value;
@@ -10,6 +11,7 @@ pub async fn handle_search_error(
     settings: &AppSettings,
     has_auth: bool,
     search_res: reqwest::Response,
+    is_poe2: bool,
 ) -> Result<(String, Value), String> {
     let res_headers = search_res.headers().clone();
     let status_code = search_res.status();
@@ -23,11 +25,13 @@ pub async fn handle_search_error(
             settings,
             has_auth,
             &err_text,
+            is_poe2,
         )
         .await;
     }
     if target_league != "Standard" && status_code.as_u16() == 400 {
-        return execute_standard_fallback(client, search_payload, settings, has_auth).await;
+        return execute_standard_fallback(client, search_payload, settings, has_auth, is_poe2)
+            .await;
     }
 
     let (state, msg) = crate::services::session::classify_http_trade_error(
@@ -50,6 +54,7 @@ async fn retry_without_unknown_stat(
     settings: &AppSettings,
     has_auth: bool,
     err_text: &str,
+    is_poe2: bool,
 ) -> Result<(String, Value), String> {
     let bad_stat = err_text
         .split("Unknown stat provided:")
@@ -70,12 +75,14 @@ async fn retry_without_unknown_stat(
         stats_arr.retain(|g| g["filters"].as_array().is_some_and(|f| !f.is_empty()));
     }
 
-    acquire_channel_slot(RequestChannel::Search, has_auth).await?;
-    let search_url = format!(
-        "https://www.pathofexile.com/api/trade/search/{}",
-        urlencoding::encode(target_league)
-    );
-    let search_headers = build_trade_headers(settings, target_league, None);
+    let channel = if is_poe2 {
+        RequestChannel::SearchPoe2
+    } else {
+        RequestChannel::Search
+    };
+    acquire_channel_slot(channel, has_auth).await?;
+    let search_url = get_trade_search_api_url(is_poe2, false, target_league);
+    let search_headers = build_trade_headers(settings, target_league, None, is_poe2);
     let retry_res = client
         .post(&search_url)
         .headers(search_headers)
@@ -100,12 +107,18 @@ async fn execute_standard_fallback(
     search_payload: &Value,
     settings: &AppSettings,
     has_auth: bool,
+    is_poe2: bool,
 ) -> Result<(String, Value), String> {
-    acquire_channel_slot(RequestChannel::Search, has_auth).await?;
-    let fallback_url = "https://www.pathofexile.com/api/trade/search/Standard";
-    let fallback_headers = build_trade_headers(settings, "Standard", None);
+    let channel = if is_poe2 {
+        RequestChannel::SearchPoe2
+    } else {
+        RequestChannel::Search
+    };
+    acquire_channel_slot(channel, has_auth).await?;
+    let fallback_url = get_trade_search_api_url(is_poe2, false, "Standard");
+    let fallback_headers = build_trade_headers(settings, "Standard", None, is_poe2);
     let fallback_res = client
-        .post(fallback_url)
+        .post(&fallback_url)
         .headers(fallback_headers)
         .json(search_payload)
         .send()
@@ -114,11 +127,11 @@ async fn execute_standard_fallback(
 
     if fallback_res.status().is_success() {
         let data: Value = fallback_res.json().await.map_err(|e| e.to_string())?;
+        crate::app_log!(
+            "[Trade LiveSync] ⚠️ 當前聯盟查詢 400 錯誤，已自動切換回退至 Standard 聯盟重試成功！"
+        );
         Ok(("Standard".to_string(), data))
     } else {
-        Err(format!(
-            "官方市集搜尋回傳錯誤: {}",
-            fallback_res.text().await.unwrap_or_default()
-        ))
+        Err("查詢條件無效且 Standard 聯盟亦查無資料".to_string())
     }
 }

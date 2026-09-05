@@ -46,10 +46,21 @@ describe('poeApi service - Trade, Ninja & Auth', () => {
       expect(res).toEqual(mockResult);
     });
 
-    it('sendOfficialWhisper posts token and league to /api/trade/whisper', async () => {
+    it('getTradeLeagues returns list or fallback', async () => {
+      const mockLeagues = [{ id: 'Standard', text: 'Standard' }, { id: 'Early Access', text: 'Early Access' }];
+      vi.spyOn(axios, 'get').mockResolvedValueOnce({ data: mockLeagues });
+      const res = await poeApi.getTradeLeagues('poe2');
+      expect(res).toEqual(mockLeagues);
+
+      vi.spyOn(axios, 'get').mockRejectedValueOnce(new Error('Network error'));
+      const fallback = await poeApi.getTradeLeagues('poe2');
+      expect(fallback.some(l => l.id === 'Early Access')).toBe(true);
+    });
+
+    it('sendOfficialWhisper posts token, league and engine to /api/trade/whisper', async () => {
       const postSpy = vi.spyOn(axios, 'post').mockResolvedValueOnce({ data: { success: true } });
-      const res = await poeApi.sendOfficialWhisper('token123', 'Settlers');
-      expect(postSpy).toHaveBeenCalledWith('/api/trade/whisper', { token: 'token123', league: 'Settlers' }, undefined);
+      const res = await poeApi.sendOfficialWhisper('token123', 'Standard', 'poe2');
+      expect(postSpy).toHaveBeenCalledWith('/api/trade/whisper', { token: 'token123', league: 'Standard', engine: 'poe2' }, undefined);
       expect(res?.success).toBe(true);
     });
 
@@ -57,21 +68,25 @@ describe('poeApi service - Trade, Ninja & Auth', () => {
       const postSpy = vi.spyOn(axios, 'post').mockResolvedValueOnce({
         data: { success: true, gameTriggered: true, hideoutCmd: '/hideout SlayerGod' }
       });
-      const res = await poeApi.travelToHideout({ token: 'tok', characterName: 'SlayerGod', league: 'Settlers' });
-      expect(postSpy).toHaveBeenCalledWith('/api/trade/travel', { token: 'tok', characterName: 'SlayerGod', league: 'Settlers' }, undefined);
+      const res = await poeApi.travelToHideout({ token: 'tok', characterName: 'SlayerGod', league: 'Standard', engine: 'poe2' });
+      expect(postSpy).toHaveBeenCalledWith('/api/trade/travel', { token: 'tok', characterName: 'SlayerGod', league: 'Standard', engine: 'poe2' }, undefined);
       expect(res?.gameTriggered).toBe(true);
     });
 
-    it('fetchBuildItemLivePrice posts raw query to /api/trade/search-raw', async () => {
+    it('fetchBuildItemLivePrice posts raw query and engine to /api/trade/search-raw', async () => {
       const mockResult = { id: 'search-raw', total: 5, listings: [] };
-      vi.spyOn(axios, 'post').mockResolvedValueOnce({ data: mockResult });
-      const res = await poeApi.fetchBuildItemLivePrice('Settlers', '{"name":"Starforge"}');
+      const postSpy = vi.spyOn(axios, 'post').mockResolvedValueOnce({ data: mockResult });
+      const res = await poeApi.fetchBuildItemLivePrice('Standard', '{"name":"Starforge"}', 'poe2');
+      expect(postSpy).toHaveBeenCalledWith('/api/trade/search-raw', { league: 'Standard', queryJson: '{"name":"Starforge"}', engine: 'poe2' }, undefined);
       expect(res).toEqual(mockResult);
     });
 
     it('createTradeSearchUrl and openExternalUrl in web mode', async () => {
-      const url = await poeApi.createTradeSearchUrl('Settlers', '{}');
-      expect(url).toBe('https://www.pathofexile.com/trade/search/Settlers');
+      const urlPoe1 = await poeApi.createTradeSearchUrl('Settlers', '{}', 'poe1');
+      expect(urlPoe1).toBe('https://www.pathofexile.com/trade/search/Settlers');
+
+      const urlPoe2 = await poeApi.createTradeSearchUrl('Standard', '{}', 'poe2');
+      expect(urlPoe2).toBe('https://www.pathofexile.com/trade2/search/Standard');
 
       const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
       await poeApi.openExternalUrl('https://example.com');
