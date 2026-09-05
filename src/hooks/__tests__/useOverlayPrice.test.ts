@@ -82,4 +82,46 @@ describe('useOverlayPrice Hook', () => {
 
     expect(poeApi.hideOverlayWindow).toHaveBeenCalled();
   });
+
+  it('passes PoE 2 engine and dedicated filters to searchTrade for PoE 2 items', async () => {
+    const mockPoe2Parsed = {
+      name: '尋路石 (階級 15)',
+      baseType: '尋路石 (階級 15)',
+      rarity: 'Normal' as const,
+      language: 'zh' as const,
+      implicits: [],
+      explicits: [],
+      rawText: 'mock poe2',
+      engine: 'poe2' as const,
+      waystoneTier: 15,
+      spirit: 50,
+      runeSockets: 'S S'
+    };
+
+    vi.mocked(poeApi.parseItem).mockResolvedValue(mockPoe2Parsed);
+    vi.mocked(poeApi.searchTrade).mockResolvedValue({
+      id: 'poe2-search',
+      total: 5,
+      listings: [],
+      estimatedMinPriceChaos: 50,
+      estimatedMinPriceDivine: 0.5,
+      estimatedMedianPriceChaos: 60,
+      estimatedMedianPriceDivine: 0.6
+    });
+
+    const { result } = renderHook(() => useOverlayPrice());
+
+    await act(async () => {
+      await result.current.loadAndParseItem('物品種類: 尋路石\n稀有度: 普通\n尋路石 (階級 15)');
+    });
+
+    expect(poeApi.searchTrade).toHaveBeenCalledWith(
+      expect.objectContaining({
+        engine: 'poe2',
+        waystoneTierMin: 15,
+        spiritMin: 50,
+        runeSocketsMin: 2
+      })
+    );
+  });
 });

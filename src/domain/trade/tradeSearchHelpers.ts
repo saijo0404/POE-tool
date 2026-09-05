@@ -9,6 +9,17 @@ export function getSortConfig(sortMode: 'price_asc' | 'price_desc' | 'indexed_de
   return { price: 'asc' as const };
 }
 
+export function parseRuneSocketsMin(runeSockets?: string): number | undefined {
+  if (!runeSockets) return undefined;
+  const clean = runeSockets.trim();
+  const parsedInt = parseInt(clean, 10);
+  if (!Number.isNaN(parsedInt) && parsedInt > 0) {
+    return parsedInt;
+  }
+  const count = clean.split(/\s+/).filter(Boolean).length;
+  return count > 0 ? count : undefined;
+}
+
 export function mergeTradeResults(prev: TradeSearchResult | null, next: TradeSearchResult | null): TradeSearchResult | null {
   if (!prev) return next;
   if (!next) return prev;

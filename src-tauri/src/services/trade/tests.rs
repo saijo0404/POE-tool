@@ -150,3 +150,56 @@ fn test_calculate_price_metrics() {
     assert_eq!(metrics.min_divine, 0.33);
     assert_eq!(metrics.median_divine, 0.67);
 }
+
+#[test]
+fn test_apply_poe2_filters_from_item() {
+    let mut filters = serde_json::json!({});
+    let mut item = crate::models::item::ParsedItem::empty("zh", "");
+    item.raw_text = "稀 有 度: 稀有\n高級法杖\n精魂需求: 85\n符文插槽: 3".to_string();
+
+    let req = TradeQueryRequest {
+        league: Some("Standard".into()),
+        engine: Some("poe2".into()),
+        item: Some(item),
+        ..Default::default()
+    };
+
+    super::poe2_filters::apply_poe2_filters(&mut filters, &req);
+    assert_eq!(filters["equipment_filters"]["filters"]["spirit"]["min"], 85);
+    assert_eq!(
+        filters["socket_filters"]["filters"]["rune_sockets"]["min"],
+        3
+    );
+}
+
+#[test]
+fn test_apply_poe2_filters_parsed_item_fields() {
+    let mut filters = serde_json::json!({});
+    let mut item = crate::models::item::ParsedItem::empty("zh", "");
+    item.spirit = Some(110);
+    item.waystone_tier = Some(15);
+    item.uncut_tier = Some(19);
+    item.rune_sockets = Some("S S".to_string());
+
+    let req = TradeQueryRequest {
+        league: Some("Standard".into()),
+        engine: Some("poe2".into()),
+        item: Some(item),
+        ..Default::default()
+    };
+
+    super::poe2_filters::apply_poe2_filters(&mut filters, &req);
+    assert_eq!(
+        filters["equipment_filters"]["filters"]["spirit"]["min"],
+        110
+    );
+    assert_eq!(
+        filters["socket_filters"]["filters"]["rune_sockets"]["min"],
+        2
+    );
+    assert_eq!(
+        filters["map_filters"]["filters"]["waystone_tier"]["min"],
+        15
+    );
+    assert_eq!(filters["misc_filters"]["filters"]["gem_level"]["min"], 19);
+}

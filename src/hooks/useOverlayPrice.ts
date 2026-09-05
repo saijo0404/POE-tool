@@ -4,6 +4,7 @@ import { poeApi } from '../services/api';
 import { useSettings } from './useSettings';
 import { useOverlayWindowEvents } from './useOverlayWindowEvents';
 import { buildSmartDefaultMods } from '../domain/trade/smartModFilter';
+import { parseRuneSocketsMin } from '../domain/trade/tradeSearchHelpers';
 import { evaluateMapDanger } from '../domain/mapMod/dangerEvaluator';
 import { DEFAULT_MAP_DANGER_CONFIG } from '../domain/mapMod/dangerPresets';
 import { playDangerAlertSound } from '../application/audio/alertSound';
@@ -42,13 +43,18 @@ export function useOverlayPrice() {
       const activeMods = targetMods.filter(m => m.enabled);
       const res = await poeApi.searchTrade({
         league: activeLeagueRef.current || 'Standard',
+        engine: item.engine,
         tradeStatus: 'instant',
         name: item.name,
         baseType: item.baseType,
         rarity: item.rarity,
         selectedMods: activeMods,
         item,
-        fetchOffset: 0
+        fetchOffset: 0,
+        spiritMin: item.spirit,
+        waystoneTierMin: item.waystoneTier,
+        uncutGemTierMin: item.uncutTier,
+        runeSocketsMin: parseRuneSocketsMin(item.runeSockets)
       });
       setTradeResults(res);
     } catch (err) {

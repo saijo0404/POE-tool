@@ -50,6 +50,22 @@ export const OverlayHeader: React.FC<OverlayHeaderProps> = ({
         )}
         <div style={{ minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {parsedItem.engine === 'poe2' && (
+              <span
+                data-testid="poe2-badge"
+                style={{
+                  fontSize: '0.65rem',
+                  padding: '1px 4px',
+                  borderRadius: '3px',
+                  background: 'rgba(235, 150, 40, 0.2)',
+                  color: '#f6ad55',
+                  border: '1px solid rgba(235, 150, 40, 0.5)',
+                  fontWeight: 600
+                }}
+              >
+                PoE 2
+              </span>
+            )}
             <span style={{
               fontSize: '0.7rem',
               padding: '1px 4px',
@@ -71,11 +87,24 @@ export const OverlayHeader: React.FC<OverlayHeaderProps> = ({
               {parsedItem.name || parsedItem.baseType}
             </span>
           </div>
-          {parsedItem.name && parsedItem.baseType && parsedItem.name !== parsedItem.baseType && (
-            <div style={{ fontSize: '0.75rem', color: '#88909d', marginTop: '1px' }}>
-              {parsedItem.baseType} {parsedItem.itemLevel ? `(ilvl: ${parsedItem.itemLevel})` : ''}
-            </div>
-          )}
+          <div style={{ fontSize: '0.75rem', color: '#88909d', marginTop: '1px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {parsedItem.name && parsedItem.baseType && parsedItem.name !== parsedItem.baseType && (
+              <span>{parsedItem.baseType}</span>
+            )}
+            {parsedItem.itemLevel ? <span>(ilvl: {parsedItem.itemLevel})</span> : null}
+            {parsedItem.spirit !== undefined && (
+              <span style={{ color: '#63b3ed' }}>精魂: {parsedItem.spirit}</span>
+            )}
+            {parsedItem.waystoneTier !== undefined && (
+              <span style={{ color: '#b794f4' }}>尋路石 T{parsedItem.waystoneTier}</span>
+            )}
+            {parsedItem.uncutTier !== undefined && (
+              <span style={{ color: '#4fd1c5' }}>階級: {parsedItem.uncutTier}</span>
+            )}
+            {parsedItem.runeSockets && (
+              <span style={{ color: '#f6ad55' }}>符文插槽: {parsedItem.runeSockets}</span>
+            )}
+          </div>
         </div>
       </div>
 

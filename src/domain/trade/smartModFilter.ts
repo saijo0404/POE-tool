@@ -19,6 +19,13 @@ const HIGH_VALUE_MOD_PATTERNS = [
   /狂怒球|暴擊球|耐力球/i,
   /frenzy charge|power charge|endurance charge/i,
   /每秒獲得.*充能/i,
+  // PoE 2 exclusive high-value affixes
+  /精魂|spirit/i,
+  /翻滾|dodge roll/i,
+  /符文插槽|rune sockets?/i,
+  /積蓄|buildup/i,
+  /護甲破壞|armour break/i,
+  /武器配置|weapon set/i,
 ];
 
 const JUNK_MOD_PATTERNS = [

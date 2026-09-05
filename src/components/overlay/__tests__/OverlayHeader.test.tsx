@@ -59,4 +59,33 @@ describe('OverlayHeader Component', () => {
     fireEvent.click(tradeBtn);
     expect(onOpen).toHaveBeenCalledTimes(1);
   });
+
+  it('renders PoE 2 badge and attributes when item has engine poe2', () => {
+    const poe2Item: ParsedItem = {
+      name: '尋路石 (階級 15)',
+      baseType: '尋路石 (階級 15)',
+      rarity: 'Normal',
+      language: 'zh',
+      rawText: 'mock poe2',
+      engine: 'poe2',
+      waystoneTier: 15,
+      spirit: 45,
+      runeSockets: 'S S',
+      implicits: [],
+      explicits: []
+    };
+
+    render(
+      <OverlayHeader
+        parsedItem={poe2Item}
+        onClose={vi.fn()}
+        onOpenOfficialTrade={vi.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('poe2-badge')).toBeInTheDocument();
+    expect(screen.getByText(/尋路石 T15/)).toBeInTheDocument();
+    expect(screen.getByText(/精魂: 45/)).toBeInTheDocument();
+    expect(screen.getByText(/符文插槽: S S/)).toBeInTheDocument();
+  });
 });
