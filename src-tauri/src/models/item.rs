@@ -49,6 +49,25 @@ pub struct ParsedItem {
     pub raw_text: String,
 }
 
+impl ParsedItem {
+    pub fn empty(language: &str, clean_text: &str) -> Self {
+        Self {
+            name: String::new(),
+            base_type: String::new(),
+            rarity: "Rare".to_string(),
+            item_class: None,
+            item_level: None,
+            quality: None,
+            corrupted: None,
+            sockets: None,
+            language: language.to_string(),
+            implicits: Vec::new(),
+            explicits: Vec::new(),
+            raw_text: clean_text.to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeQueryFilter {

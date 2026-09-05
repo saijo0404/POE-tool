@@ -1,41 +1,11 @@
 use super::bulk_rates::get_accurate_bulk_rates;
 use super::ninja_api::{fetch_exchange_overview, fetch_item_overview};
 use super::official_exchange::fetch_ggg_live_divine_rate;
-use crate::models::ninja::{NinjaPriceMap, NinjaPricesResult};
-use lazy_static::lazy_static;
+use super::price_cache::{get_valid_cached_prices, resolve_active_league, store_cached_prices};
+use crate::models::ninja::NinjaPricesResult;
 use std::collections::HashMap;
-use std::sync::RwLock;
 
 pub const DEFAULT_USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
-
-lazy_static! {
-    static ref NINJA_CACHE: RwLock<HashMap<String, (NinjaPriceMap, f64, u64)>> =
-        RwLock::new(HashMap::new());
-}
-
-fn now_secs() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
-}
-
-pub fn get_cached_divine_rate(league: &str) -> f64 {
-    let active_league = resolve_active_league(league);
-    if let Ok(guard) = NINJA_CACHE.read() {
-        if let Some((_, rate, _)) = guard.get(&active_league) {
-            if *rate > 0.0 {
-                return *rate;
-            }
-        }
-        if let Some((_, rate, _)) = guard.get("Standard") {
-            if *rate > 0.0 {
-                return *rate;
-            }
-        }
-    }
-    150.0
-}
 
 pub async fn fetch_ninja_prices(
     league: &str,
@@ -44,16 +14,8 @@ pub async fn fetch_ninja_prices(
     let active_league = resolve_active_league(league);
 
     if !force_refresh {
-        if let Ok(guard) = NINJA_CACHE.read() {
-            if let Some((rates, div_rate, ts)) = guard.get(&active_league) {
-                if now_secs() - ts < 1800 {
-                    return Ok(NinjaPricesResult {
-                        rates: rates.clone(),
-                        divine_chaos_rate: *div_rate,
-                        league: active_league,
-                    });
-                }
-            }
+        if let Some(cached) = get_valid_cached_prices(&active_league) {
+            return Ok(cached);
         }
     }
 
@@ -128,33 +90,13 @@ pub async fn fetch_ninja_prices(
         divine_chaos_rate
     );
 
-    if let Ok(mut guard) = NINJA_CACHE.write() {
-        guard.insert(
-            active_league.clone(),
-            (rates.clone(), divine_chaos_rate, now_secs()),
-        );
-    }
+    store_cached_prices(&active_league, rates.clone(), divine_chaos_rate);
 
     Ok(NinjaPricesResult {
         rates,
         divine_chaos_rate,
         league: active_league,
     })
-}
-
-fn resolve_active_league(league: &str) -> String {
-    if !league.is_empty() && league != "Auto" {
-        return league.to_string();
-    }
-    let settings = crate::services::storage::read_json_safe(
-        &crate::services::storage::get_data_dir().join("settings.json"),
-        crate::models::settings::AppSettings::default(),
-    );
-    if !settings.league.is_empty() && settings.league != "Auto" {
-        settings.league
-    } else {
-        "Settlers".to_string()
-    }
 }
 
 async fn fetch_all_ninja_categories(
