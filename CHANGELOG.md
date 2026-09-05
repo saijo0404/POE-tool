@@ -10,6 +10,31 @@
 
 ---
 
+## [2.5.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **流派自訂詞綴權重精算與裝備契合度評分引擎 (Custom Build Affix Weight & Fit Score Engine)**：
+  - 純領域評估核心 (`affixWeightEngine.ts`)，根據流派權重規則庫即時計算裝備契合度總分、階級分級（S/A/B/C/D）與個人化評語建議 ([#116](https://github.com/saijo0404/POE-tool/issues/116), [#119](https://github.com/saijo0404/POE-tool/pull/119))。
+  - 內建四大熱門主流預設（正火純火生命流、元素弓箭暴擊流、中毒混沌持續流、旋風斬純物理流）。
+  - 流派契合徽章組件 (`BuildFitScoreBadge.tsx`)，整合至查價主頁面與懸浮查價視窗，支援流派預設切換與得分明細展開。
+- **市集掛牌四分位距統計與抗壓價建議售價估算 (Market IQR Price Cleaning & Fair Value Advisor)**：
+  - 純領域四分位距（IQR）與離群值檢測引擎 (`priceFilterEngine.ts`)，自動辨識並剔除市集異常低價壓價（Price Fixing）與極端天價掛牌 ([#117](https://github.com/saijo0404/POE-tool/issues/117), [#120](https://github.com/saijo0404/POE-tool/pull/120))。
+  - 產出穩健中位數市價、快速脫手建議價與信賴區間指標，並於查價結果面板頂部嵌入建議售價卡片 (`PriceAdvisorBadge.tsx`)。
+- **穿戴裝備即時差額對比與屬性盈虧分析器 (Equipped Gear Delta & Stat Gain Inspector)**：
+  - 純領域差額比對引擎 (`gearDeltaEngine.ts`)，自動偵測裝備部位並對比生命、魔力、護盾、單抗、複合抗、全元素抗、混沌抗、法術壓抑與攻速等屬性差額 (+/- Delta) ([#118](https://github.com/saijo0404/POE-tool/issues/118), [#121](https://github.com/saijo0404/POE-tool/pull/121))。
+  - 本地槽位穿戴裝備存儲 (`gearStorage.ts`) 與一鍵「設為穿戴基準」功能。
+  - 差額分析視圖 (`GearComparisonView.tsx`)，以綠色/紅色清楚標記屬性盈虧與整體升級建議 (upgrade / sidegrade / downgrade)。
+
+### ♻️ 重構 (Refactored)
+- **核心地圖詞綴預設、輿圖尋路與查價 Hook 閾值解耦 (Map Mod Presets & Price Hooks Thresholds Decoupling)**：
+  - 抽出 `dangerModsData.ts` (194 行)，使 `dangerPresets.ts` 降至 67 行保持向後相容 ([#114](https://github.com/saijo0404/POE-tool/issues/114), [#115](https://github.com/saijo0404/POE-tool/pull/115))。
+  - 抽出 `atlasGraph.ts` (86 行)，使 `atlasPathfinding.ts` 降至 137 行並分解 BFS 為小函式。
+  - 抽出 `atlasTradeMeta.ts` (78 行)，使 `atlasShoppingList.ts` 降至 153 行。
+  - 抽出 `useOverlayWindowEvents.ts` (90 行)，使 `useOverlayPrice.ts` 降至 155 行。
+  - 抽出 `useTradeSearchExecution.ts` (115 行)，使 `usePriceChecker.ts` 降至 159 行，全數達到檔案 $\le 200$ 行、函式 $\le 30$ 行標準。
+
+---
+
 ## [2.4.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -255,7 +280,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/saijo0404/POE-tool/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/saijo0404/POE-tool/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/saijo0404/POE-tool/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/saijo0404/POE-tool/compare/v2.1.0...v2.2.0

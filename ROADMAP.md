@@ -43,7 +43,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.2.0** | **進階裝備評鑑與輿圖社群生態** *(Gear Inspector & Atlas Hub)* | ✅ 已發布 | [Milestone v2.2.0](https://github.com/saijo0404/POE-tool/milestone/5) |
 | 🟢 **v2.3.0** | **離線容災快取、自訂密語範本與刷圖歷史分析** *(Offline Fallback, Whisper Templates & Mapping Analytics)* | ✅ 已發布 | [Milestone v2.3.0](https://github.com/saijo0404/POE-tool/milestone/6) |
 | 🟢 **v2.4.0** | **跨平台適配、增量物價引擎與輿圖大宗採購精算** *(Cross-Platform HUD, Incremental Price Engine & Bulk Shopping)* | ✅ 已發布 | [Milestone v2.4.0](https://github.com/saijo0404/POE-tool/milestone/7) |
-| 🟡 **v2.5.0** | **流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析** *(Build Fit Scoring, Fair Price Advisor & Gear Comparison)* | 🚀 進行中 | [Milestone v2.5.0](https://github.com/saijo0404/POE-tool/milestone/8) |
+| 🟢 **v2.5.0** | **流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析** *(Build Fit Scoring, Fair Price Advisor & Gear Comparison)* | ✅ 已發布 | [Milestone v2.5.0](https://github.com/saijo0404/POE-tool/milestone/8) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -83,10 +83,10 @@ gantt
     輿圖策略 50 場大宗備料精算 (#108/#111)       :done,    m7_1, 2026-09-04, 2026-09-05
     本機增量物價差分快取與查詢 (#109/#112)       :done,    m7_2, 2026-09-05, 2026-09-05
     Steam Deck 與觸控 HUD 介面模式 (#110/#113)  :done,    m7_3, 2026-09-05, 2026-09-05
-    section v2.5.0 契合度與估值 (進行中)
-    流派自訂詞綴權重精算與契合度評分 (#116)      :active,  m8_1, 2026-09-05, 2026-09-06
-    市集掛牌四分位距統計與抗壓價估值 (#117)      :         m8_2, 2026-09-05, 2026-09-06
-    穿戴裝備即時差額對比與屬性盈虧 (#118)        :         m8_3, 2026-09-05, 2026-09-06
+    section v2.5.0 契合度與估值 (已完成)
+    流派自訂詞綴權重精算與契合度評分 (#116/#119)  :done,    m8_1, 2026-09-05, 2026-09-05
+    市集掛牌四分位距統計與抗壓價估值 (#117/#120)  :done,    m8_2, 2026-09-05, 2026-09-05
+    穿戴裝備即時差額對比與屬性盈虧 (#118/#121)    :done,    m8_3, 2026-09-05, 2026-09-05
     section v3.0.0+ 次世代藍圖
     PoE 2 次世代獨立雙核心模組架構           :         m9_1, 2027-02-15, 2027-05-01
 ```
@@ -217,25 +217,25 @@ gantt
 
 ---
 
-### 階段六 (v2.5.0)：流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析 (Build Fit Scoring, Fair Price Advisor & Gear Comparison)
+### 階段六 (v2.5.0)：流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析 (Build Fit Scoring, Fair Price Advisor & Gear Comparison) `[已發布]`
 
 > **核心目標**：解決玩家評估黃裝升級價值難以量化、市集惡意壓價誤導、以及替換裝備屬性盈虧心算繁瑣的三大痛點。
 
 #### 📦 交付功能與關鍵項目
 
-1. **🎯 流派自訂詞綴權重精算與裝備契合度評分引擎 (Custom Build Affix Weight & Fit Score Engine)** `[進行中]`
+1. **🎯 流派自訂詞綴權重精算與裝備契合度評分引擎 (Custom Build Affix Weight & Fit Score Engine)** `[已交付/已發布]`
    - 支援玩家依自身流派為特定詞綴屬性配置權重（Weighting Coefficient）。
    - 即時計算「流派契合度評分 (Build Fit Score)」與等級評級（S/A/B/C/D）。
    - 內建四大主流流派預設範本與自訂權重調整介面。
-   - 關聯 Issue：[#116](https://github.com/saijo0404/POE-tool/issues/116)
-2. **📈 市集掛牌四分位距統計與抗壓價建議售價估算 (Market IQR Price Cleaning & Fair Value Advisor)** `[待開發]`
+   - 關聯 PR/Issue：[#116](https://github.com/saijo0404/POE-tool/issues/116), [#119](https://github.com/saijo0404/POE-tool/pull/119)
+2. **📈 市集掛牌四分位距統計與抗壓價建議售價估算 (Market IQR Price Cleaning & Fair Value Advisor)** `[已交付/已發布]`
    - 採用四分位距（IQR）演算法剔除市集壓價（Price Fixing）與極端天價掛牌。
    - 計算穩健中位數、去極端平均價與信賴區間，產出建議快速脫手價與合理常規價。
-   - 關聯 Issue：[#117](https://github.com/saijo0404/POE-tool/issues/117)
-3. **⚖️ 穿戴裝備即時差額對比與屬性盈虧分析器 (Equipped Gear Delta & Stat Gain Inspector)** `[待開發]`
+   - 關聯 PR/Issue：[#117](https://github.com/saijo0404/POE-tool/issues/117), [#120](https://github.com/saijo0404/POE-tool/pull/120)
+3. **⚖️ 穿戴裝備即時差額對比與屬性盈虧分析器 (Equipped Gear Delta & Stat Gain Inspector)** `[已交付/已發布]`
    - 即時解析並對比兩件同一槽位裝備的總生命、魔力、護盾、元素與混沌抗性差額（+/- Delta）。
    - 屬性需求門檻與增益盈虧視覺化呈現，並支援本地儲存當前角色穿戴裝備。
-   - 關聯 Issue：[#118](https://github.com/saijo0404/POE-tool/issues/118)
+   - 關聯 PR/Issue：[#118](https://github.com/saijo0404/POE-tool/issues/118), [#121](https://github.com/saijo0404/POE-tool/pull/121)
 
 ---
 
