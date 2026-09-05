@@ -165,16 +165,8 @@ async fn fetch_all_ninja_categories(
     has_live_rate: bool,
 ) {
     let exchange_types = [
-        "Currency",
-        "Fragment",
-        "DivinationCard",
-        "Scarab",
-        "Essence",
-        "Oil",
-        "Tattoo",
-        "Omen",
-        "Artifact",
-        "DeliriumOrb",
+        "Currency", "Fragment", "DivinationCard", "Scarab", "Essence",
+        "Oil", "Tattoo", "Omen", "Artifact", "DeliriumOrb",
     ];
     for cat in exchange_types {
         fetch_exchange_overview(
@@ -189,14 +181,8 @@ async fn fetch_all_ninja_categories(
     }
 
     let item_types = [
-        "UniqueArmour",
-        "UniqueWeapon",
-        "UniqueAccessory",
-        "UniqueFlask",
-        "UniqueJewel",
-        "SkillGem",
-        "ClusterJewel",
-        "BaseType",
+        "UniqueArmour", "UniqueWeapon", "UniqueAccessory", "UniqueFlask",
+        "UniqueJewel", "SkillGem", "ClusterJewel", "BaseType",
     ];
     for cat in item_types {
         fetch_item_overview(client, active_league, cat, rates).await;

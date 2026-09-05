@@ -1,7 +1,7 @@
-use super::stash_api::{
-    fetch_character_items_raw, fetch_stash_tabs_meta, fetch_tab_items_raw, fetch_user_characters,
-};
-use super::valuation::{calculate_tab_summaries, parse_stash_item};
+use super::item_collector::{collect_inventory_items, collect_stash_tab_items};
+use super::stash_api::fetch_user_characters;
+use super::stash_headers::get_settings;
+use super::valuation::calculate_tab_summaries;
 use crate::models::settings::AppSettings;
 use crate::models::stash::{StashItem, StashProgress, WealthSnapshot};
 use crate::services::storage::{get_data_dir, read_json_safe, write_json_atomic};
@@ -37,15 +37,10 @@ pub fn get_stash_progress() -> StashProgress {
     STASH_PROGRESS.read().map(|g| g.clone()).unwrap_or_default()
 }
 
-fn set_stash_progress(p: StashProgress) {
+pub(crate) fn set_stash_progress(p: StashProgress) {
     if let Ok(mut guard) = STASH_PROGRESS.write() {
         *guard = p;
     }
-}
-
-fn get_settings() -> AppSettings {
-    let path = get_data_dir().join("settings.json");
-    read_json_safe(&path, AppSettings::default())
 }
 
 pub async fn create_snapshot() -> Result<WealthSnapshot, String> {
@@ -122,86 +117,6 @@ fn determine_target_league(settings: &AppSettings, characters: &[serde_json::Val
         .and_then(|c| c["league"].as_str())
         .unwrap_or("Standard")
         .to_string()
-}
-
-async fn collect_inventory_items(
-    all_items: &mut Vec<StashItem>,
-    settings: &AppSettings,
-    target_league: &str,
-    characters: &[serde_json::Value],
-    rates: &std::collections::HashMap<String, f64>,
-    div_rate: f64,
-) {
-    let char_opt = characters
-        .iter()
-        .find(|c| c["league"].as_str() == Some(target_league))
-        .or_else(|| characters.first());
-    if let Some(char_obj) = char_opt {
-        if let Some(c_name) = char_obj["name"].as_str() {
-            set_stash_progress(StashProgress {
-                active: true,
-                current_tab: 0,
-                total_tabs: 10,
-                current_tab_name: format!("角色: {}", c_name),
-                stage: "inventory".to_string(),
-            });
-            let items =
-                fetch_character_items_raw(settings.account_name.trim(), c_name, settings).await;
-            for it in &items {
-                if let Some(stash_it) =
-                    parse_stash_item(it, &format!("角色裝備與身上 ({})", c_name), rates, div_rate)
-                {
-                    all_items.push(stash_it);
-                }
-            }
-        }
-    }
-}
-
-async fn collect_stash_tab_items(
-    all_items: &mut Vec<StashItem>,
-    settings: &AppSettings,
-    target_league: &str,
-    rates: &std::collections::HashMap<String, f64>,
-    div_rate: f64,
-) {
-    let tabs_meta = fetch_stash_tabs_meta(Some(target_league))
-        .await
-        .unwrap_or_default();
-    let max_tabs = settings.max_stash_tabs.unwrap_or(60);
-    let selected_tabs = settings.selected_stash_tabs.clone();
-
-    let tabs_to_fetch: Vec<&crate::models::stash::StashTabMeta> = tabs_meta
-        .iter()
-        .take(max_tabs)
-        .filter(|t| {
-            if let Some(ref sel) = selected_tabs {
-                sel.contains(&t.i)
-            } else {
-                true
-            }
-        })
-        .collect();
-
-    let total_tabs = tabs_to_fetch.len();
-    for (processed, tab) in tabs_to_fetch.iter().enumerate() {
-        set_stash_progress(StashProgress {
-            active: true,
-            current_tab: processed + 1,
-            total_tabs,
-            current_tab_name: tab.n.clone(),
-            stage: "tabs".to_string(),
-        });
-        let items =
-            fetch_tab_items_raw(settings.account_name.trim(), target_league, tab.i, settings).await;
-        for it in &items {
-            if let Some(stash_it) =
-                parse_stash_item(it, &format!("倉庫: {}", tab.n), rates, div_rate)
-            {
-                all_items.push(stash_it);
-            }
-        }
-    }
 }
 
 fn calculate_hourly_changes(total_chaos: f64, total_divine: f64) -> (Option<f64>, Option<f64>) {

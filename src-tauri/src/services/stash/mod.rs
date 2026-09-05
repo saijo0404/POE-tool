@@ -1,5 +1,9 @@
+pub mod item_classifier;
+pub mod item_collector;
+pub mod price_lookup;
 pub mod snapshot_manager;
 pub mod stash_api;
+pub mod stash_headers;
 pub mod valuation;
 
 #[cfg(test)]

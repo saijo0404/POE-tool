@@ -1,7 +1,9 @@
 pub mod error_classifier;
+pub mod session_cache;
 pub mod session_probe;
 
 pub use error_classifier::*;
+pub use session_cache::*;
 pub use session_probe::*;
 
 #[cfg(test)]
