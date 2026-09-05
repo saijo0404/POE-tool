@@ -10,6 +10,22 @@
 
 ---
 
+## [2.6.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **輿圖天賦配置與聖甲蟲組合協同推薦引擎 (Atlas Tree & Scarab Synergy Recommender)**：
+  - 純領域協同計算核心 (`scarabSynergyEngine.ts`)，根據當前輿圖配置天賦節點與策略標籤，即時計算機制投入權重並比對聖甲蟲庫，產出乘數倍增推薦組合與 S/A/B 級評級 ([#122](https://github.com/saijo0404/POE-tool/issues/122), [#125](https://github.com/saijo0404/POE-tool/pull/125))。
+  - 推薦卡片組件 (`ScarabSynergyCard.tsx`)，整合至輿圖規劃中心，支援槽位防呆校驗與一鍵套用組合至當前策略分級。
+- **地圖儀工藝成本收益損益平衡預測精算器 (Map Device Craft Break-even Forecaster)**：
+  - 純領域損益精算核心 (`deviceCraftBreakEven.ts`)，收錄主流地圖儀工藝選項（精髓、伏擊、瞻妄、戰亂、收割、破滅裂痕、探險、超越、命運），結合掉落數量與怪群加成模型計算預期淨利與 ROI ([#123](https://github.com/saijo0404/POE-tool/issues/123), [#126](https://github.com/saijo0404/POE-tool/pull/126))。
+  - 計算達成損益平衡所需的「最低掉落閾值」，並提供預測卡片組件 (`DeviceBreakEvenCard.tsx`) 整合至刷圖收益記錄器，支援一鍵套用工藝成本至單場門票。
+- **地圖洗詞期望成本精算與安全詞綴模擬器 (Map Rolling Simulator & Currency Cost Estimator)**：
+  - 純領域洗圖機率模型核心 (`mapRollingSimulator.ts`)，支援重鑄點金（Scour + Alch）、混沌直骰（Chaos Spam）與點金瓦寶（Vaal Corrupt）三種策略 ([#124](https://github.com/saijo0404/POE-tool/issues/124), [#127](https://github.com/saijo0404/POE-tool/pull/127))。
+  - 幾何分佈與 95% 信心區間精算，結合避開危險詞綴數量、目標掉落數量與怪群規模門檻，計算單場與批次（如 50 張圖）期望骰數與通貨花費。
+  - 模擬精算卡片 (`MapRollingSimulatorCard.tsx`) 整合至地圖詞綴警示中心，提供各方案性價比評估與最佳推薦標籤。
+
+---
+
 ## [2.5.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -280,7 +296,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/saijo0404/POE-tool/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/saijo0404/POE-tool/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/saijo0404/POE-tool/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/saijo0404/POE-tool/compare/v2.2.0...v2.3.0
