@@ -4,6 +4,7 @@ import { useMapDanger } from '../hooks/useMapDanger';
 import { MapDangerSettingsCard } from './mapMod/MapDangerSettingsCard';
 import { MapRegexGeneratorCard } from './mapMod/MapRegexGeneratorCard';
 import { MapLiveTesterCard } from './mapMod/MapLiveTesterCard';
+import { MapRollingSimulatorCard } from './mapMod/MapRollingSimulatorCard';
 
 interface MapModHubProps {
   onShowToast?: (msg: string) => void;
@@ -85,7 +86,7 @@ export const MapModHub: React.FC<MapModHubProps> = ({ onShowToast }) => {
           <MapLiveTesterCard onEvaluate={evaluateItem} />
         </div>
 
-        {/* Right Column: Regex Generator */}
+        {/* Right Column: Regex Generator & Map Rolling Simulator */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <MapRegexGeneratorCard
             options={regexOptions}
@@ -93,6 +94,9 @@ export const MapModHub: React.FC<MapModHubProps> = ({ onShowToast }) => {
             copied={copiedRegex}
             onUpdateOptions={patch => setRegexOptions(prev => ({ ...prev, ...patch }))}
             onCopy={handleCopyRegex}
+          />
+          <MapRollingSimulatorCard
+            initialForbiddenCount={config.blacklistedModIds?.length || 3}
           />
         </div>
       </div>
