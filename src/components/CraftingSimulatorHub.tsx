@@ -5,6 +5,7 @@ import { CraftingItemConfigCard } from './crafting/CraftingItemConfigCard';
 import { CraftingModSelectorCard } from './crafting/CraftingModSelectorCard';
 import { CraftingActuaryCard } from './crafting/CraftingActuaryCard';
 import { CraftingSimulatorCard } from './crafting/CraftingSimulatorCard';
+import { BestiaryCraftCard } from './crafting/BestiaryCraftCard';
 
 interface CraftingSimulatorHubProps {
   league?: string;
@@ -85,6 +86,9 @@ export const CraftingSimulatorHub: React.FC<CraftingSimulatorHubProps> = ({
           />
         </div>
       </div>
+
+      {/* Bestiary Beastcrafting Section */}
+      <BestiaryCraftCard league={league} onCopyWhisper={(msg) => onShowToast?.(`已複製密語: ${msg}`)} />
     </div>
   );
 };
