@@ -8,6 +8,9 @@ import { OverlayQuickListings } from './overlay/OverlayQuickListings';
 import { OverlayControlsBar } from './overlay/OverlayControlsBar';
 import { useTradeWhisper } from '../hooks/useTradeWhisper';
 import { TradeWhisperCard } from './whisper/TradeWhisperCard';
+import { BuildFitScoreBadge } from './buildFit/BuildFitScoreBadge';
+import { useBuildFit } from '../hooks/useBuildFit';
+import type { ParsedItem } from '../types/poe';
 
 export const OverlayApp: React.FC = () => {
   const {
@@ -129,6 +132,12 @@ export const OverlayApp: React.FC = () => {
               onRefreshSearch={handleSearchTrade}
             />
 
+            {(parsedItem.rarity === 'Rare' || parsedItem.rarity === 'Magic') && (
+              <div style={{ padding: '0 8px' }}>
+                <BuildFitOverlaySection item={parsedItem} />
+              </div>
+            )}
+
             <OverlayModList
               mods={mods}
               onToggleMod={toggleMod}
@@ -169,6 +178,18 @@ export const OverlayApp: React.FC = () => {
         />
       </div>
     </div>
+  );
+};
+
+const BuildFitOverlaySection: React.FC<{ item: ParsedItem }> = ({ item }) => {
+  const { evaluation, presets, selectedPresetId, handleSelectPreset } = useBuildFit(item);
+  return (
+    <BuildFitScoreBadge
+      evaluation={evaluation}
+      presets={presets}
+      selectedPresetId={selectedPresetId}
+      onSelectPreset={handleSelectPreset}
+    />
   );
 };
 
