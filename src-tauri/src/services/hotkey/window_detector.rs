@@ -10,6 +10,17 @@ pub const POE_WINDOW_TITLES: &[&str] = &[
     "流亡黯道",
 ];
 
+/// Standard window titles associated with Path of Exile 2.
+pub const POE2_WINDOW_TITLES: &[&str] = &[
+    "Path of Exile 2",
+    "PathOfExile2",
+    "PathOfExile2Steam",
+    "PathOfExile2_x64",
+    "PathOfExile2_x64Steam",
+    "流亡黯道 2",
+    "流亡黯道2",
+];
+
 pub fn is_poe_item_text(text: &str) -> bool {
     let clean = text.trim();
     if clean.len() < 10 {
@@ -29,7 +40,7 @@ pub fn is_poe_active() -> bool {
         use windows::core::HSTRING;
         use windows::Win32::UI::WindowsAndMessaging::FindWindowW;
 
-        for title in POE_WINDOW_TITLES {
+        for title in POE_WINDOW_TITLES.iter().chain(POE2_WINDOW_TITLES.iter()) {
             let h_title = HSTRING::from(*title);
             unsafe {
                 if let Ok(hwnd) = FindWindowW(None, &h_title) {

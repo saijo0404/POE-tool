@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { ParsedItem, ParsedItemMod, TradeSearchResult, TradeStatusOption } from '../types/poe';
 import { poeApi } from '../services/api';
-import { getSortConfig, mergeTradeResults } from '../domain/trade/tradeSearchHelpers';
+import { getSortConfig, mergeTradeResults, parseRuneSocketsMin } from '../domain/trade/tradeSearchHelpers';
 import type { RecentSearchItem } from './useRecentSearches';
 
 interface UseTradeSearchExecutionOptions {
@@ -70,6 +70,7 @@ export function useTradeSearchExecution({
       const activeMods = targetMods.filter(m => m.enabled);
       const res = await poeApi.searchTrade({
         league: selectedLeague,
+        engine: targetItem.engine,
         tradeStatus,
         name: targetItem.name,
         baseType: targetItem.baseType,
@@ -80,7 +81,11 @@ export function useTradeSearchExecution({
         selectedMods: activeMods,
         item: targetItem,
         sort: getSortConfig(sortBy),
-        fetchOffset: fetchOffset || 0
+        fetchOffset: fetchOffset || 0,
+        spiritMin: targetItem.spirit,
+        waystoneTierMin: targetItem.waystoneTier,
+        uncutGemTierMin: targetItem.uncutTier,
+        runeSocketsMin: parseRuneSocketsMin(targetItem.runeSockets)
       });
 
       setAuthError(null);

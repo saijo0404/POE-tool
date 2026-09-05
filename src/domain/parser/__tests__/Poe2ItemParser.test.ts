@@ -134,4 +134,54 @@ Monsters have 40% increased Area of Effect
     expect(result.uncutTier).toBe(19);
     expect(result.rarity).toBe('Gem');
   });
+
+  it('parses PoE 2 尋路石 (Waystone) with Chinese alias and inline tier', () => {
+    const text = `物品種類: 尋路石
+稀有度: 普通
+尋路石 (階級 15)
+--------
+物品等級: 82`;
+
+    expect(parser.canParse(text)).toBe(true);
+    const result = parser.parse(text);
+
+    expect(result.engine).toBe('poe2');
+    expect(result.name).toBe('尋路石 (階級 15)');
+    expect(result.waystoneTier).toBe(15);
+    expect(result.rarity).toBe('Normal');
+  });
+
+  it('translates PoE 2 dedicated affixes using dictionary lookup', () => {
+    const text = `物品種類: 長靴
+稀有度: 稀有
+幻影 疾行
+厚重長靴
+--------
+精魂需求: 30
+符文插槽: S S
+--------
+增加 20% 翻滾冷卻回復率
++2 個符文插槽
++40 最大精魂`;
+
+    const result = parser.parse(text);
+
+    expect(result.engine).toBe('poe2');
+    expect(result.spirit).toBe(30);
+    expect(result.runeSockets).toBe('S S');
+    expect(result.explicits.length).toBe(3);
+
+    // Roll recovery
+    expect(result.explicits[0].id).toBe('explicit.stat_dodge_roll_recovery_rate');
+    expect(result.explicits[0].englishText).toBe('#% increased Dodge Roll Recovery Rate');
+    expect(result.explicits[0].value).toBe(20);
+
+    // Rune sockets
+    expect(result.explicits[1].id).toBe('explicit.stat_rune_sockets');
+    expect(result.explicits[1].englishText).toBe('+# Rune Sockets');
+
+    // Spirit
+    expect(result.explicits[2].id).toBe('explicit.stat_spirit');
+    expect(result.explicits[2].englishText).toBe('+# to maximum Spirit');
+  });
 });

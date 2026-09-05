@@ -7,16 +7,22 @@ import {
   extractNumericValue,
   buildSimpleMod
 } from './parserUtils';
+import { lookupPoe2Stat } from '../dictionary/statLookup';
 
 const POE2_MARKERS = [
   /spirit:\s*\d+/i,
   /精魂:\s*\d+/,
+  /精魂需求:\s*\d+/,
   /waystone\s+tier:\s*\d+/i,
   /銘刻地圖階級:\s*\d+/,
+  /尋路石階級:\s*\d+/,
   /uncut\s+.*gem/i,
   /未切割.*寶石/,
-  /item class:\s*waystones/i,
-  /物品種類:\s*銘刻地圖/,
+  /item class:\s*waystones?/i,
+  /物品種類:\s*(?:銘刻地圖|尋路石)/,
+  /物品類別:\s*(?:銘刻地圖|尋路石)/,
+  /尋路石/i,
+  /waystones?/i,
   /rune\s+sockets:/i,
   /符文插槽:/
 ];
@@ -58,12 +64,17 @@ export class Poe2ItemParser implements ItemParserStrategy {
           itemClass = line.replace(/^(?:物品種類|Item Class):\s*/i, '').trim();
         } else if (/^(?:稀有度|Rarity):\s*(.+)$/i.test(line)) {
           rarity = parseRarity(line);
-        } else if (/^(?:Waystone Tier|銘刻地圖階級):\s*(\d+)/i.test(line)) {
-          waystoneTier = extractNumericValue(line, /^(?:Waystone Tier|銘刻地圖階級):\s*(\d+)/i);
+        } else if (/^(?:Waystone Tier|銘刻地圖階級|尋路石階級|地圖階級):\s*(\d+)/i.test(line)) {
+          waystoneTier = extractNumericValue(line, /^(?:Waystone Tier|銘刻地圖階級|尋路石階級|地圖階級):\s*(\d+)/i);
         } else if (/^(?:Tier|階級):\s*(\d+)/i.test(line)) {
-          uncutTier = extractNumericValue(line, /^(?:Tier|階級):\s*(\d+)/i);
-        } else if (/^(?:Spirit|精魂):\s*(\d+)/i.test(line)) {
-          spirit = extractNumericValue(line, /^(?:Spirit|精魂):\s*(\d+)/i);
+          const tierVal = extractNumericValue(line, /^(?:Tier|階級):\s*(\d+)/i);
+          if (text.includes('Waystone') || text.includes('尋路石') || text.includes('銘刻地圖')) {
+            waystoneTier = tierVal;
+          } else {
+            uncutTier = tierVal;
+          }
+        } else if (/^(?:Spirit|精魂|精魂需求):\s*(\d+)/i.test(line)) {
+          spirit = extractNumericValue(line, /^(?:Spirit|精魂|精魂需求):\s*(\d+)/i);
         } else {
           filteredHeader.push(line);
         }
@@ -78,20 +89,34 @@ export class Poe2ItemParser implements ItemParserStrategy {
       }
     }
 
+    const isWaystone = text.includes('Waystone') || text.includes('尋路石') || text.includes('銘刻地圖');
+    const isUncut = text.includes('Uncut') || text.includes('未切割');
+
+    // Fallback tier extraction from item name or base type
+    if (waystoneTier === undefined && isWaystone) {
+      const match = (name + ' ' + baseType).match(/(?:Tier|階級|\(T|T)\s*(\d+)/i);
+      if (match) waystoneTier = parseInt(match[1], 10);
+    }
+    if (uncutTier === undefined && isUncut) {
+      const match = (name + ' ' + baseType).match(/(?:Tier|階級|\(T|T)\s*(\d+)/i);
+      if (match) uncutTier = parseInt(match[1], 10);
+    }
+
     // Process body sections
     for (let i = 1; i < sections.length; i++) {
       const section = sections[i];
       let isMetadata = false;
 
       for (const line of section) {
-        if (/^(?:Spirit|精魂):\s*(\d+)/i.test(line)) {
-          spirit = extractNumericValue(line, /^(?:Spirit|精魂):\s*(\d+)/i);
+        if (/^(?:Spirit|精魂|精魂需求):\s*(\d+)/i.test(line)) {
+          spirit = extractNumericValue(line, /^(?:Spirit|精魂|精魂需求):\s*(\d+)/i);
           isMetadata = true;
-        } else if (/^(?:Waystone Tier|銘刻地圖階級):\s*(\d+)/i.test(line)) {
-          waystoneTier = extractNumericValue(line, /^(?:Waystone Tier|銘刻地圖階級):\s*(\d+)/i);
+        } else if (/^(?:Waystone Tier|銘刻地圖階級|尋路石階級|地圖階級):\s*(\d+)/i.test(line)) {
+          waystoneTier = extractNumericValue(line, /^(?:Waystone Tier|銘刻地圖階級|尋路石階級|地圖階級):\s*(\d+)/i);
           isMetadata = true;
         } else if (/^(?:Tier|階級):\s*(\d+)/i.test(line)) {
-          uncutTier = extractNumericValue(line, /^(?:Tier|階級):\s*(\d+)/i);
+          const tierVal = extractNumericValue(line, /^(?:Tier|階級):\s*(\d+)/i);
+          if (isWaystone) waystoneTier = tierVal; else uncutTier = tierVal;
           isMetadata = true;
         } else if (/^(?:物品等級|Item Level):\s*(\d+)/i.test(line)) {
           itemLevel = extractNumericValue(line, /^(?:物品等級|Item Level):\s*(\d+)/i);
@@ -115,11 +140,24 @@ export class Poe2ItemParser implements ItemParserStrategy {
 
       if (!isMetadata) {
         for (const line of section) {
-          if (line.endsWith('(implicit)') || line.endsWith('(固定詞綴)')) {
-            const clean = line.replace(/\s*\((?:implicit|固定詞綴)\)$/i, '').trim();
-            implicits.push(buildSimpleMod(clean, implicits.length, 'implicit'));
+          const isImplicit = line.endsWith('(implicit)') || line.endsWith('(固定詞綴)');
+          const clean = isImplicit ? line.replace(/\s*\((?:implicit|固定詞綴)\)$/i, '').trim() : line.trim();
+          const targetList = isImplicit ? implicits : explicits;
+          const statMatch = lookupPoe2Stat(clean);
+
+          if (statMatch) {
+            targetList.push({
+              id: statMatch.id,
+              text: clean,
+              englishText: statMatch.enText,
+              type: isImplicit ? 'implicit' : 'explicit',
+              value: statMatch.value,
+              minValue: statMatch.minValue,
+              maxValue: statMatch.maxValue,
+              enabled: true
+            });
           } else {
-            explicits.push(buildSimpleMod(line, explicits.length, 'explicit'));
+            targetList.push(buildSimpleMod(clean, targetList.length, isImplicit ? 'implicit' : 'explicit'));
           }
         }
       }

@@ -190,4 +190,55 @@ describe('smartModFilter', () => {
     expect(updated[1].minValue).toBe(27); // 30 * 0.9 = 27
     // Disabled mod remains unchanged or updated appropriately
   });
+
+  it('identifies and enables PoE 2 exclusive high-value affixes by default', () => {
+    const item: ParsedItem = {
+      name: '風暴 結界',
+      baseType: '輕靈法衣',
+      rarity: 'Rare',
+      language: 'zh',
+      rawText: '',
+      engine: 'poe2',
+      spirit: 45,
+      implicits: [],
+      explicits: [
+        {
+          id: 'explicit.stat_spirit',
+          text: '+45 最大精魂',
+          englishText: '+45 to maximum Spirit',
+          type: 'explicit',
+          value: 45,
+          enabled: false
+        },
+        {
+          id: 'explicit.stat_dodge_roll_recovery_rate',
+          text: '增加 20% 翻滾冷卻回復率',
+          englishText: '20% increased Dodge Roll Recovery Rate',
+          type: 'explicit',
+          value: 20,
+          enabled: false
+        },
+        {
+          id: 'explicit.stat_rune_sockets',
+          text: '+2 個符文插槽',
+          englishText: '+2 Rune Sockets',
+          type: 'explicit',
+          value: 2,
+          enabled: false
+        }
+      ]
+    };
+
+    const result = buildSmartDefaultMods(item, 80);
+
+    const spiritMod = result.find(m => m.id === 'explicit.stat_spirit');
+    expect(spiritMod?.enabled).toBe(true);
+    expect(spiritMod?.minValue).toBe(36);
+
+    const rollMod = result.find(m => m.id === 'explicit.stat_dodge_roll_recovery_rate');
+    expect(rollMod?.enabled).toBe(true);
+
+    const runeMod = result.find(m => m.id === 'explicit.stat_rune_sockets');
+    expect(runeMod?.enabled).toBe(true);
+  });
 });
