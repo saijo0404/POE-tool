@@ -116,4 +116,28 @@ describe('ParsedItemHeader Component', () => {
       unmount();
     });
   });
+
+  it('renders PoE 2 attributes when present on parsedItem', () => {
+    const poe2Item: ParsedItem = {
+      name: 'Doom Shell',
+      baseType: 'Golden Plate',
+      rarity: 'Rare',
+      language: 'en',
+      engine: 'poe2',
+      spirit: 60,
+      waystoneTier: 14,
+      uncutTier: 19,
+      runeSockets: 'S S',
+      rawText: '',
+      implicits: [],
+      explicits: []
+    };
+
+    render(<ParsedItemHeader parsedItem={poe2Item} />);
+    expect(screen.getByText('PoE 2')).toBeInTheDocument();
+    expect(screen.getByText('精魂: 60')).toBeInTheDocument();
+    expect(screen.getByText('銘刻地圖: Tier 14')).toBeInTheDocument();
+    expect(screen.getByText('寶石階級: Tier 19')).toBeInTheDocument();
+    expect(screen.getByText('符文插槽: S S')).toBeInTheDocument();
+  });
 });

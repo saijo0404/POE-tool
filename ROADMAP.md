@@ -131,8 +131,8 @@ gantt
     前端遺留測試嚴格型別化與相依安全性修復 (#160/#163)     :done,    m15_3, 2026-09-05, 2026-09-05
     section v3.0.0 次世代雙核心
     雙引擎狀態機與進程偵測抽象架構 (#166/#169)       :done,    m16_1, 2026-09-05, 2026-09-05
-    雙引擎物品解析工廠與 PoE 2 剪貼簿解析 (#167) :active,  m16_2, 2026-09-05, 2026-09-06
-    全域雙核心切換器與 PoE 2 檢視適配 (#168)    :         m16_3, 2026-09-06, 2026-09-07
+    雙引擎物品解析工廠與 PoE 2 剪貼簿解析 (#167/#170) :done,    m16_2, 2026-09-05, 2026-09-05
+    全域雙核心切換器與 PoE 2 檢視適配 (#168)    :active,  m16_3, 2026-09-05, 2026-09-06
 ```
 
 ---
@@ -457,11 +457,11 @@ gantt
    - 封裝 `WindowProcessDetector` 介面與 Windows 前景視窗識別，支援自動切換與手動強制鎖定。
    - 實作 `StorageNamespaceAdapter`，將 LocalStorage、價格快照與使用者設定按引擎隔離，防止資料污染。
    - 關聯 PR/Issue：[#166](https://github.com/saijo0404/POE-tool/issues/166), [#169](https://github.com/saijo0404/POE-tool/pull/169)
-2. **🔮 雙引擎物品解析工廠與 PoE 2 剪貼簿解析 (Dual Engine Item Parser Factory & PoE 2 Clipboard)** `[進行中]`
+2. **🔮 雙引擎物品解析工廠與 PoE 2 剪貼簿解析 (Dual Engine Item Parser Factory & PoE 2 Clipboard)** `[已交付/已發布]`
    - 抽象化物品解析工廠 `ItemParserFactory` 與 `ItemParserStrategy` 策略介面。
    - 實作 `Poe2ItemParser`：支援精魂 (Spirit) 保留消耗、符文插槽 (Rune Sockets)、無打孔裝備與技能石階級 (Uncut Gem Tier)、銘刻地圖 (Waystone)。
-   - 關聯 PR/Issue：[#167](https://github.com/saijo0404/POE-tool/issues/167)
-3. **🎨 全域雙核心切換器與 PoE 2 檢視適配 (Engine Switcher & PoE 2 Attributes UI)** `[待開發]`
+   - 關聯 PR/Issue：[#167](https://github.com/saijo0404/POE-tool/issues/167), [#170](https://github.com/saijo0404/POE-tool/pull/170)
+3. **🎨 全域雙核心切換器與 PoE 2 檢視適配 (Engine Switcher & PoE 2 Attributes UI)** `[進行中]`
    - 在導覽列整合 `EngineSwitcher`，提供即時切換開關與鎖定狀態指示。
    - 裝備評鑑與查價介面自適應展示精魂成本、金幣定價標記與雙天賦/武器組標記。
    - 關聯 PR/Issue：[#168](https://github.com/saijo0404/POE-tool/issues/168)

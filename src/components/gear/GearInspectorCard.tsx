@@ -29,8 +29,14 @@ export const GearInspectorCard: React.FC<GearInspectorCardProps> = ({ item }) =>
           <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-gold)' }}>
             {item.name || item.baseType}
           </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-            {item.baseType} {item.itemLevel ? `(iLvl ${item.itemLevel})` : ''}
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>{item.baseType} {item.itemLevel ? `(iLvl ${item.itemLevel})` : ''}</span>
+            {item.spirit !== undefined && (
+              <span style={{ color: '#c084fc', fontWeight: 600 }}>[精魂: {item.spirit}]</span>
+            )}
+            {item.engine === 'poe2' && (
+              <span style={{ color: '#38bdf8', fontWeight: 600 }}>[PoE 2]</span>
+            )}
           </div>
         </div>
 

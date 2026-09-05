@@ -81,7 +81,32 @@ export const ParsedItemHeader: React.FC<ParsedItemHeaderProps> = ({ parsedItem, 
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px', fontSize: '0.8rem' }}>
-        {mapTier && (
+        {parsedItem.engine === 'poe2' && (
+          <span style={{ background: 'rgba(56, 189, 248, 0.15)', padding: '2px 8px', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', fontWeight: 700 }}>
+            PoE 2
+          </span>
+        )}
+        {parsedItem.spirit !== undefined && (
+          <span style={{ background: 'rgba(168, 85, 247, 0.15)', padding: '2px 8px', borderRadius: '4px', border: '1px solid rgba(168, 85, 247, 0.4)', color: '#c084fc', fontWeight: 600 }}>
+            精魂: {parsedItem.spirit}
+          </span>
+        )}
+        {parsedItem.waystoneTier !== undefined && (
+          <span style={{ background: '#172030', padding: '2px 8px', borderRadius: '4px', border: '1px solid var(--border-gold)', color: 'var(--text-gold)', fontWeight: 600 }}>
+            銘刻地圖: Tier {parsedItem.waystoneTier}
+          </span>
+        )}
+        {parsedItem.uncutTier !== undefined && (
+          <span style={{ background: '#172030', padding: '2px 8px', borderRadius: '4px', border: '1px solid #2a364f', color: '#38bdf8', fontWeight: 600 }}>
+            寶石階級: Tier {parsedItem.uncutTier}
+          </span>
+        )}
+        {parsedItem.runeSockets && (
+          <span style={{ background: '#172030', padding: '2px 8px', borderRadius: '4px', border: '1px solid #2a364f', color: '#fbbf24', fontWeight: 600 }}>
+            符文插槽: {parsedItem.runeSockets}
+          </span>
+        )}
+        {mapTier && !parsedItem.waystoneTier && (
           <span style={{ background: '#172030', padding: '2px 8px', borderRadius: '4px', border: '1px solid var(--border-gold)', color: 'var(--text-gold)', fontWeight: 600 }}>
             地圖階級: Tier {mapTier}
           </span>
