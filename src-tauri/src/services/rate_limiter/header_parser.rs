@@ -32,7 +32,11 @@ pub fn update_rate_limits_from_headers(
     }
 }
 
-pub(crate) fn parse_and_apply_rate_limit(channel: RequestChannel, limit_str: &str, state_str: &str) {
+pub(crate) fn parse_and_apply_rate_limit(
+    channel: RequestChannel,
+    limit_str: &str,
+    state_str: &str,
+) {
     let limits: Vec<Vec<u64>> = limit_str
         .split(',')
         .map(|s| {

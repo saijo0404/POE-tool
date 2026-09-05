@@ -37,7 +37,7 @@ pub fn run_win32_listener() {
             style: WNDCLASS_STYLES(0),
             lpfnWndProc: Some(wndproc),
             cbClsExtra: 0,
-            cbExtra: 0,
+            cbWndExtra: 0,
             hInstance: HINSTANCE(null_mut()),
             hIcon: HICON(null_mut()),
             hCursor: HCURSOR(null_mut()),

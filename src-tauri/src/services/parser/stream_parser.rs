@@ -115,12 +115,8 @@ pub fn parse_pob_or_stream_item(clean_text: &str, is_zh: bool, language: &str) -
     let is_armour = check_is_armour(class_str, &base_type);
     let is_weapon = check_is_weapon(class_str, &base_type);
 
-    let (implicits, explicits) = extract_stream_mods(
-        mod_candidates,
-        total_implicits_count,
-        is_armour,
-        is_weapon,
-    );
+    let (implicits, explicits) =
+        extract_stream_mods(mod_candidates, total_implicits_count, is_armour, is_weapon);
 
     ParsedItem {
         name,

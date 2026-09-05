@@ -1,6 +1,6 @@
+use super::window_detector::is_valid_in_game_command;
 #[cfg(target_os = "windows")]
 use super::window_detector::POE_WINDOW_TITLES;
-use super::window_detector::is_valid_in_game_command;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
 pub fn send_in_game_command(app: Option<&tauri::AppHandle>, command: &str) -> Result<bool, String> {

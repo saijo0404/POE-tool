@@ -1,9 +1,9 @@
+pub use super::roll_range_extractor::{
+    clean_mod_line_and_extract_values, extract_roll_range, ROLL_RANGE_RE, VALUE_EXTRACT_RE,
+};
 use crate::models::item::{ModType, ParsedItemMod};
 use crate::services::dictionary::{
     lookup_stat_by_text, lookup_stat_for_armour, lookup_stat_for_weapon,
-};
-pub use super::roll_range_extractor::{
-    clean_mod_line_and_extract_values, extract_roll_range, ROLL_RANGE_RE, VALUE_EXTRACT_RE,
 };
 use lazy_static::lazy_static;
 use regex::Regex;
