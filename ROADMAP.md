@@ -18,7 +18,8 @@
    - [階段六 (v2.5.0)：流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析 (Build Fit Scoring, Fair Price Advisor & Gear Comparison)](#階段六-v250流派契合度精算抗壓價市集估值與穿戴裝備即時差額分析-build-fit-scoring-fair-price-advisor--gear-comparison)
    - [階段七 (v2.6.0)：輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬 (Atlas Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)](#階段七-v260輿圖聖甲蟲組合協同地圖工藝損益預測與地圖洗詞期望模擬-atlas-scarab-synergy-device-craft-forecaster--map-rolling-simulator)
    - [階段八 (v2.7.0)：地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵 (Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)](#階段八-v270地圖歷史掉落熱力圖通牒命運試煉精算與自訂置頂快捷鍵-map-drop-heatmap-ultimatum-ev--custom-hotkey-pinning)
-   - [階段九 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段九-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
+   - [階段九 (v2.8.0)：迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列 (Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)](#階段九-v280迷霧瞻妄層數期望精算軍團永恆珠寶種子鑑定與多物品比價暫存列-delirium-ev-forecaster-timeless-jewel-evaluator--comparison-tray)
+   - [階段十 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)](#階段十-v300次世代雙核心架構-poe-2-next-gen-architecture-vision)
 5. [🤝 參與貢獻與協作規範](#5--參與貢獻與協作規範)
 
 ---
@@ -48,6 +49,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.5.0** | **流派契合度精算、抗壓價市集估值與穿戴裝備即時差額分析** *(Build Fit Scoring, Fair Price Advisor & Gear Comparison)* | ✅ 已發布 | [Milestone v2.5.0](https://github.com/saijo0404/POE-tool/milestone/8) |
 | 🟢 **v2.6.0** | **輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬** *(Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)* | ✅ 已發布 | [Milestone v2.6.0](https://github.com/saijo0404/POE-tool/milestone/9) |
 | 🟢 **v2.7.0** | **地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵** *(Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)* | ✅ 已發布 | [Milestone v2.7.0](https://github.com/saijo0404/POE-tool/milestone/10) |
+| 🟡 **v2.8.0** | **迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列** *(Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)* | 🚀 進行中 | [Milestone v2.8.0](https://github.com/saijo0404/POE-tool/milestone/11) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -298,7 +300,30 @@ gantt
 
 ---
 
-### 階段九 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
+### 階段九 (v2.8.0)：迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列 (Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)
+
+> **核心目標**：精算迷霧瞻妄層數與寶珠效益，提供軍團永恆珠寶種子碼鑑定與關鍵基石查詢，並實作多物品比價暫存列。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🌫️ 幻境瞻妄階級層數回報模擬與迷霧寶珠成本效益精算器 (Delirium Fog Layer EV & Simulacrum Splinter Forecaster)**
+   - 迷霧擊殺數階梯模型與獎勵層數門檻計算（Reward Tiers）。
+   - 迷霧寶珠（Delirium Orb）投入成本與特定獎勵池（通貨/聖甲蟲/命運卡）收益模擬。
+   - 幻境裂片掉落機率模型與整張門票折算價值。
+   - 關聯 PR/Issue：[#134](https://github.com/saijo0404/POE-tool/issues/134)
+2. **💎 永恆軍團珠寶種子碼鑑定與核心基石變更查詢器 (Timeless Jewel Seed Evaluator & Keystone Lookup)**
+   - 收錄 5 種軍團珠寶、所有將領名稱對應之傳奇基石（如 Supreme Ego, Agnostic, Wind Dancer, Divine Flesh, Inner Conviction 等）。
+   - 依據種子碼與將領即時鑑定核心基石效果、主流流派適配度與市場價值評級。
+   - 關聯 PR/Issue：[#135](https://github.com/saijo0404/POE-tool/issues/135)
+3. **📋 遊戲內剪貼簿歷史回溯面板與多物品比價暫存列 (Clipboard History Log & Multi-Item Comparison Tray)**
+   - 佇列管理（FIFO，保留最新 20 筆查價紀錄）。
+   - 支援重複去重、自訂加入比價暫存列（最多 4 件）。
+   - 產生多物品價格中位數與詞綴差異對比模型。
+   - 關聯 PR/Issue：[#136](https://github.com/saijo0404/POE-tool/issues/136)
+
+---
+
+### 階段十 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
 
 > **核心目標**：在《Path of Exile 2》正式發布且 API 穩定後，提供 PoE 1 與 PoE 2 雙引擎無縫切換體驗。
 
