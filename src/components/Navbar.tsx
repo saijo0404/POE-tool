@@ -5,6 +5,7 @@ import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
 import { poeApi } from '../services/api';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
+import { EngineSwitcher } from './common/EngineSwitcher';
 
 export type AppTabType = 'price' | 'exchange' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod' | 'craft';
 
@@ -93,6 +94,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           alwaysOnTop={alwaysOnTop}
           onTogglePin={handleTogglePin}
         />
+
+        <EngineSwitcher />
       </div>
 
       <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
