@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertOctagon } from 'lucide-react';
 import { useOverlayPrice } from '../hooks/useOverlayPrice';
 import { OverlayHeader } from './overlay/OverlayHeader';
+import { WeaponSwapIndicator } from './overlay/WeaponSwapIndicator';
 import { OverlayPriceSummary } from './overlay/OverlayPriceSummary';
 import { OverlayModList } from './overlay/OverlayModList';
 import { OverlayQuickListings } from './overlay/OverlayQuickListings';
@@ -108,6 +109,10 @@ export const OverlayApp: React.FC = () => {
               onClose={handleCloseOverlay}
               onOpenOfficialTrade={handleOpenOfficialTrade}
             />
+
+            {parsedItem.engine === 'poe2' && (
+              <WeaponSwapIndicator />
+            )}
 
             {dangerEvaluation?.hasDanger && (
               <div style={{
