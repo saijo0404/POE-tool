@@ -2624,7 +2624,7 @@ dependencies = [
 
 [[package]]
 name = "poe-tool"
-version = "2.8.0"
+version = "2.9.0"
 dependencies = [
  "aho-corasick",
  "base64 0.22.1",

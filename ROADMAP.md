@@ -50,7 +50,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.6.0** | **輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬** *(Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)* | ✅ 已發布 | [Milestone v2.6.0](https://github.com/saijo0404/POE-tool/milestone/9) |
 | 🟢 **v2.7.0** | **地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵** *(Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)* | ✅ 已發布 | [Milestone v2.7.0](https://github.com/saijo0404/POE-tool/milestone/10) |
 | 🟢 **v2.8.0** | **迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列** *(Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)* | ✅ 已發布 | [Milestone v2.8.0](https://github.com/saijo0404/POE-tool/milestone/11) |
-| 🟡 **v2.9.0** | **荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點** *(Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)* | 🚀 進行中 | [Milestone v2.9.0](https://github.com/saijo0404/POE-tool/milestone/12) |
+| 🟢 **v2.9.0** | **荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點** *(Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)* | ✅ 已發布 | [Milestone v2.9.0](https://github.com/saijo0404/POE-tool/milestone/12) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -98,12 +98,20 @@ gantt
     輿圖天賦配置與聖甲蟲組合協同推薦 (#122/#125)    :done,    m9_1, 2026-09-05, 2026-09-05
     地圖儀工藝成本收益損益平衡預測 (#123/#126)    :done,    m9_2, 2026-09-05, 2026-09-05
     地圖洗詞期望成本精算與安全詞綴模擬 (#124/#127)  :done,    m9_3, 2026-09-05, 2026-09-05
-    section v2.7.0 掉落熱力圖與試煉精算 (進行中)
-    地圖歷史掉落價值分析與地形收益熱力圖 (#128)      :active,  m10_1, 2026-09-05, 2026-09-06
-    通牒命運試煉期望回報精算與致命詞綴風險評級 (#129) :         m10_2, 2026-09-05, 2026-09-06
-    自訂全域快捷鍵綁定管理與懸浮視窗自適應釘選 (#130) :         m10_3, 2026-09-05, 2026-09-06
+    section v2.7.0 掉落熱力圖與試煉精算 (已完成)
+    地圖歷史掉落價值分析與地形收益熱力圖 (#128/#131)      :done,    m10_1, 2026-09-05, 2026-09-05
+    通牒命運試煉期望回報精算與致命詞綴風險評級 (#129/#132) :done,    m10_2, 2026-09-05, 2026-09-05
+    自訂全域快捷鍵綁定管理與懸浮視窗自適應釘選 (#130/#133) :done,    m10_3, 2026-09-05, 2026-09-05
+    section v2.8.0 迷霧精算與軍團鑑定 (已完成)
+    幻境瞻妄階級層數回報模擬與迷霧寶珠成本效益 (#134/#137) :done,    m11_1, 2026-09-05, 2026-09-05
+    永恆軍團珠寶種子碼鑑定與核心基石變更查詢 (#135/#138)   :done,    m11_2, 2026-09-05, 2026-09-05
+    遊戲內剪貼簿歷史回溯面板與多物品比價暫存列 (#136/#139) :done,    m11_3, 2026-09-05, 2026-09-05
+    section v2.9.0 荒野符咒與聖甲蟲盤點 (已完成)
+    荒野野靈荒野昇華天賦與符咒效果精算 (#140/#143)       :done,    m12_1, 2026-09-05, 2026-09-05
+    禁忌聖所試煉聖物詞綴相乘評估與房型收益 (#141/#144)   :done,    m12_2, 2026-09-05, 2026-09-05
+    聖甲蟲庫存自動盤點與套裝成套率精算 (#142/#145)       :done,    m12_3, 2026-09-05, 2026-09-05
     section v3.0.0+ 次世代藍圖
-    PoE 2 次世代獨立雙核心模組架構           :         m11_1, 2027-02-15, 2027-05-01
+    PoE 2 次世代獨立雙核心模組架構           :         m13_1, 2027-02-15, 2027-05-01
 ```
 
 ---
@@ -324,28 +332,28 @@ gantt
 
 ---
 
-### 階段十 (v2.9.0)：荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點 (Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)
+### 階段十 (v2.9.0)：荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點 (Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit) `[已發布]`
 
 > **核心目標**：深化荒野特殊昇華與符咒增益組合精算，支援禁忌聖所 4 層聖物相乘效益與收益預估，並提供刷圖聖甲蟲庫存自動盤點與套裝缺口補貨精算。
 
 #### 📦 交付功能與關鍵項目
 
-1. **🌿 荒野野靈荒野昇華天賦與符咒效果精算器 (Wildwood Ascendancy & Charms Evaluator)**
+1. **🌿 荒野野靈荒野昇華天賦與符咒效果精算器 (Wildwood Ascendancy & Charms Evaluator)** `[已交付/已發布]`
    - 收錄 3 大荒野昇華核心節點與主要符咒詞綴效果庫（跨職業昇華效果移植）。
    - 支援 1~3 個符咒插槽組合驗證，計算累積抗性、生命/護盾加成與特殊機制旗標。
    - 產出流派適配度評級（S/A/B/C）與裝備配置建議。
-   - 關聯 PR/Issue：[#140](https://github.com/saijo0404/POE-tool/issues/140)
-2. **🏛️ 禁忌聖所試煉聖物詞綴相乘評估與房型收益推估器 (Forbidden Sanctum Relic & Room EV Evaluator)**
+   - 關聯 PR/Issue：[#140](https://github.com/saijo0404/POE-tool/issues/140), [#143](https://github.com/saijo0404/POE-tool/pull/143)
+2. **🏛️ 禁忌聖所試煉聖物詞綴相乘評估與房型收益推估器 (Forbidden Sanctum Relic & Room EV Evaluator)** `[已交付/已發布]`
    - 建立 4 層試煉房間模型（第 1~4 層房間基礎難度與獎勵權重）。
    - 支援聖物詞綴聚合計算（決心減免%、商人價格折扣%、房間選擇額外視野等）。
    - 精算各房型期望淨利（EV in Chaos/Divine）與通關生存率預測。
-   - 關聯 PR/Issue：[#141](https://github.com/saijo0404/POE-tool/issues/141)
-3. **📦 聖甲蟲庫存自動盤點與套裝成套率精算器 (Scarab Inventory Stock & Set Completion Engine)**
+   - 關聯 PR/Issue：[#141](https://github.com/saijo0404/POE-tool/issues/141), [#144](https://github.com/saijo0404/POE-tool/pull/144)
+3. **📦 聖甲蟲庫存自動盤點與套裝成套率精算器 (Scarab Inventory Stock & Set Completion Engine)** `[已交付/已發布]`
    - 支援自訂策略配置（如 4~5 顆聖甲蟲槽位需求）。
    - 輸入當前庫存數量，計算成套完整場次（木桶短板瓶頸計算）。
    - 計算目標場次（如目標 50 場）所需的各甲蟲缺口數量與估算補貨成本（Chaos/Divine）。
    - 產生官方市集大宗採購鏈接與批次購買密語。
-   - 關聯 PR/Issue：[#142](https://github.com/saijo0404/POE-tool/issues/142)
+   - 關聯 PR/Issue：[#142](https://github.com/saijo0404/POE-tool/issues/142), [#145](https://github.com/saijo0404/POE-tool/pull/145)
 
 ---
 

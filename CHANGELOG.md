@@ -10,6 +10,24 @@
 
 ---
 
+## [2.9.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **荒野野靈荒野昇華天賦與符咒效果精算器 (Wildwood Ascendancy & Charms Evaluator)**：
+  - 純領域符咒精算核心 (`charmEvaluator.ts`, `wildwoodData.ts`)，完整支援 3 大荒野昇華派系（原始獵手、林地看守者、夜詠者）與 15 種跨職業昇華符咒詞綴效果庫 ([#140](https://github.com/saijo0404/POE-tool/issues/140), [#143](https://github.com/saijo0404/POE-tool/pull/143))。
+  - 支援 1~3 個符咒插槽組合驗證，即時計算累積抗性、生命/魔力加成與特殊旗標，並產出流派契合度評級（S/A/B/C）與裝備配置建議。
+  - 荒野符咒卡片組件 (`WildwoodCharmsCard.tsx`)，整合至流派配裝面板，支援即時詞綴搜尋與快速清除。
+- **禁忌聖所試煉聖物詞綴相乘評估與房型收益推估器 (Forbidden Sanctum Relic & Room EV Evaluator)**：
+  - 純領域聖所精算核心 (`sanctumRelicEngine.ts`, `sanctumData.ts`)，收錄 4 大層聖所房型難度與基礎獎勵池模型，支援 12 種聖物詞綴相乘評估（決心抗性、商人折扣、額外視野等）([#141](https://github.com/saijo0404/POE-tool/issues/141), [#144](https://github.com/saijo0404/POE-tool/pull/144))。
+  - 精算各房型期望淨利（EV in Chaos/Divine）與通關生存率預測，提供「首選挺進 / 審慎考慮 / 極高風險」房型建議。
+  - 聖物精算卡片組件 (`SanctumRelicCard.tsx`)，整合至刷圖收益面板，支援層數切換與自訂金幣估值。
+- **聖甲蟲庫存自動盤點與套裝成套率精算器 (Scarab Inventory Stock & Set Completion Engine)**：
+  - 純領域甲蟲盤點核心 (`scarabStockEngine.ts`, `scarabData.ts`)，支援 4~5 槽位策略聖甲蟲配置與短板瓶頸精算 ([#142](https://github.com/saijo0404/POE-tool/issues/142), [#145](https://github.com/saijo0404/POE-tool/pull/145))。
+  - 根據當前庫存精算成套場次，依據目標場次精算各甲蟲缺口數量與補貨總成本，並產出官方市集大宗採購鏈接與批次購買密語。
+  - 甲蟲盤點卡片組件 (`ScarabStockAuditCard.tsx`)，整合至輿圖規劃中心，支援一鍵加載預設甲蟲組合與補貨清單複製。
+
+---
+
 ## [2.8.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -331,7 +349,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.8.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/saijo0404/POE-tool/compare/v2.8.0...v2.9.0
 [2.8.0]: https://github.com/saijo0404/POE-tool/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/saijo0404/POE-tool/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/saijo0404/POE-tool/compare/v2.5.0...v2.6.0
