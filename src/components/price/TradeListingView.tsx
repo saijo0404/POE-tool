@@ -4,6 +4,7 @@ import { ExternalLink, Loader2, ArrowUpDown, ChevronDown } from 'lucide-react';
 import { poeApi } from '../../services/api';
 import { TradeEmptyState } from './TradeEmptyState';
 import { TradeListingRow } from './TradeListingRow';
+import { PriceAdvisorBadge } from './PriceAdvisorBadge';
 
 interface TradeListingViewProps {
   tradeResults: TradeSearchResult | null;
@@ -70,6 +71,10 @@ export const TradeListingView: React.FC<TradeListingViewProps> = ({
             </select>
           </div>
         )}
+      </div>
+
+      <div style={{ padding: '12px 18px 0 18px' }}>
+        <PriceAdvisorBadge listings={tradeResults.listings} />
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
