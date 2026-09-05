@@ -7,6 +7,7 @@ import { AccountAuthSection } from './settings/AccountAuthSection';
 import { StashTabSelector } from './settings/StashTabSelector';
 import { DeviceProfileSelector } from './common/DeviceProfileSelector';
 import { useDeviceProfile } from '../hooks/useDeviceProfile';
+import { HotkeySettingsCard } from './settings/HotkeySettingsCard';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -85,6 +86,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             suggestedMode={deviceProfile.suggestedMode}
           />
         </div>
+
+        <HotkeySettingsCard
+          settings={settings}
+          onChange={(key, val) => setSettings(prev => ({ ...prev, [key]: val }))}
+          onShowToast={onShowToast}
+        />
 
         <OverlaySettingsSection
           settings={settings}
