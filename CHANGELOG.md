@@ -10,6 +10,25 @@
 
 ---
 
+## [3.2.0] - 2026-09-05
+
+### ✨ 新增 (Added)
+- **PoE 2 雙武器組與雙天賦分配領域模型 (Dual Weapon Sets & Dual Spec Domain Model)**：
+  - 建立 `WeaponSet` (`'Set1' | 'Set2'`)、`EquippedWeapon` 與 `DualSpecAllocation` 領域模型與不可變資料結構 ([#183](https://github.com/saijo0404/POE-tool/issues/183), [#186](https://github.com/saijo0404/POE-tool/pull/186))。
+  - 實作雙語基底類型分類器 `classifyWeaponType` 與副手合法性校驗 `isValidOffHand`（完整支援弓/十字弓配備箭袋，近戰雙手武器互斥保護）。
+  - 實作技能武器需求自動綁定解析器 `resolveSkillWeaponRequirements` 與主動切換邏輯。
+  - 實作武器專屬雙天賦點數分離校驗器 `validateDualSpec` 與本地命名空間持久化儲存 `DualWeaponStorage`。
+- **雙武器組屬性差額與連段協同運算引擎 (Dual Setup Stat Delta & Combo Synergy Engine)**：
+  - 實作 `calculateWeaponSetDelta` 精算攻擊/法術點傷、攻速、暴擊、防禦與抗性之相對及百分比差額 ([#184](https://github.com/saijo0404/POE-tool/issues/184), [#187](https://github.com/saijo0404/POE-tool/pull/187))。
+  - 實作 PoE 2 特色連段異常狀態協同引擎 `calculateComboSynergy`，精算焦油點燃、冰凍碎裂猛擊、破甲割裂等連鎖乘數與加成覆蓋。
+  - 實作情境權重評分引擎 `calculateScenarioScore`，針對拓荒清圖 (Mapping) 與攻堅王戰 (Bossing) 智慧評估兩組武器之契合度得分。
+- **遊戲內雙武器即時切換懸浮指引與狀態條 (Weapon Swap In-Game HUD & Active Setup Overlay)**：
+  - 實作 `useWeaponSwap` Hook 監聽全域與本機切換熱鍵（預設 `X`），支援 Set 1 / Set 2 快速切換與即時狀態同步 ([#185](https://github.com/saijo0404/POE-tool/issues/185), [#188](https://github.com/saijo0404/POE-tool/pull/188))。
+  - 打造 `WeaponSwapIndicator` 懸浮 HUD 元件，具備主副手武器類型徽章、天賦點數分配進度條、不相容技能警示與差額矩陣展開卡片。
+  - 整合至 `OverlayApp`，於 PoE 2 引擎模式自適應渲染，並提供極簡模式快速收合。
+
+---
+
 ## [3.1.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -441,7 +460,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/saijo0404/POE-tool/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/saijo0404/POE-tool/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/saijo0404/POE-tool/compare/v2.12.0...v3.0.0
 [2.12.0]: https://github.com/saijo0404/POE-tool/compare/v2.11.0...v2.12.0

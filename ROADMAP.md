@@ -63,9 +63,8 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.11.0** | **核心架構收斂、技術債清理與 UI 原語重構** *(Core Refactoring, Tech Debt Cleanup & UI Primitives)* | ✅ 已發布 | [Milestone v2.11.0](https://github.com/saijo0404/POE-tool/milestone/14) |
 | 🟢 **v2.12.0** | **PoE 1 終極架構收斂與後端模組化** *(PoE 1 Final Convergence & Rust Modularization)* | ✅ 已發布 | [Milestone v2.12.0](https://github.com/saijo0404/POE-tool/milestone/15) |
 | 🟢 **v3.0.0** | **PoE 2 次世代雙核心架構基礎** *(PoE 2 Dual Engine Core Foundation)* | ✅ 已發布 | [Milestone v3.0.0](https://github.com/saijo0404/POE-tool/milestone/16) |
-| 🟢 **v3.1.0** | **PoE 2 官方市集對接與專屬詞綴數據字典** *(PoE 2 Official Trade API & Stat Dictionary)* | ✅ 已發布 | [Milestone v3.1.0](https://github.com/saijo0404/POE-tool/milestone/17) |
-| 🚀 **v3.2.0** | **PoE 2 雙武器配置與技能切換輔助系統** *(Dual Weapon Sets, Skill Binding & Dual Spec HUD)* | 🎯 規劃中 | 武器組 A/B 自動切換、專屬天賦樹配置、屬性即時差額 |
-| 🔮 **v3.3.0** | **PoE 2 銘刻地圖與深淵終局刷圖追蹤結算** *(PoE 2 Waystone & Endgame Mapping Analytics)* | 🔭 規劃中 | 銘刻地圖危險評級、終局刷圖收益日誌、金幣掉落統計 |
+| 🟢 **v3.2.0** | **PoE 2 雙武器配置與技能切換輔助系統** *(Dual Weapon Sets, Skill Binding & Dual Spec HUD)* | ✅ 已發布 | [Milestone v3.2.0](https://github.com/saijo0404/POE-tool/milestone/18) |
+| 🚀 **v3.3.0** | **PoE 2 銘刻地圖與深淵終局刷圖追蹤結算** *(PoE 2 Waystone & Endgame Mapping Analytics)* | 🎯 規劃中 | 銘刻地圖危險評級、終局刷圖收益日誌、金幣掉落統計 |
 | 🔮 **v3.4.0** | **PoE 2 符文工藝、未切割寶石切割期望與黑市交易** *(PoE 2 Rune Crafting, Uncut Gem Cutting & Black Market)* | 🔭 規劃中 | 符文雕刻工藝精算、未切割寶石價值矩陣、黑市金幣套利 |
 
 ---
@@ -145,12 +144,12 @@ gantt
     PoE 2 官方市集 API Client 與多引擎分發器 (#175/#178) :done,    m17_1, 2026-09-05, 2026-09-05
     PoE 2 專屬詞綴與基底雙向對照字典庫 (#176/#180)       :done,    m17_2, 2026-09-05, 2026-09-05
     PoE 2 剪貼簿一鍵智慧查價與自適應篩選 (#177/#181)     :done,    m17_3, 2026-09-05, 2026-09-05
-    section v3.2.0 雙武器與技能輔助 (規劃中)
-    雙武器組與雙天賦分配領域模型                   :crit, active, m18_1, 2026-09-06, 2026-09-08
-    雙武器組屬性差額與技能輸出即時對比引擎           :m18_2, 2026-09-07, 2026-09-09
-    遊戲內雙武器即時切換懸浮指引與狀態條           :m18_3, 2026-09-08, 2026-09-10
+    section v3.2.0 雙武器與技能輔助 (已完成)
+    雙武器組與雙天賦分配領域模型 (#183/#186)       :done,    m18_1, 2026-09-05, 2026-09-05
+    雙武器組屬性差額與技能輸出即時對比引擎 (#184/#187) :done,    m18_2, 2026-09-05, 2026-09-05
+    遊戲內雙武器即時切換懸浮指引與狀態條 (#185/#188)   :done,    m18_3, 2026-09-05, 2026-09-05
     section v3.3.0 銘刻地圖與終局結算 (規劃中)
-    銘刻地圖詞綴危險度評級與洗圖成本精算           :m19_1, 2026-09-15, 2026-09-17
+    銘刻地圖詞綴危險度評級與洗圖成本精算           :crit, active, m19_1, 2026-09-06, 2026-09-08
     PoE 2 日誌解析與金幣/終局資產收益追蹤          :m19_2, 2026-09-16, 2026-09-18
     PoE 2 終局地圖塔台與生物群落策略輔助           :m19_3, 2026-09-17, 2026-09-19
     section v3.4.0 符文工藝與黑市交易 (規劃中)
@@ -516,22 +515,25 @@ gantt
 
 ---
 
-### 階段十六 (v3.2.0)：PoE 2 雙武器配置與技能切換輔助系統 (Dual Weapon Sets, Skill Binding & Dual Spec HUD)
+### 階段十六 (v3.2.0)：PoE 2 雙武器配置與技能切換輔助系統 (Dual Weapon Sets, Skill Binding & Dual Spec HUD) `[已發布]`
 
 > **核心目標**：因應 PoE 2 革命性的「雙武器配置 (Weapon Swap Set 1 & 2)」與「技能自動切換武器/雙重天賦點數」機制，提供即時配置追蹤、雙配裝屬性差額與連段輸出增益精算。
 
 #### 📦 交付功能與關鍵項目
 
-1. **⚔️ 雙武器組與雙天賦分配領域模型 (Dual Weapon Sets & Dual Spec Domain Model)** `[規劃中]`
-   - 建立 `WeaponSet` (`'Set1' | 'Set2'`) 與 `DualSpecAllocation` 領域模型。
-   - 支援技能與武器組的綁定解析（例如：近戰技能自動切換長柄武器，法術技能自動切換法杖/魔杖）。
-   - 支援武器專屬天賦點數（Weapon-specific passives）與全域天賦點數的分離解析與合法性校驗。
-2. **⚖️ 雙武器組屬性差額與技能輸出即時對比引擎 (Dual Setup Stat Delta & Skill Synergy Engine)** `[規劃中]`
+1. **⚔️ 雙武器組與雙天賦分配領域模型 (Dual Weapon Sets & Dual Spec Domain Model)** `[已交付/已發布]`
+   - 建立 `WeaponSet` (`'Set1' | 'Set2'`)、`EquippedWeapon` 與 `DualSpecAllocation` 領域模型與不可變資料結構。
+   - 支援技能與武器組的綁定解析與武器類型雙語分類器（例如：弓/十字弓箭袋配對、雙手近戰互斥保護）。
+   - 支援武器專屬天賦點數（Weapon-specific passives）與全域天賦點數的分離解析、合法性校驗與持久化儲存。
+   - 關聯 PR/Issue：[#183](https://github.com/saijo0404/POE-tool/issues/183), [#186](https://github.com/saijo0404/POE-tool/pull/186)
+2. **⚖️ 雙武器組屬性差額與技能輸出即時對比引擎 (Dual Setup Stat Delta & Skill Synergy Engine)** `[已交付/已發布]`
    - 對比兩組武器在不同技能情境（如清圖拓荒 vs 攻堅王戰）下的期望效益與屬性覆蓋。
-   - 精算更換特定武器對全套連段機制（Combo Chain）的連鎖屬性增減。
-3. **🎮 遊戲內雙武器即時切換懸浮指引與狀態條 (Weapon Swap In-Game HUD & Active Setup Overlay)** `[規劃中]`
-   - 懸浮窗即時顯示當前啟動中的武器組配置與主動技能相容性狀態。
-   - 提供武器切換按鍵快捷提示、武器耐久/狀態指示與屬性差額快速切換卡片。
+   - 精算更換特定武器對全套連段機制（Combo Chain）的異常狀態協同倍率與連鎖屬性增減。
+   - 關聯 PR/Issue：[#184](https://github.com/saijo0404/POE-tool/issues/184), [#187](https://github.com/saijo0404/POE-tool/pull/187)
+3. **🎮 遊戲內雙武器即時切換懸浮指引與狀態條 (Weapon Swap In-Game HUD & Active Setup Overlay)** `[已交付/已發布]`
+   - 懸浮窗即時顯示當前啟動中的武器組配置、天賦點數分配條與主動技能相容性狀態。
+   - 提供武器切換按鍵快捷提示（預設 `X`）、不相容技能警示、極簡模式與屬性差額展開卡片。
+   - 關聯 PR/Issue：[#185](https://github.com/saijo0404/POE-tool/issues/185), [#188](https://github.com/saijo0404/POE-tool/pull/188)
 
 ---
 
