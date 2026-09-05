@@ -50,6 +50,7 @@ POE_tool 致力於成為《流亡黯道 (Path of Exile)》台服與國際服玩�
 | 🟢 **v2.6.0** | **輿圖聖甲蟲組合協同、地圖工藝損益預測與地圖洗詞期望模擬** *(Scarab Synergy, Device Craft Forecaster & Map Rolling Simulator)* | ✅ 已發布 | [Milestone v2.6.0](https://github.com/saijo0404/POE-tool/milestone/9) |
 | 🟢 **v2.7.0** | **地圖歷史掉落熱力圖、通牒命運試煉精算與自訂置頂快捷鍵** *(Map Drop Heatmap, Ultimatum EV & Custom Hotkey Pinning)* | ✅ 已發布 | [Milestone v2.7.0](https://github.com/saijo0404/POE-tool/milestone/10) |
 | 🟢 **v2.8.0** | **迷霧瞻妄層數期望精算、軍團永恆珠寶種子鑑定與多物品比價暫存列** *(Delirium EV Forecaster, Timeless Jewel Evaluator & Comparison Tray)* | ✅ 已發布 | [Milestone v2.8.0](https://github.com/saijo0404/POE-tool/milestone/11) |
+| 🟡 **v2.9.0** | **荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點** *(Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)* | 🚀 進行中 | [Milestone v2.9.0](https://github.com/saijo0404/POE-tool/milestone/12) |
 | 🔮 **v3.0.0+** | **PoE 2 次世代雙核心獨立架構** *(PoE 2 Dual Engine Vision)* | 🔭 願景藍圖 | PoE 1 / PoE 2 雙引擎無縫切換、專屬全新機制適配 |
 
 ---
@@ -323,7 +324,32 @@ gantt
 
 ---
 
-### 階段十 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
+### 階段十 (v2.9.0)：荒野昇華符咒精算、禁忌聖所聖物評估與聖甲蟲庫存套裝盤點 (Wildwood Charms Evaluator, Sanctum Relic Evaluator & Scarab Stock Audit)
+
+> **核心目標**：深化荒野特殊昇華與符咒增益組合精算，支援禁忌聖所 4 層聖物相乘效益與收益預估，並提供刷圖聖甲蟲庫存自動盤點與套裝缺口補貨精算。
+
+#### 📦 交付功能與關鍵項目
+
+1. **🌿 荒野野靈荒野昇華天賦與符咒效果精算器 (Wildwood Ascendancy & Charms Evaluator)**
+   - 收錄 3 大荒野昇華核心節點與主要符咒詞綴效果庫（跨職業昇華效果移植）。
+   - 支援 1~3 個符咒插槽組合驗證，計算累積抗性、生命/護盾加成與特殊機制旗標。
+   - 產出流派適配度評級（S/A/B/C）與裝備配置建議。
+   - 關聯 PR/Issue：[#140](https://github.com/saijo0404/POE-tool/issues/140)
+2. **🏛️ 禁忌聖所試煉聖物詞綴相乘評估與房型收益推估器 (Forbidden Sanctum Relic & Room EV Evaluator)**
+   - 建立 4 層試煉房間模型（第 1~4 層房間基礎難度與獎勵權重）。
+   - 支援聖物詞綴聚合計算（決心減免%、商人價格折扣%、房間選擇額外視野等）。
+   - 精算各房型期望淨利（EV in Chaos/Divine）與通關生存率預測。
+   - 關聯 PR/Issue：[#141](https://github.com/saijo0404/POE-tool/issues/141)
+3. **📦 聖甲蟲庫存自動盤點與套裝成套率精算器 (Scarab Inventory Stock & Set Completion Engine)**
+   - 支援自訂策略配置（如 4~5 顆聖甲蟲槽位需求）。
+   - 輸入當前庫存數量，計算成套完整場次（木桶短板瓶頸計算）。
+   - 計算目標場次（如目標 50 場）所需的各甲蟲缺口數量與估算補貨成本（Chaos/Divine）。
+   - 產生官方市集大宗採購鏈接與批次購買密語。
+   - 關聯 PR/Issue：[#142](https://github.com/saijo0404/POE-tool/issues/142)
+
+---
+
+### 階段十一 (v3.0.0+)：次世代雙核心架構 (PoE 2 Next-Gen Architecture Vision)
 
 > **核心目標**：在《Path of Exile 2》正式發布且 API 穩定後，提供 PoE 1 與 PoE 2 雙引擎無縫切換體驗。
 
