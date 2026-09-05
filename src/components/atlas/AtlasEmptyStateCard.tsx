@@ -1,5 +1,6 @@
 import React from 'react';
 import { Compass, Share2 } from 'lucide-react';
+import { Card, Button } from '../ui';
 
 interface AtlasEmptyStateCardProps {
   onCreateStrategy: () => void;
@@ -11,18 +12,17 @@ export const AtlasEmptyStateCard: React.FC<AtlasEmptyStateCardProps> = ({
   onOpenCommunityHub
 }) => {
   return (
-    <div style={{
-      background: 'linear-gradient(180deg, rgba(27, 36, 52, 0.6) 0%, rgba(16, 22, 34, 0.8) 100%)',
-      border: '1px solid rgba(200, 170, 110, 0.3)',
-      borderRadius: '8px',
-      padding: '48px 24px',
-      textAlign: 'center',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '16px',
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)'
-    }}>
+    <Card
+      variant="elevated"
+      padding="lg"
+      style={{
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '16px',
+      }}
+    >
       <div style={{
         width: '64px',
         height: '64px',
@@ -45,26 +45,26 @@ export const AtlasEmptyStateCard: React.FC<AtlasEmptyStateCardProps> = ({
       </p>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
-        <button
-          type="button"
-          className="poe-button"
+        <Button
+          variant="primary"
+          size="lg"
           onClick={onCreateStrategy}
-          style={{ padding: '10px 20px', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+          icon={<Compass size={17} />}
         >
-          <Compass size={17} /> + 新增自訂策略
-        </button>
+          + 新增自訂策略
+        </Button>
 
         {onOpenCommunityHub && (
-          <button
-            type="button"
-            className="poe-button-secondary"
+          <Button
+            variant="secondary"
+            size="lg"
             onClick={onOpenCommunityHub}
-            style={{ padding: '10px 20px', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            icon={<Share2 size={16} />}
           >
-            <Share2 size={16} color="var(--text-gold)" /> 瀏覽社群精選策略
-          </button>
+            瀏覽社群精選策略
+          </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

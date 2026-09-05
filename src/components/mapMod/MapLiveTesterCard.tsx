@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, AlertOctagon, CheckCircle2, Clipboard } from 'lucide-react';
 import type { MapDangerEvaluation } from '../../domain/mapMod/types';
 import { poeApi } from '../../services/api';
+import { Card, Button } from '../ui';
 
 interface MapLiveTesterCardProps {
   onEvaluate: (text: string, playSound?: boolean) => MapDangerEvaluation;
@@ -38,19 +39,19 @@ export const MapLiveTesterCard: React.FC<MapLiveTesterCardProps> = ({ onEvaluate
   };
 
   return (
-    <div className="poe-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Card variant="default" padding="md" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '12px' }}>
         <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Search size={18} color="var(--text-gold)" /> 即時地圖危險詞綴測試區 (Live Tester)
         </h3>
-        <button
-          type="button"
-          className="poe-button-secondary"
+        <Button
+          size="sm"
+          variant="secondary"
           onClick={handlePasteFromClipboard}
-          style={{ padding: '4px 10px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+          icon={<Clipboard size={13} />}
         >
-          <Clipboard size={13} /> 貼上剪貼簿地圖
-        </button>
+          貼上剪貼簿地圖
+        </Button>
       </div>
 
       <div>
@@ -156,6 +157,6 @@ export const MapLiveTesterCard: React.FC<MapLiveTesterCardProps> = ({ onEvaluate
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 };

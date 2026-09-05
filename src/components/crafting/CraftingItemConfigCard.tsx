@@ -2,6 +2,7 @@ import React from 'react';
 import { Shield, Layers } from 'lucide-react';
 import { ITEM_CLASSES } from '../../domain/crafting/basesDatabase';
 import type { CraftBaseItem, ItemClass } from '../../domain/crafting/types';
+import { Card, Button } from '../ui';
 
 interface CraftingItemConfigCardProps {
   selectedClass: ItemClass;
@@ -23,7 +24,7 @@ export const CraftingItemConfigCard: React.FC<CraftingItemConfigCardProps> = ({
   onIlvlChange,
 }) => {
   return (
-    <div className="poe-card" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '10px' }}>
         <Shield size={18} color="var(--text-gold)" />
         <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-gold)' }}>1. 裝備部位與基底設定</h3>
@@ -34,15 +35,14 @@ export const CraftingItemConfigCard: React.FC<CraftingItemConfigCardProps> = ({
         <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>裝備類別 (Item Class)：</label>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {ITEM_CLASSES.map(cls => (
-            <button
+            <Button
               key={cls.id}
-              type="button"
+              size="sm"
+              variant={selectedClass === cls.id ? 'primary' : 'secondary'}
               onClick={() => onClassChange(cls.id)}
-              className={selectedClass === cls.id ? 'poe-button' : 'poe-button-secondary'}
-              style={{ padding: '5px 10px', fontSize: '0.78rem', borderRadius: '4px' }}
             >
               {cls.nameZh}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -129,6 +129,6 @@ export const CraftingItemConfigCard: React.FC<CraftingItemConfigCardProps> = ({
           <span style={{ color: '#68c4ff' }}>固定詞綴：{selectedBase.implicit}</span>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

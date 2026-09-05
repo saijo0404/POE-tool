@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { ScarabSynergyRecommendation, RecommendedScarabSlot } from '../../domain/atlas/scarabSynergyEngine';
 import type { AtlasTierScarab } from '../../domain/atlas/types';
 import { Sparkles, Check, Flame, Zap, ArrowRight } from 'lucide-react';
+import { Card, Button } from '../ui';
 
 interface ScarabSynergyCardProps {
   recommendation: ScarabSynergyRecommendation;
@@ -63,7 +64,7 @@ export const ScarabSynergyCard: React.FC<ScarabSynergyCardProps> = ({
   const costDivine = Math.round((recommendation.estimatedCostChaos / divineRate) * 100) / 100;
 
   return (
-    <div className="poe-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -107,29 +108,14 @@ export const ScarabSynergyCard: React.FC<ScarabSynergyCardProps> = ({
           </div>
 
           {onApplyToCurrentTier && (
-            <button
-              type="button"
-              className={applied ? 'poe-button-secondary' : 'poe-button'}
+            <Button
+              variant={applied ? 'secondary' : 'primary'}
+              size="sm"
               onClick={handleApply}
-              style={{
-                fontSize: '0.8rem',
-                padding: '5px 12px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
+              icon={applied ? <Check size={14} color="#86efac" /> : <ArrowRight size={14} />}
             >
-              {applied ? (
-                <>
-                  <Check size={14} color="#86efac" /> 已套用至當前配置
-                </>
-              ) : (
-                <>
-                  <ArrowRight size={14} /> 一鍵套用此組合
-                </>
-              )}
-            </button>
+              {applied ? '已套用至當前配置' : '一鍵套用此組合'}
+            </Button>
           )}
         </div>
       </div>
@@ -190,6 +176,6 @@ export const ScarabSynergyCard: React.FC<ScarabSynergyCardProps> = ({
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 };

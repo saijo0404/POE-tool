@@ -6,6 +6,7 @@ import {
   type BulkShoppingPlan
 } from '../../domain/atlas/atlasBulkShoppingEngine';
 import { ShoppingCart, Copy, Coins, Edit2, Check } from 'lucide-react';
+import { Card, Button } from '../ui';
 
 interface AtlasBulkShoppingCardProps {
   tier: AtlasStrategyTier;
@@ -65,15 +66,18 @@ export const AtlasBulkShoppingCard: React.FC<AtlasBulkShoppingCardProps> = ({
   if (!plan) return null;
 
   return (
-    <div style={{
-      background: 'linear-gradient(145deg, #141b27 0%, #0d121c 100%)',
-      border: '1px solid rgba(200, 170, 110, 0.25)',
-      borderRadius: '8px',
-      padding: '14px 16px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '12px'
-    }}>
+    <Card
+      variant="default"
+      padding="none"
+      style={{
+        background: 'linear-gradient(145deg, #141b27 0%, #0d121c 100%)',
+        border: '1px solid rgba(200, 170, 110, 0.25)',
+        padding: '14px 16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px'
+      }}
+    >
       {/* Header & Runs Selector */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -242,22 +246,16 @@ export const AtlasBulkShoppingCard: React.FC<AtlasBulkShoppingCardProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            type="button"
-            className="poe-button-secondary"
+          <Button
+            size="sm"
+            variant="secondary"
             onClick={handleCopyClipboard}
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.78rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
+            icon={<Copy size={13} />}
           >
-            <Copy size={13} /> 複製採購清單
-          </button>
+            複製採購清單
+          </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

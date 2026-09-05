@@ -3,6 +3,7 @@ import { Play, Pause, RotateCcw, CheckCircle2, Camera, Loader2, Compass } from '
 import type { MappingTimerState } from '../../domain/mapping/types';
 import type { WealthSnapshot } from '../../types/poe';
 import { formatDuration } from '../../domain/mapping/mappingExport';
+import { Card, Button } from '../ui';
 
 interface MappingTimerCardProps {
   timerState: MappingTimerState;
@@ -46,10 +47,10 @@ export const MappingTimerCard: React.FC<MappingTimerCardProps> = ({
   };
 
   return (
-    <div
-      className="poe-card"
+    <Card
+      variant={isRunning ? 'elevated' : 'default'}
+      padding="lg"
       style={{
-        padding: '24px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -58,7 +59,6 @@ export const MappingTimerCard: React.FC<MappingTimerCardProps> = ({
         backgroundColor: '#121620',
         border: isRunning ? '1px solid rgba(243, 209, 121, 0.6)' : '1px solid rgba(200, 170, 110, 0.25)',
         boxShadow: isRunning ? '0 0 16px rgba(243, 209, 121, 0.15)' : 'none',
-        position: 'relative'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
@@ -92,97 +92,90 @@ export const MappingTimerCard: React.FC<MappingTimerCardProps> = ({
       {/* Action Controls */}
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
         {!isRunning && !isPaused && (
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="lg"
             onClick={onStartMap}
             disabled={snapshotting}
-            className="poe-button"
-            style={{ padding: '10px 24px', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '6px' }}
+            icon={snapshotting ? <Loader2 size={18} className="spin" /> : <Play size={18} />}
           >
-            {snapshotting ? <Loader2 size={18} className="spin" /> : <Play size={18} />}
             開始進圖 (Start Map)
-          </button>
+          </Button>
         )}
 
         {isRunning && (
           <>
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="lg"
               onClick={onFinishAndSettle}
               disabled={snapshotting}
-              className="poe-button"
+              icon={snapshotting ? <Loader2 size={18} className="spin" /> : <CheckCircle2 size={18} />}
               style={{
-                padding: '10px 24px',
-                fontSize: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                borderRadius: '6px',
                 background: 'linear-gradient(180deg, #98c379 0%, #5c873f 100%)',
                 color: '#0d121c',
                 fontWeight: 'bold'
               }}
             >
-              {snapshotting ? <Loader2 size={18} className="spin" /> : <CheckCircle2 size={18} />}
               出圖放貨並結算 (Settle Run)
-            </button>
+            </Button>
 
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="lg"
               onClick={onPauseMap}
-              className="poe-button-secondary"
-              style={{ padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '6px' }}
+              icon={<Pause size={16} />}
             >
-              <Pause size={16} /> 暫停
-            </button>
+              暫停
+            </Button>
           </>
         )}
 
         {isPaused && (
           <>
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="lg"
               onClick={onResumeMap}
-              className="poe-button"
-              style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '6px' }}
+              icon={<Play size={16} />}
             >
-              <Play size={16} /> 繼續計時
-            </button>
+              繼續計時
+            </Button>
 
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="lg"
               onClick={onFinishAndSettle}
               disabled={snapshotting}
-              className="poe-button-secondary"
-              style={{ padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '6px', color: '#98c379' }}
+              icon={<CheckCircle2 size={16} />}
+              style={{ color: '#98c379' }}
             >
-              <CheckCircle2 size={16} /> 出圖結算
-            </button>
+              出圖結算
+            </Button>
           </>
         )}
 
-        <button
-          type="button"
+        <Button
+          variant="secondary"
+          size="lg"
           onClick={onTakeSnapshotA}
           disabled={snapshotting}
-          className="poe-button-secondary"
-          style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '6px' }}
+          icon={snapshotting ? <Loader2 size={16} className="spin" /> : <Camera size={16} />}
           title="手動抓取進圖前 Dump Tab 快照 A"
         >
-          {snapshotting ? <Loader2 size={16} className="spin" /> : <Camera size={16} />}
           {snapshotA ? '重新記錄快照 A' : '記錄進圖快照 A'}
-        </button>
+        </Button>
 
         {(isRunning || isPaused || timerState.elapsedSeconds > 0) && (
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="lg"
             onClick={onResetTimer}
-            className="poe-button-secondary"
-            style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '6px' }}
+            icon={<RotateCcw size={16} />}
             title="重設單場碼錶"
           >
-            <RotateCcw size={16} /> 重設碼錶
-          </button>
+            重設碼錶
+          </Button>
         )}
       </div>
 
@@ -195,6 +188,6 @@ export const MappingTimerCard: React.FC<MappingTimerCardProps> = ({
           <span>💡 提示：點擊「開始進圖」時將自動記錄進圖前快照，出圖後點擊「出圖放貨並結算」即可全自動結算單場獲利！</span>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

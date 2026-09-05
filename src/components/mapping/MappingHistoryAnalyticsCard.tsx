@@ -6,6 +6,7 @@ import {
   type MappingHistoryAnalytics
 } from '../../domain/mapping/mappingAnalytics';
 import { BarChart3, Award, Filter, Sparkles } from 'lucide-react';
+import { Card } from '../ui';
 
 interface MappingHistoryAnalyticsCardProps {
   sessions: MappingSession[];
@@ -49,13 +50,10 @@ export const MappingHistoryAnalyticsCard: React.FC<MappingHistoryAnalyticsCardPr
   }, [sessions, timeRange, selectedStrategy, currentLeague, divineRate]);
 
   return (
-    <div
-      className="poe-card"
+    <Card
+      variant="subtle"
+      padding="md"
       style={{
-        background: 'rgba(15, 20, 28, 0.95)',
-        border: '1px solid rgba(200, 170, 110, 0.35)',
-        borderRadius: '8px',
-        padding: '16px',
         color: '#e2e8f0'
       }}
     >
@@ -189,6 +187,6 @@ export const MappingHistoryAnalyticsCard: React.FC<MappingHistoryAnalyticsCardPr
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

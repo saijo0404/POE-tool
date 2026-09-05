@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AtlasCalculationSummary } from '../../domain/atlas/types';
 import { Calculator, DollarSign, TrendingUp, Clock, Percent } from 'lucide-react';
+import { Card } from '../ui';
 
 interface AtlasCostSummaryCardProps {
   summary: AtlasCalculationSummary;
@@ -18,14 +19,15 @@ export const AtlasCostSummaryCard: React.FC<AtlasCostSummaryCardProps> = ({
   const isProfitable = summary.netProfitChaosPerMap >= 0;
 
   return (
-    <div className="poe-card" style={{
-      background: 'linear-gradient(145deg, #131926 0%, #0a0d14 100%)',
-      border: '1.5px solid var(--border-gold)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '16px',
-      marginBottom: '16px'
-    }}>
+    <Card
+      variant="elevated"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        marginBottom: '16px',
+      }}
+    >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -173,6 +175,6 @@ export const AtlasCostSummaryCard: React.FC<AtlasCostSummaryCardProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

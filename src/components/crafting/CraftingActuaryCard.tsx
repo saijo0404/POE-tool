@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calculator, Award, Sparkles, AlertCircle } from 'lucide-react';
 import type { CraftActuaryResult } from '../../domain/crafting/types';
+import { Card } from '../ui';
 
 interface CraftingActuaryCardProps {
   actuaryResult: CraftActuaryResult | null;
@@ -9,17 +10,17 @@ interface CraftingActuaryCardProps {
 export const CraftingActuaryCard: React.FC<CraftingActuaryCardProps> = ({ actuaryResult }) => {
   if (!actuaryResult) {
     return (
-      <div className="poe-card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+      <Card variant="default" padding="lg" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
         <AlertCircle size={24} style={{ marginBottom: '8px', color: 'var(--text-gold)' }} />
         <p style={{ margin: 0 }}>請設定基底並至少選擇 1 條目標詞綴以進行精算。</p>
-      </div>
+      </Card>
     );
   }
 
   const { evaluations, recommendedMethod, activeTargetModsCount } = actuaryResult;
 
   return (
-    <div className="poe-card" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Calculator size={18} color="var(--text-gold)" />
@@ -126,6 +127,6 @@ export const CraftingActuaryCard: React.FC<CraftingActuaryCardProps> = ({ actuar
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 };

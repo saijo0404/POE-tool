@@ -12,6 +12,7 @@ import {
 } from '../../domain/hotkey/hotkeyManager';
 import type { HotkeyActionId, HotkeyBindingMap } from '../../domain/hotkey/types';
 import type { AppSettings } from '../../domain/settings/types';
+import { Card, Button } from '../ui';
 
 interface HotkeySettingsCardProps {
   settings: Partial<AppSettings>;
@@ -58,13 +59,11 @@ function ActionBadge({ isRecording, currentKey }: { isRecording: boolean; curren
       borderRadius: '4px',
       fontSize: '0.78rem',
       fontWeight: 700,
-      background: isRecording ? '#ef4444' : 'rgba(0,0,0,0.4)',
-      border: `1px solid ${isRecording ? '#f87171' : 'var(--border-gold)'}`,
-      color: isRecording ? '#fff' : 'var(--text-gold)',
-      minWidth: '80px',
-      textAlign: 'center'
+      background: isRecording ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+      color: isRecording ? '#fca5a5' : '#f3d179',
+      border: isRecording ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.15)'
     }}>
-      {isRecording ? '請按下按鍵...' : currentKey.toUpperCase()}
+      {isRecording ? '請按下新快捷鍵...' : currentKey.toUpperCase()}
     </span>
   );
 }
@@ -76,7 +75,7 @@ function ActionRow({
   onStartRecord,
   onCancelRecord
 }: {
-  action: typeof HOTKEY_ACTIONS[number];
+  action: typeof HOTKEY_ACTIONS[0];
   currentKey: string;
   isRecording: boolean;
   onStartRecord: () => void;
@@ -90,22 +89,13 @@ function ActionRow({
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <ActionBadge isRecording={isRecording} currentKey={currentKey} />
-        <button
-          type="button"
+        <Button
+          size="sm"
+          variant={isRecording ? 'secondary' : 'primary'}
           onClick={isRecording ? onCancelRecord : onStartRecord}
-          style={{
-            padding: '3px 8px',
-            borderRadius: '4px',
-            fontSize: '0.75rem',
-            background: isRecording ? '#444' : 'var(--gold-gradient)',
-            color: isRecording ? '#fff' : '#000',
-            border: 'none',
-            fontWeight: 600,
-            cursor: 'pointer'
-          }}
         >
           {isRecording ? '取消' : '錄製'}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -244,7 +234,7 @@ export const HotkeySettingsCard: React.FC<HotkeySettingsCardProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+    <Card variant="subtle" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
         <h3 style={{ fontSize: '1rem', color: 'var(--text-gold)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Keyboard size={16} /> 自訂全域快捷鍵與視窗釘選 (Hotkeys & Pinning)
@@ -268,7 +258,7 @@ export const HotkeySettingsCard: React.FC<HotkeySettingsCardProps> = ({
         opacity={settings.overlayOpacity ?? 0.92}
         onChangeOpacity={val => onChange('overlayOpacity', val)}
       />
-    </div>
+    </Card>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import type { ParsedItem } from '../../types/poe';
 import { evaluateGearPotential } from '../../domain/gear/gearInspector';
 import { Sparkles, CheckCircle, AlertCircle, Wrench } from 'lucide-react';
+import { Card } from '../ui';
 
 interface GearInspectorCardProps {
   item: ParsedItem;
@@ -14,7 +15,14 @@ export const GearInspectorCard: React.FC<GearInspectorCardProps> = ({ item }) =>
   const gradeColor = grade === 'S' ? '#fbbf24' : grade === 'A' ? '#38bdf8' : grade === 'B' ? '#a3e635' : '#94a3b8';
 
   return (
-    <div className="poe-card" style={{ padding: '14px', border: isHighValueBase ? '1.5px solid #fbbf24' : '1px solid var(--border-gold)' }}>
+    <Card
+      variant="default"
+      padding="sm"
+      style={{
+        padding: '14px',
+        border: isHighValueBase ? '1.5px solid #fbbf24' : '1px solid var(--border-gold)',
+      }}
+    >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         <div>
@@ -131,6 +139,6 @@ export const GearInspectorCard: React.FC<GearInspectorCardProps> = ({ item }) =>
           </ul>
         </div>
       )}
-    </div>
+    </Card>
   );
 };

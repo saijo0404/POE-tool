@@ -3,6 +3,7 @@ import { Package, Copy, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-rea
 import type { ScarabStockStrategy, ScarabShortage } from '../../domain/scarab/scarabTypes';
 import { DEFAULT_SCARABS, PRESET_SCARAB_STRATEGIES } from '../../domain/scarab/scarabData';
 import { auditScarabStock, getScarabById } from '../../domain/scarab/scarabStockEngine';
+import { Card, Button } from '../ui';
 
 interface ScarabStockAuditCardProps {
   divineRate?: number;
@@ -27,13 +28,13 @@ export const ScarabStockAuditCard: React.FC<ScarabStockAuditCardProps> = ({ divi
   const handleSelectStrat = (id: string) => { setSelectedStrategyId(id); const s = PRESET_SCARAB_STRATEGIES.find(x => x.id === id); if (s) setTargetRuns(s.targetMapRuns); };
 
   return (
-    <div className="poe-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <CardHeader completionPct={audit.completionPct} maxRuns={audit.maxPlayableRuns} />
       <StrategySelectorBar strategies={PRESET_SCARAB_STRATEGIES} selectedId={selectedStrategyId} targetRuns={targetRuns} onSelectStrategy={handleSelectStrat} onChangeTargetRuns={setTargetRuns} />
       <AuditMetricsMeter audit={audit} />
       <InventoryInputsGrid requirements={currentStrategy.requirements} inventory={inventory} onChangeStock={handleUpdateStock} />
       {audit.shortages.length > 0 && <ShortagesTable shortages={audit.shortages} onCopyWhisper={handleCopyWhisper} />}
-    </div>
+    </Card>
   );
 };
 
@@ -59,9 +60,14 @@ const StrategySelectorBar: React.FC<{
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
     <div style={{ display: 'flex', gap: '8px' }}>
       {strategies.map(s => (
-        <button key={s.id} type="button" className={`btn-filter ${s.id === selectedId ? 'active' : ''}`} onClick={() => onSelectStrategy(s.id)}>
+        <Button
+          key={s.id}
+          size="sm"
+          variant={s.id === selectedId ? 'primary' : 'secondary'}
+          onClick={() => onSelectStrategy(s.id)}
+        >
           {s.name}
-        </button>
+        </Button>
       ))}
     </div>
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#aaa' }}>
@@ -127,9 +133,14 @@ const ShortagesTable: React.FC<{
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <span style={{ fontSize: '0.8rem', color: '#e74c3c' }}>待採購補貨清單:</span>
-      <button type="button" className="btn-filter" style={{ padding: '2px 8px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={onCopyWhisper}>
-        <Copy size={11} /> 複製大宗採購指令
-      </button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={onCopyWhisper}
+        icon={<Copy size={11} />}
+      >
+        複製大宗採購指令
+      </Button>
     </div>
     <div style={{ overflowX: 'auto' }}>
       <table style={{ width: '100%', fontSize: '0.75rem', borderCollapse: 'collapse', textAlign: 'left' }}>

@@ -6,6 +6,7 @@ import {
   type WhisperTemplate
 } from '../../domain/tradeWhisper/whisperTemplates';
 import { TradeWhisperStashGrid } from './TradeWhisperStashGrid';
+import { Card } from '../ui';
 import {
   UserPlus,
   Clock,
@@ -74,17 +75,18 @@ export const TradeWhisperCard: React.FC<TradeWhisperCardProps> = ({
   };
 
   return (
-    <div style={{
-      background: 'linear-gradient(180deg, rgba(26, 32, 44, 0.95) 0%, rgba(15, 20, 28, 0.95) 100%)',
-      border: '1px solid rgba(200, 170, 110, 0.5)',
-      borderRadius: '8px',
-      padding: '10px 12px',
-      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(200, 170, 110, 0.2)',
-      color: '#e2e8f0',
-      fontSize: '0.82rem',
-      marginBottom: '8px',
-      boxSizing: 'border-box'
-    }}>
+    <Card
+      variant="elevated"
+      padding="sm"
+      style={{
+        border: '1px solid rgba(200, 170, 110, 0.5)',
+        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(200, 170, 110, 0.2)',
+        color: '#e2e8f0',
+        fontSize: '0.82rem',
+        marginBottom: '8px',
+        boxSizing: 'border-box'
+      }}
+    >
       {/* Header bar: Buyer name, status, close button */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -253,6 +255,6 @@ export const TradeWhisperCard: React.FC<TradeWhisperCardProps> = ({
           />
         </div>
       )}
-    </div>
+    </Card>
   );
 };

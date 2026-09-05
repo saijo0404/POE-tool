@@ -3,6 +3,7 @@ import { Target, CheckCircle2, Circle } from 'lucide-react';
 import { filterAvailableMods } from '../../domain/crafting/craftingCalculator';
 import { CRAFT_MODS } from '../../domain/crafting/modDatabase';
 import type { CraftBaseItem, TargetModSelection } from '../../domain/crafting/types';
+import { Card, Button } from '../ui';
 
 interface CraftingModSelectorCardProps {
   baseItem: CraftBaseItem;
@@ -29,7 +30,7 @@ export const CraftingModSelectorCard: React.FC<CraftingModSelectorCardProps> = (
   }, [availableMods, filterType]);
 
   return (
-    <div className="poe-card" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(200, 170, 110, 0.2)', paddingBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Target size={18} color="var(--text-gold)" />
@@ -43,15 +44,14 @@ export const CraftingModSelectorCard: React.FC<CraftingModSelectorCardProps> = (
       {/* Filter Tabs */}
       <div style={{ display: 'flex', gap: '6px' }}>
         {(['all', 'prefix', 'suffix'] as const).map(tab => (
-          <button
+          <Button
             key={tab}
-            type="button"
+            size="sm"
+            variant={filterType === tab ? 'primary' : 'secondary'}
             onClick={() => setFilterType(tab)}
-            className={filterType === tab ? 'poe-button' : 'poe-button-secondary'}
-            style={{ padding: '4px 10px', fontSize: '0.78rem', borderRadius: '4px' }}
           >
             {tab === 'all' ? '全部詞綴' : tab === 'prefix' ? '前綴 (Prefix)' : '後綴 (Suffix)'}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -128,6 +128,6 @@ export const CraftingModSelectorCard: React.FC<CraftingModSelectorCardProps> = (
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 };

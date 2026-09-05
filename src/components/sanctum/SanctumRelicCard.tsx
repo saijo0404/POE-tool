@@ -3,6 +3,7 @@ import { Compass, ShieldCheck, Coins, TrendingUp, Sparkles, AlertCircle } from '
 import type { SanctumPlaystyle, SanctumRelic, SanctumRelicAffix } from '../../domain/sanctum/types';
 import { COMMON_RELIC_AFFIXES } from '../../domain/sanctum/sanctumData';
 import { forecastSanctumRun } from '../../domain/sanctum/sanctumRelicEngine';
+import { Card, Button } from '../ui';
 
 export const SanctumRelicCard: React.FC = () => {
   const [playstyle, setPlaystyle] = useState<SanctumPlaystyle>('balanced');
@@ -19,7 +20,7 @@ export const SanctumRelicCard: React.FC = () => {
   const handleToggleAffix = (id: string) => setActiveAffixIds(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
   return (
-    <div className="poe-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <Card variant="default" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f39c12', fontWeight: 'bold' }}>
           <Compass size={18} />
@@ -32,7 +33,7 @@ export const SanctumRelicCard: React.FC = () => {
       <RelicAffixList activeIds={activeAffixIds} onToggle={handleToggleAffix} />
       <ForecastMetricsMeter forecast={forecast} />
       <StrategicNotesPanel path={forecast.recommendedPath} notes={forecast.strategicNotes} />
-    </div>
+    </Card>
   );
 };
 
@@ -52,15 +53,27 @@ const PlaystyleSelector: React.FC<{
 }> = ({ active, onChange }) => (
   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
     <span style={{ fontSize: '0.8rem', color: '#888' }}>偏好風格:</span>
-    <button type="button" className={`btn-filter ${active === 'high_yield' ? 'active' : ''}`} onClick={() => onChange('high_yield')}>
+    <Button
+      size="sm"
+      variant={active === 'high_yield' ? 'primary' : 'secondary'}
+      onClick={() => onChange('high_yield')}
+    >
       高收益冒險 (High Yield)
-    </button>
-    <button type="button" className={`btn-filter ${active === 'balanced' ? 'active' : ''}`} onClick={() => onChange('balanced')}>
+    </Button>
+    <Button
+      size="sm"
+      variant={active === 'balanced' ? 'primary' : 'secondary'}
+      onClick={() => onChange('balanced')}
+    >
       平衡推進 (Balanced)
-    </button>
-    <button type="button" className={`btn-filter ${active === 'safe_clear' ? 'active' : ''}`} onClick={() => onChange('safe_clear')}>
+    </Button>
+    <Button
+      size="sm"
+      variant={active === 'safe_clear' ? 'primary' : 'secondary'}
+      onClick={() => onChange('safe_clear')}
+    >
       穩健通關 (Safe Clear)
-    </button>
+    </Button>
   </div>
 );
 

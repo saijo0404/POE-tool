@@ -2,6 +2,7 @@ import React from 'react';
 import { ShoppingBag, ExternalLink, RefreshCw, Zap, Search, Layers } from 'lucide-react';
 import type { TradeSearchResult } from '../../types/poe';
 import { poeApi } from '../../services/api';
+import { Card, Button } from '../ui';
 
 interface TradeSummaryCardProps {
   tradeResults: TradeSearchResult | null;
@@ -19,57 +20,59 @@ export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
   // If actively searching and results haven't arrived yet
   if (searching && !tradeResults) {
     return (
-      <div className="poe-card" style={{
-        marginBottom: '20px',
-        padding: '16px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '12px',
-        background: 'rgba(200, 170, 110, 0.05)',
-        border: '1px solid rgba(200, 170, 110, 0.3)',
-        borderRadius: '8px'
-      }}>
+      <Card
+        variant="subtle"
+        padding="md"
+        style={{
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+        }}
+      >
         <RefreshCw className="animate-spin" size={18} color="var(--text-gold)" />
         <span style={{ fontSize: '0.95rem', color: 'var(--text-gold)', fontWeight: 600 }}>
           正在向 GGG 官方市集查詢即時刊登與行情估價中...
         </span>
-      </div>
+      </Card>
     );
   }
 
   // If parsed but trade search hasn't been executed yet
   if (!tradeResults) {
     return (
-      <div className="poe-card" style={{
-        marginBottom: '20px',
-        padding: '14px 20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '12px',
-        background: 'rgba(200, 170, 110, 0.03)'
-      }}>
+      <Card
+        variant="subtle"
+        padding="md"
+        style={{
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-gold)' }}>
           <ShoppingBag size={18} />
           <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>裝備屬性解析完成，點擊右側按鈕開始向市集比價：</span>
         </div>
-        <button
+        <Button
+          variant="primary"
+          size="md"
           onClick={onRefreshSearch}
           disabled={searching}
-          className="poe-btn poe-btn-primary"
-          style={{ fontSize: '0.85rem', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
+          icon={<Search size={15} />}
         >
-          <Search size={15} />
           {searching ? '查詢中...' : '🔍 立即市集查價'}
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   return (
-    <div className="poe-card" style={{ marginBottom: '20px', background: 'linear-gradient(135deg, rgba(20, 24, 33, 0.95), rgba(13, 17, 23, 0.95))' }}>
+    <Card variant="elevated" padding="md" style={{ marginBottom: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -94,8 +97,9 @@ export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={async () => {
               try {
                 await poeApi.showOverlayWindow(undefined, undefined, rawText);
@@ -103,29 +107,28 @@ export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
                 // Ignore
               }
             }}
-            className="poe-btn"
-            style={{ fontSize: '0.85rem', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-gold)', background: 'rgba(200, 170, 110, 0.1)' }}
+            icon={<Layers size={15} />}
             title="開啟遊戲內極簡懸浮查價小卡"
           >
-            <Layers size={15} /> 懸浮卡片
-          </button>
+            懸浮卡片
+          </Button>
 
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             onClick={onRefreshSearch}
             disabled={searching}
-            className="poe-btn poe-btn-primary"
-            style={{ fontSize: '0.85rem', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            icon={searching ? <RefreshCw className="animate-spin" size={15} /> : <Zap size={15} />}
           >
-            {searching ? <RefreshCw className="animate-spin" size={15} /> : <Zap size={15} />}
             {searching ? '查詢中...' : '重新查詢'}
-          </button>
+          </Button>
 
           {tradeResults.tradeUrl && (
             <a
               href={tradeResults.tradeUrl}
               target="_blank"
               rel="noreferrer"
-              className="poe-btn"
+              className="poe-button-secondary"
               style={{ fontSize: '0.85rem', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
             >
               <ExternalLink size={15} /> 開啟官方拍賣場
@@ -133,7 +136,7 @@ export const TradeSummaryCard: React.FC<TradeSummaryCardProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
