@@ -89,16 +89,34 @@ mod tests {
 
     #[test]
     fn test_trade_urls_poe1_and_poe2() {
-        assert_eq!(get_trade_api_base(false, false), "https://www.pathofexile.com/api/trade");
-        assert_eq!(get_trade_api_base(true, false), "https://www.pathofexile.com/api/trade2");
-        assert_eq!(get_trade_api_base(false, true), "https://pathofexile.tw/api/trade");
-        assert_eq!(get_trade_api_base(true, true), "https://pathofexile.tw/api/trade2");
+        assert_eq!(
+            get_trade_api_base(false, false),
+            "https://www.pathofexile.com/api/trade"
+        );
+        assert_eq!(
+            get_trade_api_base(true, false),
+            "https://www.pathofexile.com/api/trade2"
+        );
+        assert_eq!(
+            get_trade_api_base(false, true),
+            "https://pathofexile.tw/api/trade"
+        );
+        assert_eq!(
+            get_trade_api_base(true, true),
+            "https://pathofexile.tw/api/trade2"
+        );
 
         let search_url = get_trade_search_api_url(true, false, "Standard");
-        assert_eq!(search_url, "https://www.pathofexile.com/api/trade2/search/Standard");
+        assert_eq!(
+            search_url,
+            "https://www.pathofexile.com/api/trade2/search/Standard"
+        );
 
         let web_url = get_trade_search_web_url(true, false, "Standard", "abc123");
-        assert_eq!(web_url, "https://www.pathofexile.com/trade2/search/Standard/abc123");
+        assert_eq!(
+            web_url,
+            "https://www.pathofexile.com/trade2/search/Standard/abc123"
+        );
     }
 
     #[test]

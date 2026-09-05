@@ -119,8 +119,7 @@ pub async fn create_trade_search_url(
             if status.is_success() {
                 if let Ok(resp_json) = res.json::<serde_json::Value>().await {
                     if let Some(id) = resp_json["id"].as_str() {
-                        let full_url =
-                            get_trade_search_web_url(is_poe2, false, &active_league, id);
+                        let full_url = get_trade_search_web_url(is_poe2, false, &active_league, id);
                         crate::app_log!(
                             "[Trade] ✅ 成功建立 GGG 官方市集搜尋 ID: {} -> {}",
                             id,
@@ -141,8 +140,7 @@ pub async fn create_trade_search_url(
         }
     }
 
-    let fallback_url =
-        get_trade_search_web_query_url(is_poe2, false, &active_league, &query_json);
+    let fallback_url = get_trade_search_web_query_url(is_poe2, false, &active_league, &query_json);
     crate::app_log!("[Trade] ↩️ 使用回退市集首頁: {}", fallback_url);
     open_browser_url(Some(&app), &fallback_url);
     Ok(fallback_url)

@@ -43,8 +43,10 @@ lazy_static! {
     pub(crate) static ref SEARCH_LOCK: Mutex<ChannelState> = Mutex::new(ChannelState::new(1500));
     pub(crate) static ref FETCH_LOCK: Mutex<ChannelState> = Mutex::new(ChannelState::new(1000));
     pub(crate) static ref STASH_LOCK: Mutex<ChannelState> = Mutex::new(ChannelState::new(800));
-    pub(crate) static ref SEARCH_POE2_LOCK: Mutex<ChannelState> = Mutex::new(ChannelState::new(1500));
-    pub(crate) static ref FETCH_POE2_LOCK: Mutex<ChannelState> = Mutex::new(ChannelState::new(1000));
+    pub(crate) static ref SEARCH_POE2_LOCK: Mutex<ChannelState> =
+        Mutex::new(ChannelState::new(1500));
+    pub(crate) static ref FETCH_POE2_LOCK: Mutex<ChannelState> =
+        Mutex::new(ChannelState::new(1000));
     static ref RATE_LIMIT_EXPIRY_POE1_MS: AtomicU64 = AtomicU64::new(0);
     static ref RATE_LIMIT_EXPIRY_POE2_MS: AtomicU64 = AtomicU64::new(0);
 }

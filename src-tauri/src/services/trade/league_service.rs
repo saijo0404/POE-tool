@@ -154,6 +154,8 @@ mod tests {
     async fn test_fetch_trade_leagues_fallback() {
         let leagues = fetch_trade_leagues(Some("poe2")).await;
         assert!(!leagues.is_empty());
-        assert!(leagues.iter().any(|l| l.id == "Standard" || l.id == "Early Access"));
+        assert!(leagues
+            .iter()
+            .any(|l| l.id == "Standard" || l.id == "Early Access"));
     }
 }

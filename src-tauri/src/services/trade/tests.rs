@@ -123,10 +123,22 @@ fn test_build_search_query_payload_poe2_filters() {
     let payload = build_search_query_payload(&req);
     let query = &payload["query"];
 
-    assert_eq!(query["filters"]["equipment_filters"]["filters"]["spirit"]["min"], 120);
-    assert_eq!(query["filters"]["socket_filters"]["filters"]["rune_sockets"]["min"], 2);
-    assert_eq!(query["filters"]["map_filters"]["filters"]["waystone_tier"]["min"], 16);
-    assert_eq!(query["filters"]["misc_filters"]["filters"]["gem_level"]["min"], 20);
+    assert_eq!(
+        query["filters"]["equipment_filters"]["filters"]["spirit"]["min"],
+        120
+    );
+    assert_eq!(
+        query["filters"]["socket_filters"]["filters"]["rune_sockets"]["min"],
+        2
+    );
+    assert_eq!(
+        query["filters"]["map_filters"]["filters"]["waystone_tier"]["min"],
+        16
+    );
+    assert_eq!(
+        query["filters"]["misc_filters"]["filters"]["gem_level"]["min"],
+        20
+    );
 }
 
 #[test]

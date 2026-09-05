@@ -30,7 +30,8 @@ pub async fn handle_search_error(
         .await;
     }
     if target_league != "Standard" && status_code.as_u16() == 400 {
-        return execute_standard_fallback(client, search_payload, settings, has_auth, is_poe2).await;
+        return execute_standard_fallback(client, search_payload, settings, has_auth, is_poe2)
+            .await;
     }
 
     let (state, msg) = crate::services::session::classify_http_trade_error(
@@ -126,7 +127,9 @@ async fn execute_standard_fallback(
 
     if fallback_res.status().is_success() {
         let data: Value = fallback_res.json().await.map_err(|e| e.to_string())?;
-        crate::app_log!("[Trade LiveSync] ⚠️ 當前聯盟查詢 400 錯誤，已自動切換回退至 Standard 聯盟重試成功！");
+        crate::app_log!(
+            "[Trade LiveSync] ⚠️ 當前聯盟查詢 400 錯誤，已自動切換回退至 Standard 聯盟重試成功！"
+        );
         Ok(("Standard".to_string(), data))
     } else {
         Err("查詢條件無效且 Standard 聯盟亦查無資料".to_string())

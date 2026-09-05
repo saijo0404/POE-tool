@@ -73,8 +73,7 @@ pub(crate) fn parse_and_apply_rate_limit(
             if limit > 0 {
                 let ratio = (current as f64) / (limit as f64);
                 if current >= limit.saturating_sub(1) {
-                    max_wait_suggested =
-                        max_wait_suggested.max((interval * 1000 + 2000).min(8000));
+                    max_wait_suggested = max_wait_suggested.max((interval * 1000 + 2000).min(8000));
                 } else if ratio >= 0.7 {
                     max_wait_suggested = max_wait_suggested.max(5000);
                 } else if ratio >= 0.5 {

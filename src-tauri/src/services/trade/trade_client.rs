@@ -1,9 +1,7 @@
 use super::listing_parser::parse_single_listing;
 use super::search_fallback::handle_search_error;
 pub use super::trade_headers::build_trade_headers;
-use super::trade_urls::{
-    get_trade_fetch_api_url, get_trade_search_api_url, is_poe2_engine,
-};
+use super::trade_urls::{get_trade_fetch_api_url, get_trade_search_api_url, is_poe2_engine};
 use crate::models::settings::AppSettings;
 use crate::models::trade::TradeListing;
 use crate::services::rate_limiter::{

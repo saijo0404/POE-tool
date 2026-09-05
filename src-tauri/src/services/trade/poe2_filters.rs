@@ -21,7 +21,12 @@ fn apply_spirit_filter(top_filters: &mut Value, req: &TradeQueryRequest) {
 
     if let Some(spirit) = spirit_val {
         if spirit > 0 {
-            ensure_sub_filter(top_filters, "equipment_filters", "spirit", json!({ "min": spirit }));
+            ensure_sub_filter(
+                top_filters,
+                "equipment_filters",
+                "spirit",
+                json!({ "min": spirit }),
+            );
         }
     }
 }
@@ -34,7 +39,12 @@ fn apply_rune_socket_filter(top_filters: &mut Value, req: &TradeQueryRequest) {
 
     if let Some(runes) = rune_val {
         if runes > 0 {
-            ensure_sub_filter(top_filters, "socket_filters", "rune_sockets", json!({ "min": runes }));
+            ensure_sub_filter(
+                top_filters,
+                "socket_filters",
+                "rune_sockets",
+                json!({ "min": runes }),
+            );
         }
     }
 }
@@ -47,7 +57,12 @@ fn apply_waystone_filter(top_filters: &mut Value, req: &TradeQueryRequest) {
 
     if let Some(tier) = waystone_tier {
         if tier > 0 {
-            ensure_sub_filter(top_filters, "map_filters", "waystone_tier", json!({ "min": tier, "max": tier }));
+            ensure_sub_filter(
+                top_filters,
+                "map_filters",
+                "waystone_tier",
+                json!({ "min": tier, "max": tier }),
+            );
         }
     }
 }
@@ -60,7 +75,12 @@ fn apply_uncut_gem_filter(top_filters: &mut Value, req: &TradeQueryRequest) {
 
     if let Some(gem_level) = uncut_tier {
         if gem_level > 0 {
-            ensure_sub_filter(top_filters, "misc_filters", "gem_level", json!({ "min": gem_level }));
+            ensure_sub_filter(
+                top_filters,
+                "misc_filters",
+                "gem_level",
+                json!({ "min": gem_level }),
+            );
         }
     }
 }
@@ -115,8 +135,14 @@ mod tests {
         apply_poe2_filters(&mut filters, &req);
 
         assert_eq!(filters["equipment_filters"]["filters"]["spirit"]["min"], 50);
-        assert_eq!(filters["socket_filters"]["filters"]["rune_sockets"]["min"], 2);
-        assert_eq!(filters["map_filters"]["filters"]["waystone_tier"]["min"], 15);
+        assert_eq!(
+            filters["socket_filters"]["filters"]["rune_sockets"]["min"],
+            2
+        );
+        assert_eq!(
+            filters["map_filters"]["filters"]["waystone_tier"]["min"],
+            15
+        );
         assert_eq!(filters["misc_filters"]["filters"]["gem_level"]["min"], 19);
     }
 
@@ -135,6 +161,9 @@ mod tests {
 
         apply_poe2_filters(&mut filters, &req);
         assert_eq!(filters["equipment_filters"]["filters"]["spirit"]["min"], 85);
-        assert_eq!(filters["socket_filters"]["filters"]["rune_sockets"]["min"], 3);
+        assert_eq!(
+            filters["socket_filters"]["filters"]["rune_sockets"]["min"],
+            3
+        );
     }
 }
