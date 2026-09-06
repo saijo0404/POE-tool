@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert, MessageSquare, Hammer } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, TrendingUp, Settings, Coins, Calculator, Map, Compass, Layers, Swords, ShieldAlert, MessageSquare, Hammer, Filter } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import { toggleAlwaysOnTop } from '../utils/tauri';
 import { useSettings } from '../hooks/useSettings';
+import { useGameEngine } from '../hooks/useGameEngine';
 import { poeApi } from '../services/api';
+import { isFeatureSupported, FEATURE_CAPABILITIES } from '../domain/engine/capabilities';
 import { ConnectionStatusBadge } from './common/ConnectionStatusBadge';
 import { EngineSwitcher } from './common/EngineSwitcher';
+import { EngineBadge } from './common/EngineBadge';
+import { FeatureCapabilityMatrixModal } from './settings/FeatureCapabilityMatrixModal';
 
 export type AppTabType = 'price' | 'exchange' | 'wealth' | 'mapping' | 'build' | 'acts' | 'atlas' | 'mapmod' | 'craft';
 
@@ -40,13 +44,21 @@ export const Navbar: React.FC<NavbarProps> = ({
   divineRate: propDivineRate,
   accountName: propAccountName
 }) => {
-  const { settings, activeLeague, divineRate: ctxDivineRate, isRateRefreshing, refreshDivineRate } = useSettings();
+  const { settings, updateSettings, activeLeague, divineRate: ctxDivineRate, isRateRefreshing, refreshDivineRate } = useSettings();
+  const { currentEngine } = useGameEngine();
   const [alwaysOnTop, setAlwaysOnTop] = useState<boolean>(false);
+  const [isMatrixOpen, setIsMatrixOpen] = useState<boolean>(false);
   const divIcon = getImageUrl('https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lNb2RWYWx1ZXMiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/e1a54ff97d/CurrencyModValues.png');
 
   const displayLeague = propLeague || activeLeague || settings.league || 'Settlers';
   const divineRate = propDivineRate !== undefined ? propDivineRate : (ctxDivineRate || 150);
   const accountName = propAccountName !== undefined ? propAccountName : settings.accountName;
+
+  useEffect(() => {
+    if (settings.focusModeEnabled && !isFeatureSupported(activeTab, currentEngine)) {
+      setActiveTab('price');
+    }
+  }, [settings.focusModeEnabled, currentEngine, activeTab, setActiveTab]);
 
   const handleManualRefreshRate = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -58,6 +70,14 @@ export const Navbar: React.FC<NavbarProps> = ({
     await toggleAlwaysOnTop(next);
     setAlwaysOnTop(next);
   };
+
+  const handleToggleFocusMode = async () => {
+    await updateSettings({ focusModeEnabled: !settings.focusModeEnabled });
+  };
+
+  const visibleTabs = settings.focusModeEnabled
+    ? NAV_TABS.filter(tab => isFeatureSupported(tab.id, currentEngine))
+    : NAV_TABS;
 
   return (
     <header style={{
@@ -96,20 +116,60 @@ export const Navbar: React.FC<NavbarProps> = ({
         />
 
         <EngineSwitcher />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button
+            type="button"
+            onClick={handleToggleFocusMode}
+            className={settings.focusModeEnabled ? 'poe-button' : 'poe-button-secondary'}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 9px', borderRadius: '5px', fontSize: '0.78rem' }}
+            title={settings.focusModeEnabled ? '專注模式開啟中：已自動隱藏非當前世代分頁' : '點擊啟用世代專注模式（自動隱藏不支援的專屬分頁）'}
+          >
+            <Filter size={12} /> {settings.focusModeEnabled ? '專注模式' : '全功能'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsMatrixOpen(true)}
+            className="poe-button-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 8px', borderRadius: '5px', fontSize: '0.78rem', color: 'var(--text-gold)', borderColor: 'rgba(200, 170, 110, 0.4)' }}
+            title="開啟 PoE 1 vs PoE 2 功能與能力支援對照表"
+          >
+            <Layers size={12} /> 對照表
+          </button>
+        </div>
       </div>
 
       <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        {NAV_TABS.map(tab => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id)}
-            className={activeTab === tab.id ? 'poe-button' : 'poe-button-secondary'}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px', fontSize: '0.86rem' }}
-          >
-            {tab.icon} {tab.label}
-          </button>
-        ))}
+        {visibleTabs.map(tab => {
+          const isSupported = isFeatureSupported(tab.id, currentEngine);
+          const cap = FEATURE_CAPABILITIES[tab.id];
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={activeTab === tab.id ? 'poe-button' : 'poe-button-secondary'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 12px',
+                borderRadius: '6px',
+                fontSize: '0.84rem',
+                opacity: isSupported ? 1 : 0.6
+              }}
+              title={
+                !isSupported
+                  ? `${tab.label}（${cap.supportedEngines[0] === 'poe1' ? 'PoE 1' : 'PoE 2'} 專屬機制，當前為 ${currentEngine === 'poe1' ? 'PoE 1' : 'PoE 2'} 模式）`
+                  : cap.description
+              }
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+              <EngineBadge supportedEngines={cap.supportedEngines} size="xs" />
+            </button>
+          );
+        })}
 
         <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
 
@@ -149,6 +209,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Settings size={15} /> 設定
         </button>
       </nav>
+
+      <FeatureCapabilityMatrixModal
+        isOpen={isMatrixOpen}
+        onClose={() => setIsMatrixOpen(false)}
+      />
     </header>
   );
 };

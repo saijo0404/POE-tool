@@ -20,6 +20,7 @@ export interface AppSettings {
   overlayScale?: number;
   mapDangerConfig?: import('../mapMod/types').MapDangerConfig;
   clientLogPath?: string;
+  focusModeEnabled?: boolean;
 }
 
 export interface CharacterInfo {
