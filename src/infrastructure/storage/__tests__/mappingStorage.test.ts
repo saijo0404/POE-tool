@@ -8,6 +8,8 @@ import {
   MAPPING_SESSIONS_STORAGE_KEY,
   ACTIVE_MAPPING_SESSION_ID_KEY
 } from '../mappingStorage';
+import { StorageNamespaceAdapter } from '../StorageNamespaceAdapter';
+import { LocalStorageAdapter } from '../LocalStorageAdapter';
 
 describe('mappingStorage', () => {
   beforeEach(() => {
@@ -19,6 +21,13 @@ describe('mappingStorage', () => {
     expect(sessions).toHaveLength(1);
     expect(sessions[0].league).toBe('Standard');
     expect(sessions[0].runs).toEqual([]);
+  });
+
+  it('should create default session for poe2 with appropriate metadata', () => {
+    const session = createDefaultMappingSession('Standard', 'poe2');
+    expect(session.engine).toBe('poe2');
+    expect(session.name).toContain('PoE 2');
+    expect(session.strategyName).toContain('Waystone');
   });
 
   it('should save and reload valid sessions correctly', () => {
@@ -59,5 +68,28 @@ describe('mappingStorage', () => {
 
     const activeId = loadActiveSessionId([s1]);
     expect(activeId).toBe(s1.id);
+  });
+
+  it('should isolate poe1 and poe2 sessions in namespaced storage', () => {
+    const rawStorage = new LocalStorageAdapter();
+    const poe1Storage = new StorageNamespaceAdapter(rawStorage, () => 'poe1');
+    const poe2Storage = new StorageNamespaceAdapter(rawStorage, () => 'poe2');
+
+    const poe1Session = createDefaultMappingSession('Settlers', 'poe1');
+    poe1Session.name = 'PoE 1 Mapping Session';
+    saveMappingSessions([poe1Session], poe1Storage);
+
+    const poe2Session = createDefaultMappingSession('Standard', 'poe2');
+    poe2Session.name = 'PoE 2 Waystone Session';
+    saveMappingSessions([poe2Session], poe2Storage);
+
+    const loadedPoe1 = loadMappingSessions('Settlers', poe1Storage);
+    const loadedPoe2 = loadMappingSessions('Standard', poe2Storage);
+
+    expect(loadedPoe1).toHaveLength(1);
+    expect(loadedPoe1[0].name).toBe('PoE 1 Mapping Session');
+
+    expect(loadedPoe2).toHaveLength(1);
+    expect(loadedPoe2[0].name).toBe('PoE 2 Waystone Session');
   });
 });

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Trash2, Package } from 'lucide-react';
 import type { MapRun } from '../../domain/mapping/types';
 import { formatDuration } from '../../domain/mapping/mappingExport';
+import { formatGold } from '../../domain/mapping/poe2MappingCalculator';
 
 interface MappingRunsTableProps {
   runs: MapRun[];
@@ -75,7 +76,29 @@ export const MappingRunsTable: React.FC<MappingRunsTableProps> = ({ runs, onDele
                     }}
                   >
                     <td style={{ padding: '12px 14px', fontWeight: 'bold', color: 'var(--text-gold)' }}>
-                      #{run.runNumber}
+                      <div>#{run.runNumber} {run.mapName ? `${run.mapName}` : ''}</div>
+                      <div style={{ display: 'flex', gap: '4px', marginTop: '2px', flexWrap: 'wrap' }}>
+                        {run.mapTier && (
+                          <span style={{ fontSize: '0.72rem', color: '#c678dd', backgroundColor: 'rgba(198,120,221,0.15)', padding: '1px 4px', borderRadius: '3px' }}>
+                            T{run.mapTier}
+                          </span>
+                        )}
+                        {run.goldEarned !== undefined && run.goldEarned > 0 && (
+                          <span style={{ fontSize: '0.72rem', color: '#f3d179', backgroundColor: 'rgba(243,209,121,0.15)', padding: '1px 4px', borderRadius: '3px' }}>
+                            💰 {formatGold(run.goldEarned)}
+                          </span>
+                        )}
+                        {run.bossSlain && (
+                          <span style={{ fontSize: '0.72rem', color: '#98c379', backgroundColor: 'rgba(152,195,121,0.15)', padding: '1px 4px', borderRadius: '3px' }}>
+                            👑 討伐
+                          </span>
+                        )}
+                        {run.deathCount !== undefined && run.deathCount > 0 && (
+                          <span style={{ fontSize: '0.72rem', color: '#e06c75', backgroundColor: 'rgba(224,108,117,0.15)', padding: '1px 4px', borderRadius: '3px' }}>
+                            💀 x{run.deathCount}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: '12px 14px', textAlign: 'center', color: '#61afef' }}>
                       {formatDuration(run.durationSeconds)}
@@ -141,6 +164,19 @@ export const MappingRunsTable: React.FC<MappingRunsTableProps> = ({ runs, onDele
                           <span style={{ fontSize: '0.82rem', fontWeight: 'bold', color: 'var(--text-gold)' }}>
                             📦 第 #{run.runNumber} 場掉落物差量明細 ({run.drops.length} 項)：
                           </span>
+                          {(run.goldEarned !== undefined || run.waystonesFound || run.runesFound) && (
+                            <div style={{ display: 'flex', gap: '12px', fontSize: '0.8rem', flexWrap: 'wrap', padding: '6px 10px', backgroundColor: '#11151f', borderRadius: '4px' }}>
+                              {run.goldEarned !== undefined && (
+                                <span style={{ color: '#f3d179' }}>💰 金幣收益：{run.goldEarned.toLocaleString()} ({run.goldPerHour ? `${formatGold(run.goldPerHour)}/hr` : ''})</span>
+                              )}
+                              {run.waystonesFound !== undefined && run.waystonesFound > 0 && (
+                                <span style={{ color: '#c678dd' }}>🗺️ 銘刻掉落：{run.waystonesFound} 張</span>
+                              )}
+                              {run.runesFound !== undefined && run.runesFound > 0 && (
+                                <span style={{ color: '#56b6c2' }}>🪨 符文掉落：{run.runesFound} 顆</span>
+                              )}
+                            </div>
+                          )}
                           {run.drops.length === 0 ? (
                             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                               本次結算未偵測到指定的 Dump Tab 物品數量增長（或為純門票消耗）。

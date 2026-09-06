@@ -11,6 +11,11 @@ pub const COMMON_CLIENT_LOG_PATHS: &[&str] = &[
     r"D:\SteamLibrary\steamapps\common\Path of Exile\logs\Client.txt",
     r"E:\SteamLibrary\steamapps\common\Path of Exile\logs\Client.txt",
     r"C:\Program Files (x86)\GarenaPoE\GameData\Apps\PoE\logs\Client.txt",
+    r"C:\Program Files (x86)\Steam\steamapps\common\Path of Exile 2\logs\Client.txt",
+    r"C:\Program Files (x86)\Grinding Gear Games\Path of Exile 2\logs\Client.txt",
+    r"C:\SteamLibrary\steamapps\common\Path of Exile 2\logs\Client.txt",
+    r"D:\SteamLibrary\steamapps\common\Path of Exile 2\logs\Client.txt",
+    r"E:\SteamLibrary\steamapps\common\Path of Exile 2\logs\Client.txt",
 ];
 
 pub fn find_client_log_path(custom_path: Option<&str>) -> Option<PathBuf> {
@@ -34,10 +39,6 @@ pub fn find_client_log_path(custom_path: Option<&str>) -> Option<PathBuf> {
 }
 
 fn process_log_line(app: &tauri::AppHandle, line: &str) {
-    if !is_poe_trade_whisper(line) {
-        return;
-    }
-
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
@@ -47,6 +48,12 @@ fn process_log_line(app: &tauri::AppHandle, line: &str) {
         text: line.trim().to_string(),
         timestamp: now,
     };
+
+    let _ = app.emit("poe-client-log-line", &payload);
+
+    if !is_poe_trade_whisper(line) {
+        return;
+    }
 
     let _ = app.emit("poe-trade-whisper", payload);
     crate::app_log!(
