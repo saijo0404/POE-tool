@@ -29,7 +29,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   poetoken: '',
   cf_clearance: '',
   userAgent: '',
-  hotkey: 'ctrl+c+d'
+  hotkey: 'ctrl+c+d',
+  focusModeEnabled: false
 };
 
 export function loadSettingsCache(): AppSettings {
