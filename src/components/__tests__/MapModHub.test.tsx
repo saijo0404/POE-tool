@@ -36,4 +36,13 @@ describe('MapModHub Component', () => {
     fireEvent.click(copyBtn);
     expect(onShowToast).toHaveBeenCalled();
   });
+
+  it('should switch to PoE 2 Waystone tab when clicked', () => {
+    render(<MapModHub />);
+    const waystoneTabBtn = screen.getByRole('button', { name: /PoE 2 銘刻地圖/i });
+    fireEvent.click(waystoneTabBtn);
+
+    expect(screen.getByText(/PoE 2 銘刻地圖 \(Waystone\) 詞綴評鑑與洗圖精算/i)).toBeInTheDocument();
+    expect(screen.getByText(/洗圖通貨成本期望精算/i)).toBeInTheDocument();
+  });
 });

@@ -1,16 +1,21 @@
-import React from 'react';
-import { ShieldAlert } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldAlert, Compass } from 'lucide-react';
 import { useMapDanger } from '../hooks/useMapDanger';
+import { useGameEngine } from '../hooks/useGameEngine';
 import { MapDangerSettingsCard } from './mapMod/MapDangerSettingsCard';
 import { MapRegexGeneratorCard } from './mapMod/MapRegexGeneratorCard';
 import { MapLiveTesterCard } from './mapMod/MapLiveTesterCard';
 import { MapRollingSimulatorCard } from './mapMod/MapRollingSimulatorCard';
+import { WaystoneHub } from './waystone/WaystoneHub';
 
 interface MapModHubProps {
   onShowToast?: (msg: string) => void;
 }
 
 export const MapModHub: React.FC<MapModHubProps> = ({ onShowToast }) => {
+  const { currentEngine } = useGameEngine();
+  const [activeTab, setActiveTab] = useState<'poe1' | 'poe2'>(currentEngine);
+
   const {
     config,
     updateConfig,
@@ -34,18 +39,42 @@ export const MapModHub: React.FC<MapModHubProps> = ({ onShowToast }) => {
 
   return (
     <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Header Banner */}
-      <div style={{
-        background: 'radial-gradient(ellipse at top left, rgba(200, 170, 110, 0.15) 0%, rgba(10, 13, 20, 0.8) 70%)',
-        border: '1px solid rgba(200, 170, 110, 0.3)',
-        borderRadius: '8px',
-        padding: '20px 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '16px'
-      }}>
+      {/* Top Engine View Toggle */}
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
+        <button
+          type="button"
+          className={activeTab === 'poe1' ? 'poe-button' : 'poe-button-secondary'}
+          onClick={() => setActiveTab('poe1')}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.86rem' }}
+        >
+          <ShieldAlert size={16} /> PoE 1 輿圖詞綴 & 倉庫 Regex
+        </button>
+        <button
+          type="button"
+          className={activeTab === 'poe2' ? 'poe-button' : 'poe-button-secondary'}
+          onClick={() => setActiveTab('poe2')}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.86rem' }}
+        >
+          <Compass size={16} /> PoE 2 銘刻地圖 (Waystone) 評鑑與洗圖
+        </button>
+      </div>
+
+      {activeTab === 'poe2' ? (
+        <WaystoneHub onShowToast={onShowToast} />
+      ) : (
+        <>
+          {/* Header Banner */}
+          <div style={{
+            background: 'radial-gradient(ellipse at top left, rgba(200, 170, 110, 0.15) 0%, rgba(10, 13, 20, 0.8) 70%)',
+            border: '1px solid rgba(200, 170, 110, 0.3)',
+            borderRadius: '8px',
+            padding: '20px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
             width: '44px',
@@ -100,7 +129,9 @@ export const MapModHub: React.FC<MapModHubProps> = ({ onShowToast }) => {
           />
         </div>
       </div>
-    </div>
+    </>
+  )}
+</div>
   );
 };
 
