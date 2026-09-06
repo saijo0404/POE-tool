@@ -14,6 +14,7 @@
 - [⚖️ PoE 1 vs PoE 2 雙引擎能力邊界 (Engine Capabilities)](features/engine-capabilities.md)：世代差異對照矩陣、雙引擎功能隔離機制與專注模式 (Focus Mode)。
 - [⚔️ 裝備即時查價與詞綴精算 (Price Checker)](features/price-checker.md)：100% 繁中/英文雙向字典、數值範圍過濾、偽屬性 (Pseudo) 聚合與官方即時行情查詢。
 - [🪙 大宗貨幣交易所 (Faustus Exchange)](features/faustus-exchange.md)：Faustus 官方交易所支援、金幣手續費精算與跨市場現貨套利評估。
+- [🗿 PoE 2 銘刻地圖評鑑與洗圖精算 (Waystone Risk & Rolling)](features/waystone-risk-and-rolling.md)：PoE 2 專屬危險詞綴庫、機體弱點對比、安全評分檢驗與洗圖通貨成本預測。
 
 ### 3. 🏛️ 軟體架構與工程規範 ([Architecture](architecture/))
 - [📐 系統架構概覽 (Architecture Overview)](architecture/architecture-overview.md)：六角架構 (Hexagonal Architecture)、連接埠與適配器 (Ports & Adapters)、Tauri 2.0 Rust 原生微核心 IPC。
