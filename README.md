@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-saijo0404%2FPOE--tool-181717.svg?logo=github&logoColor=white)](https://github.com/saijo0404/POE-tool)
-[![Version](https://img.shields.io/badge/Version-v3.2.0-gold.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v3.3.0-gold.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/Tests-1145%2B%20Passed%20(1059%20Vitest%20%2B%2086%20Rust)-success.svg)]()
 [![Dual Engine](https://img.shields.io/badge/Engine-PoE%201%20%26%20PoE%202%20Native-orange.svg)]()
 [![Tauri 2.0](https://img.shields.io/badge/Tauri-2.0-24C8D8.svg?logo=tauri&logoColor=white)](https://tauri.app/)

@@ -1,6 +1,6 @@
 {
   "name": "poe-tool",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Path of Exile (PoE) 繁體中文即時查價、倉庫資產追蹤與 Build 造價計算工具",
   "license": "MIT",
   "type": "module",
