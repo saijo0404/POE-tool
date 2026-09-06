@@ -6,6 +6,10 @@ describe('CHANGELOG.md link validation', () => {
   const changelogPath = path.resolve(__dirname, '../../CHANGELOG.md');
   const content = fs.readFileSync(changelogPath, 'utf-8');
 
+  it('should include link definition for [3.3.0]', () => {
+    expect(content).toMatch(/\[3\.3\.0\]:\s*https:\/\/github\.com\/saijo0404\/POE-tool\/compare\/v3\.2\.0\.\.\.v3\.3\.0/);
+  });
+
   it('should include link definition for [3.2.0]', () => {
     expect(content).toMatch(/\[3\.2\.0\]:\s*https:\/\/github\.com\/saijo0404\/POE-tool\/compare\/v3\.1\.0\.\.\.v3\.2\.0/);
   });
@@ -70,7 +74,7 @@ describe('CHANGELOG.md link validation', () => {
     expect(content).toMatch(/\[2\.0\.0\]:\s*https:\/\/github\.com\/saijo0404\/POE-tool\/compare\/v1\.5\.0\.\.\.v2\.0\.0/);
   });
 
-  it('should point [Unreleased] to compare from v3.2.0 to HEAD', () => {
-    expect(content).toMatch(/\[Unreleased\]:\s*https:\/\/github\.com\/saijo0404\/POE-tool\/compare\/v3\.2\.0\.\.\.HEAD/);
+  it('should point [Unreleased] to compare from v3.3.0 to HEAD', () => {
+    expect(content).toMatch(/\[Unreleased\]:\s*https:\/\/github\.com\/saijo0404\/POE-tool\/compare\/v3\.3\.0\.\.\.HEAD/);
   });
 });

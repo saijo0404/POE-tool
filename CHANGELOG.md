@@ -10,6 +10,43 @@
 
 ---
 
+## [3.3.0] - 2026-09-06
+
+### ✨ 新增 (Added)
+- **PoE 1 vs PoE 2 雙引擎能力邊界與功能隔離 (Dual-Engine Capability Matrix & Isolation)**：
+  - 建立型別安全領域模型 `ENGINE_CAPABILITY_MATRIX` 與 `EngineFeatureId`，嚴格區隔世代專屬機制（輿圖天賦、章節拓荒、工藝模擬）與雙版本共用功能 ([#194](https://github.com/saijo0404/POE-tool/issues/194), [#200](https://github.com/saijo0404/POE-tool/pull/200))。
+  - 實作 `StorageNamespaceAdapter` 與路由自動重導向防呆機制，杜絕跨世代暫存覆蓋。
+  - 推出「專注模式 (Focus Mode)」，支援一鍵隱藏當前遊戲世代不適用的功能項目。
+- **結構化滾動日誌系統與敏感資料脫敏 (Structured Rolling Logger & Size Caps)**：
+  - 後端 Rust 微核心實作 `LogRotator`，嚴格限制單一日誌 1MB、保留 3 份滾動備份，循環覆寫淘汰，杜絕磁碟過度膨脹 ([#195](https://github.com/saijo0404/POE-tool/issues/195), [#199](https://github.com/saijo0404/POE-tool/pull/199))。
+  - 實作 `LogSanitizer`，自動脫敏遮蔽 `POESESSID`、Bearer Token、密碼與敏感連線資訊。
+  - 前端提供結構化日誌記錄器，並於設定頁面支援「一鍵匯出診斷日誌 (Diagnostic Export)」。
+- **PoE 2 銘刻地圖 (Waystone) 詞綴評鑑與洗圖精算 (Waystone Risk Rating & Rolling Forecaster)**：
+  - 內建專屬 PoE 2 銘刻地圖危險詞綴庫，比對機體抗性弱點動態校準秒殺危險等級 ([#190](https://github.com/saijo0404/POE-tool/issues/190), [#203](https://github.com/saijo0404/POE-tool/pull/203))。
+  - 精算點金/重鑄、蛻變/增幅/富豪、混沌直骰策略之單次命中率、期望成本與 95% 信心保底消耗。
+- **PoE 2 遊戲日誌解析與金幣收益追蹤 (Mapping Log Parser & Gold Profit Tracker)**：
+  - 深度適配 PoE 2 遊戲日誌，以狀態機即時辨識進圖、首領討伐、陣亡與回城事件 ([#191](https://github.com/saijo0404/POE-tool/issues/191), [#204](https://github.com/saijo0404/POE-tool/pull/204))。
+  - 即時精算單場金幣淨拾取量、總利潤與 Gold/hr、Divine/hr 時薪，雙世代歷程命名空間隔離。
+- **PoE 2 先祖塔台與生態群落策略優化器 (Precursor Towers & Biome Strategy Optimizer)**：
+  - 實作先祖石塔多塔交疊共振模型（雙塔 +15%、三塔 +35% 額外加乘）與先祖碑牌插槽效益聚合 ([#192](https://github.com/saijo0404/POE-tool/issues/192), [#205](https://github.com/saijo0404/POE-tool/pull/205))。
+  - 建立 6 大生態群落特性分析模型，提供黃金、通貨、銘刻升階等 6 種終局目標之契合評分與推薦碑牌配置。
+
+### 🔄 變更與介面重構 (Changed & Redesigned)
+- **應用主版面側邊導覽與首頁儀表板重構 (Sidebar Navigation & Home Dashboard Redesign)**：
+  - 徹底重組頂部過載的水平分頁列，改採左側模組分組邊欄（【市集與定價】、【輿圖與刷圖】、【流派與工藝】、【資產財務】），支援極簡圖示收合模式 ([#197](https://github.com/saijo0404/POE-tool/issues/197), [#201](https://github.com/saijo0404/POE-tool/pull/201))。
+  - 打造現代化 Home 總覽儀表板，提供經濟看板、快捷功能導航與最近刷圖收益概覽。
+  - 統一三層 Surface 色彩階層與 Design Tokens，消除水平捲軸溢出與視覺過載。
+
+### 📚 文檔與規範 (Documentation & Governance)
+- **軟體工程多層架構文檔中心 (Modular /docs Documentation Architecture)**：
+  - 翻新精簡 `README.md`，將規格化文檔拆分至 `/docs/` 目錄（`user-guide/`、`features/`、`architecture/`、`development/`）([#196](https://github.com/saijo0404/POE-tool/issues/196), [#202](https://github.com/saijo0404/POE-tool/pull/202))。
+  - 驗證全專案 Markdown 內部相對連結 100% 正確有效。
+- **版本生命週期管理與發布治理規範 (Release Lifecycle Governance)**：
+  - 制定語意化版本（SemVer 2.0.0）原則，杜絕微版本過度膨脹，以完整業務主題 Epic 為 Minor 推進單位 ([#193](https://github.com/saijo0404/POE-tool/issues/193), [#198](https://github.com/saijo0404/POE-tool/pull/198))。
+  - 建立 GitHub Milestone 一對一治理規範與標準發布作業程序 (Release SOP Checklist)。
+
+---
+
 ## [3.2.0] - 2026-09-05
 
 ### ✨ 新增 (Added)
@@ -460,7 +497,8 @@
 
 ---
 
-[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.2.0...HEAD
+[Unreleased]: https://github.com/saijo0404/POE-tool/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/saijo0404/POE-tool/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/saijo0404/POE-tool/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/saijo0404/POE-tool/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/saijo0404/POE-tool/compare/v2.12.0...v3.0.0
