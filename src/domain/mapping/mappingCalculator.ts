@@ -1,5 +1,6 @@
 import type { StashItem } from '../wealth/types';
 import type { MapDropItem, MapInvestment, MapRun, MappingSessionStats } from './types';
+import { computePoe2SessionStats } from './poe2MappingCalculator';
 
 export function calculateInvestmentTotals(
   inv: Omit<MapInvestment, 'totalCostChaos' | 'totalCostDivine'>,
@@ -145,6 +146,7 @@ export function computeSessionStats(
   const sessionTotalChaosPerHour = sessionHours > 0 ? Math.round((totalNetProfitChaos / sessionHours) * 100) / 100 : 0;
 
   const allDropsMerged = mergeSessionDrops(runs);
+  const poe2Stats = computePoe2SessionStats(runs, sessionDurationSeconds);
 
   return {
     totalRuns,
@@ -160,7 +162,8 @@ export function computeSessionStats(
     activeMappingChaosPerHour,
     sessionTotalDivPerHour,
     sessionTotalChaosPerHour,
-    topDrops: allDropsMerged.slice(0, 10)
+    topDrops: allDropsMerged.slice(0, 10),
+    ...poe2Stats
   };
 }
 

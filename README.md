@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-saijo0404%2FPOE--tool-181717.svg?logo=github&logoColor=white)](https://github.com/saijo0404/POE-tool)
 [![Version](https://img.shields.io/badge/Version-v3.2.0-gold.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/Tests-1086%2B%20Passed%20(1000%20Vitest%20%2B%2086%20Rust)-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-1119%2B%20Passed%20(1033%20Vitest%20%2B%2086%20Rust)-success.svg)]()
 [![Dual Engine](https://img.shields.io/badge/Engine-PoE%201%20%26%20PoE%202%20Native-orange.svg)]()
 [![Tauri 2.0](https://img.shields.io/badge/Tauri-2.0-24C8D8.svg?logo=tauri&logoColor=white)](https://tauri.app/)
 [![Rust](https://img.shields.io/badge/Rust-1.80%2B-orange.svg?logo=rust&logoColor=white)](https://www.rust-lang.org/)
@@ -57,6 +57,8 @@
   進出圖自動對比背包資產變動，精算神聖石時薪（Divine/hr），自動高亮致命反傷詞綴並產生安全 Regex。
 - 🗿 **PoE 2 銘刻地圖 (Waystone) 評鑑與洗圖精算**：
   內建專屬危險詞綴庫，比對機體抗性弱點自動標記秒殺威脅，並精算點金/重鑄/混沌之通貨成本期望值。
+- 🗺️ **PoE 2 遊戲日誌解析與金幣收益追蹤**：
+  即時解析 `Client.txt` 辨識進圖、首領討伐、陣亡與回城，精算金幣拾取淨量與 Gold/hr 時薪，雙引擎歷程命名空間隔離。
 - 🔒 **結構化滾動日誌與一鍵診斷**：
   單檔嚴格限制 1MB、3 份備份、循環覆寫淘汰，敏感憑證自動脫敏，支援一鍵匯出診斷報告。
 
@@ -88,10 +90,10 @@ npm run tauri:dev
 
 ## 🧪 測試與代碼品質規範 (Quality Standards)
 
-本專案遵循嚴格的軟體工程標準，目前全專案共有 **1086+ 項自動化單元測試** 全數通過：
+本專案遵循嚴格的軟體工程標準，目前全專案共有 **1119+ 項自動化單元測試** 全數通過：
 
 ```bash
-# 執行前端 Vitest 單元測試 (223 個測試檔，1000 項測試)
+# 執行前端 Vitest 單元測試 (228 個測試檔，1033 項測試)
 npm test
 
 # 執行後端 Rust Cargo 單元測試 (86 項測試)

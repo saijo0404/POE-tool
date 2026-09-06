@@ -47,6 +47,13 @@ export function useMappingSessionActions({
     );
   }, [activeSession.id]);
 
+  const addMapRuns = useCallback((newRuns: MapRun[]) => {
+    if (newRuns.length === 0) return;
+    setSessions(prev =>
+      prev.map(s => (s.id === activeSession.id ? { ...s, runs: [...newRuns, ...s.runs], updatedAt: Date.now() } : s))
+    );
+  }, [activeSession.id]);
+
   const handleDeleteRun = useCallback((runId: string) => {
     setSessions(prev =>
       prev.map(s => (s.id === activeSession.id ? { ...s, runs: s.runs.filter(r => r.id !== runId) } : s))
@@ -110,6 +117,7 @@ export function useMappingSessionActions({
     setActiveSessionId,
     stats,
     addMapRun,
+    addMapRuns,
     handleDeleteRun,
     handleClearRuns,
     handleUpdateInvestment,

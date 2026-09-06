@@ -12,7 +12,7 @@ POE_tool 從架構底層即支援《流亡黯道 1 (Path of Exile 1)》與《流
 | **裝備查價** | `price` | 雙世代支援 (`poe1`, `poe2`) | PoE 1 支援複雜詞綴與偽屬性；PoE 2 支援未剪切寶石、符文與全新詞綴結構 |
 | **大宗交易所** | `exchange` | 雙世代支援 (`poe1`, `poe2`) | PoE 2 原生對接 Faustus 市集，支援黃金 (Gold) 手續費計算與掛牌匯率 |
 | **資產估算** | `wealth` | 雙世代支援 (`poe1`, `poe2`) | 倉庫通貨與裝備價值折算（PoE 1 基於 Chaos/Divine；PoE 2 結合次世代匯率模型） |
-| **刷圖記錄** | `mapping` | 雙世代支援 (`poe1`, `poe2`) | PoE 1 對應 Map 輿圖刷圖日誌；PoE 2 支援 Waystone（路標石）戰鬥追蹤 |
+| **刷圖記錄** | `mapping` | 雙世代支援 (`poe1`, `poe2`) | PoE 1 支援地圖儀與賽季機制收益；PoE 2 支援專屬 [遊戲日誌解析與金幣收益追蹤](poe2-mapping-and-gold-tracker.md) |
 | **輿圖策略** | `atlas` | **PoE 1 專屬** (`poe1`) | 內建 860+ 節點輿圖天賦樹拓撲、聖甲蟲 (Scarab) 與地圖工藝配置 |
 | **地圖過濾 / Waystone** | `mapmod` | 雙世代支援 (`poe1`, `poe2`) | PoE 1 支援地圖危險詞綴與安全 Regex；PoE 2 支援專屬 [銘刻地圖 (Waystone) 詞綴評鑑與洗圖精算](waystone-risk-and-rolling.md) |
 | **Build 成本** | `build` | 雙世代支援 (`poe1`, `poe2`) | PoE 1 支援 PoB XML/Base64 解碼；PoE 2 支援全新技能雙配置 (Dual Spec) 與武器切換成本 |

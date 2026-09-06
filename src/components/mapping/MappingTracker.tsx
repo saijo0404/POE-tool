@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMappingTracker } from '../../hooks/useMappingTracker';
+import { useGameEngine } from '../../hooks/useGameEngine';
 import { MappingHeaderBar } from './MappingHeaderBar';
 import { MappingSummaryCard } from './MappingSummaryCard';
 import { MappingTimerCard } from './MappingTimerCard';
@@ -14,6 +15,7 @@ import { UltimatumEvCard } from '../ultimatum/UltimatumEvCard';
 import { DeliriumForecasterCard } from '../delirium/DeliriumForecasterCard';
 import { SanctumRelicCard } from '../sanctum/SanctumRelicCard';
 import { ExpeditionOptimizerCard } from './ExpeditionOptimizerCard';
+import { Poe2GoldTrackerCard } from './Poe2GoldTrackerCard';
 
 interface MappingTrackerProps {
   league: string;
@@ -22,6 +24,7 @@ interface MappingTrackerProps {
 }
 
 export const MappingTracker: React.FC<MappingTrackerProps> = ({ league, divineRate = 150, onShowToast }) => {
+  const { currentEngine } = useGameEngine();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const mt = useMappingTracker({ league, divineRate, onShowToast });
 
@@ -32,8 +35,18 @@ export const MappingTracker: React.FC<MappingTrackerProps> = ({ league, divineRa
         onCreateSession={mt.handleCreateSession} onExportDiscord={mt.handleExportDiscord} onExportCsv={mt.handleExportCsv}
         onClearRuns={mt.handleClearRuns} onOpenInvestmentModal={() => setIsModalOpen(true)}
       />
+      {currentEngine === 'poe2' && (
+        <Poe2GoldTrackerCard
+          stats={mt.stats}
+          runs={mt.activeSession.runs}
+          onImportRuns={mt.addMapRuns}
+          onShowToast={onShowToast}
+        />
+      )}
       <AnalyticsSection mt={mt} league={league} divineRate={divineRate} />
-      <EndgameMechanicsSection mt={mt} divineRate={divineRate} onShowToast={onShowToast} />
+      {currentEngine === 'poe1' && (
+        <EndgameMechanicsSection mt={mt} divineRate={divineRate} onShowToast={onShowToast} />
+      )}
       <RunsTrackerSection mt={mt} />
       <MappingInvestmentModal
         isOpen={isModalOpen} investment={mt.activeSession.defaultInvestment} divineRate={divineRate}
