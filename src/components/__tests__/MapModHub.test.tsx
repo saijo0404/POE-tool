@@ -42,7 +42,7 @@ describe('MapModHub Component', () => {
     const waystoneTabBtn = screen.getByRole('button', { name: /PoE 2 銘刻地圖/i });
     fireEvent.click(waystoneTabBtn);
 
-    expect(screen.getByText(/PoE 2 銘刻地圖 \(Waystone\) 詞綴評鑑與洗圖精算/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /PoE 2 銘刻地圖 \(Waystone\) 評鑑與終局塔台最佳化/i })).toBeInTheDocument();
     expect(screen.getByText(/洗圖通貨成本期望精算/i)).toBeInTheDocument();
   });
 });
