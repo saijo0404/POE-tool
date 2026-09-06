@@ -84,7 +84,7 @@ describe('Navbar Component', () => {
     renderNavbar(defaultProps);
 
     expect(screen.getByText('POE Tool')).toBeInTheDocument();
-    expect(screen.getByText('裝備即時查價')).toBeInTheDocument();
+    expect(screen.getByText('裝備查價')).toBeInTheDocument();
     expect(screen.getByText(/Settlers/i)).toBeInTheDocument();
     expect(screen.getByText(/160 Chaos/i)).toBeInTheDocument();
     expect(screen.getByText(/TestUser#1234/i)).toBeInTheDocument();
