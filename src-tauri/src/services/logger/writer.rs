@@ -1,7 +1,9 @@
 use super::path_resolver::{
     get_fallback_log_paths, get_primary_log_path, open_or_create_writable_log,
 };
-use super::rotator::{clear_all_logs, rotate_logs, should_rotate, DEFAULT_MAX_BACKUPS, MAX_LOG_SIZE_BYTES};
+use super::rotator::{
+    clear_all_logs, rotate_logs, should_rotate, DEFAULT_MAX_BACKUPS, MAX_LOG_SIZE_BYTES,
+};
 use super::sanitizer::sanitize_log_message;
 use super::types::{DiagnosticBundle, LogLevel};
 use chrono::Local;
@@ -43,10 +45,14 @@ pub fn init_logger() {
         *writer_guard = active_writer;
     }
 
-    log_entry(LogLevel::Info, Some("System"), &format!(
-        "=== POE Tool 結構化日誌系統已啟動 (檔案: {}) ===",
-        chosen_path.display()
-    ));
+    log_entry(
+        LogLevel::Info,
+        Some("System"),
+        &format!(
+            "=== POE Tool 結構化日誌系統已啟動 (檔案: {}) ===",
+            chosen_path.display()
+        ),
+    );
 }
 
 pub fn get_current_log_path() -> PathBuf {
@@ -111,13 +117,16 @@ pub fn clear_logs() -> Result<(), String> {
     let mut writer_guard = LOG_WRITER.lock().unwrap_or_else(|e| e.into_inner());
     *writer_guard = None;
 
-    clear_all_logs(&path, DEFAULT_MAX_BACKUPS)
-        .map_err(|e| format!("清除日誌失敗: {}", e))?;
+    clear_all_logs(&path, DEFAULT_MAX_BACKUPS).map_err(|e| format!("清除日誌失敗: {}", e))?;
 
     *writer_guard = open_or_create_writable_log(&path).ok();
     drop(writer_guard);
 
-    log_entry(LogLevel::Info, Some("System"), "本機日誌歷程已由使用者手動清空");
+    log_entry(
+        LogLevel::Info,
+        Some("System"),
+        "本機日誌歷程已由使用者手動清空",
+    );
     Ok(())
 }
 

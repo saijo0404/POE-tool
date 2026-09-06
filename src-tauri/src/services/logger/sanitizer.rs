@@ -10,7 +10,8 @@ lazy_static! {
         Regex::new(r#"(?i)("?(?:token|secret|password|session_id)"?\s*[:=]\s*"?)[^"'\s,;&]+"#)
             .expect("Invalid token kv regex");
     static ref RE_URL_TOKEN: Regex =
-        Regex::new(r"(?i)([?&](?:token|session|auth|password)=)[^&\s]+").expect("Invalid url token regex");
+        Regex::new(r"(?i)([?&](?:token|session|auth|password)=)[^&\s]+")
+            .expect("Invalid url token regex");
 }
 
 pub fn sanitize_log_message(msg: &str) -> String {
@@ -39,10 +40,7 @@ mod tests {
     fn test_redacts_lowercase_poesessid() {
         let raw = "error with poesessid=xyz987secret in request";
         let sanitized = sanitize_log_message(raw);
-        assert_eq!(
-            sanitized,
-            "error with poesessid=***REDACTED*** in request"
-        );
+        assert_eq!(sanitized, "error with poesessid=***REDACTED*** in request");
     }
 
     #[test]
