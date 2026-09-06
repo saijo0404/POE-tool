@@ -26,6 +26,7 @@ import type {
   NinjaPricesResult
 } from '../domain/build/types';
 import type { FaustusMarketOverview } from '../domain/exchange/types';
+import type { DiagnosticBundle } from '../domain/logger/types';
 
 export const poeApi = {
   // Settings & Auth
@@ -107,7 +108,15 @@ export const poeApi = {
   getLogContents: (lines?: number): Promise<string> =>
     ApiClientFactory.getClient().getLogContents(lines),
   getLogFilePath: (): Promise<string> =>
-    ApiClientFactory.getClient().getLogFilePath()
+    ApiClientFactory.getClient().getLogFilePath(),
+  writeLogEntry: (level: string, message: string, context?: string): Promise<void> =>
+    ApiClientFactory.getClient().writeLogEntry(level, message, context),
+  clearLogs: (): Promise<{ success: boolean }> =>
+    ApiClientFactory.getClient().clearLogs(),
+  getDiagnosticBundle: (): Promise<DiagnosticBundle> =>
+    ApiClientFactory.getClient().getDiagnosticBundle(),
+  openLogDirectory: (): Promise<{ success: boolean }> =>
+    ApiClientFactory.getClient().openLogDirectory()
 };
 
 export default poeApi;

@@ -41,6 +41,10 @@ pub fn run() {
             // Logger Commands
             commands::get_log_contents,
             commands::get_log_file_path,
+            commands::write_log_entry,
+            commands::clear_logs,
+            commands::get_diagnostic_bundle,
+            commands::open_log_directory,
             // Trade & Parser Commands
             commands::parse_item,
             commands::search_trade,

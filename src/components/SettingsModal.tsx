@@ -8,6 +8,7 @@ import { StashTabSelector } from './settings/StashTabSelector';
 import { DeviceProfileSelector } from './common/DeviceProfileSelector';
 import { useDeviceProfile } from '../hooks/useDeviceProfile';
 import { HotkeySettingsCard } from './settings/HotkeySettingsCard';
+import { LogDiagnosticsSection } from './settings/LogDiagnosticsSection';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -107,6 +108,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           onClearAllTabs={handleClearAllTabs}
           onSelectCurrencyTabs={handleSelectCurrencyTabs}
         />
+
+        <LogDiagnosticsSection onShowToast={onShowToast} />
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px' }}>
           <button type="button" className="poe-button-secondary" onClick={onClose} style={{ padding: '8px 18px', fontSize: '0.85rem' }}>
