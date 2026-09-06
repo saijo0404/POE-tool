@@ -76,47 +76,26 @@ describe('Navbar Component', () => {
     divineRate: 160,
     onOpenSettings: vi.fn(),
     accountName: 'TestUser#1234',
+    isSidebarCollapsed: false,
+    onToggleSidebar: vi.fn()
   };
 
-  it('renders tab buttons, league name, divine rate and account name', () => {
+  it('renders title, active tab indicator, divine rate and account name', () => {
     renderNavbar(defaultProps);
 
-    expect(screen.getAllByText(/裝備即時查價/i)[0]).toBeInTheDocument();
-    expect(screen.getByText(/大宗交易所/i)).toBeInTheDocument();
-    expect(screen.getByText(/每小時資產估算/i)).toBeInTheDocument();
-    expect(screen.getByText(/Build 成本/i)).toBeInTheDocument();
-    expect(screen.getByText(/拓荒攻略/i)).toBeInTheDocument();
+    expect(screen.getByText('POE Tool')).toBeInTheDocument();
+    expect(screen.getByText('裝備即時查價')).toBeInTheDocument();
     expect(screen.getByText(/Settlers/i)).toBeInTheDocument();
     expect(screen.getByText(/160 Chaos/i)).toBeInTheDocument();
     expect(screen.getByText(/TestUser#1234/i)).toBeInTheDocument();
   });
 
-  it('calls setActiveTab when tabs are clicked', () => {
+  it('calls onToggleSidebar when toggle button is clicked', () => {
     renderNavbar(defaultProps);
 
-    const wealthTab = screen.getByText(/每小時資產估算/i);
-    fireEvent.click(wealthTab);
-    expect(defaultProps.setActiveTab).toHaveBeenCalledWith('wealth');
-
-    const exchangeTab = screen.getByText(/大宗交易所/i);
-    fireEvent.click(exchangeTab);
-    expect(defaultProps.setActiveTab).toHaveBeenCalledWith('exchange');
-  });
-
-  it('displays PoE 1 badges on generation-exclusive tabs', () => {
-    renderNavbar(defaultProps);
-
-    const poe1Badges = screen.getAllByTestId('engine-badge-poe1');
-    expect(poe1Badges.length).toBeGreaterThanOrEqual(2); // atlas and craft
-  });
-
-  it('filters out unsupported tabs when focusModeEnabled is true in poe2 mode', () => {
-    renderNavbar(defaultProps, { engine: 'poe2', focusModeEnabled: true });
-
-    expect(screen.getByText(/裝備即時查價/i)).toBeInTheDocument();
-    expect(screen.getByText(/大宗交易所/i)).toBeInTheDocument();
-    expect(screen.queryByText(/輿圖天賦策略/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/工藝期望精算/i)).not.toBeInTheDocument();
+    const toggleBtn = screen.getByRole('button', { name: /收合側邊欄/i });
+    fireEvent.click(toggleBtn);
+    expect(defaultProps.onToggleSidebar).toHaveBeenCalledTimes(1);
   });
 
   it('toggles focusModeEnabled when clicking focus mode button', () => {
@@ -151,5 +130,13 @@ describe('Navbar Component', () => {
     );
 
     expect(setActiveTab).toHaveBeenCalledWith('price');
+  });
+
+  it('calls onOpenSettings when settings button is clicked', () => {
+    renderNavbar(defaultProps);
+
+    const settingsBtn = screen.getByRole('button', { name: /設定/i });
+    fireEvent.click(settingsBtn);
+    expect(defaultProps.onOpenSettings).toHaveBeenCalledTimes(1);
   });
 });

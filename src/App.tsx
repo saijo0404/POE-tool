@@ -1,5 +1,6 @@
 import React, { useState, useCallback, Suspense, lazy, useRef } from 'react';
 import { Navbar, type AppTabType } from './components/Navbar';
+import { Sidebar } from './components/navigation/Sidebar';
 import { AppRouter } from './components/AppRouter';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useClipboardSync } from './hooks/useClipboardSync';
@@ -16,7 +17,8 @@ const TradeWhisperModal = lazy(() => import('./components/whisper/TradeWhisperMo
 
 export const App: React.FC = () => {
   const { settings, activeLeague, divineRate, refreshSettings, refreshDivineRate } = useSettings();
-  const [activeTab, setActiveTab] = useState<AppTabType>('price');
+  const [activeTab, setActiveTab] = useState<AppTabType>('dashboard');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWhisperOpen, setIsWhisperOpen] = useState<boolean>(false);
   const [pastedText, setPastedText] = useState<string>('');
@@ -65,23 +67,38 @@ export const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <AppStateProvider>
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <Navbar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenTradeWhisper={() => setIsWhisperOpen(true)}
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={() => setIsSidebarCollapsed(prev => !prev)}
           />
 
-          <main style={{ flex: 1 }}>
-            <AppRouter
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+            <Sidebar
               activeTab={activeTab}
-              activeLeague={activeLeague}
-              divineRate={divineRate}
-              pastedText={pastedText}
-              showToast={showToast}
+              setActiveTab={setActiveTab}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
+              onOpenTradeWhisper={() => setIsWhisperOpen(true)}
+              onShowToast={showToast}
             />
-          </main>
+
+            <main style={{ flex: 1, overflowY: 'auto', background: '#0f1219' }}>
+              <AppRouter
+                activeTab={activeTab}
+                activeLeague={activeLeague}
+                divineRate={divineRate}
+                pastedText={pastedText}
+                showToast={showToast}
+                onNavigate={setActiveTab}
+                onOpenTradeWhisper={() => setIsWhisperOpen(true)}
+              />
+            </main>
+          </div>
 
           <Suspense fallback={null}>
             {isSettingsOpen && (

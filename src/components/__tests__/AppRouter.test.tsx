@@ -21,4 +21,9 @@ describe('AppRouter Component', () => {
     // Should initially show either loading fallback or the lazy loaded module
     expect(document.body).toBeInTheDocument();
   });
+
+  it('renders HomeDashboard on dashboard tab', async () => {
+    render(<AppRouter {...defaultProps} activeTab="dashboard" />);
+    expect(await screen.findByText(/POE Helper Tool 控制總覽儀表板/i)).toBeInTheDocument();
+  });
 });

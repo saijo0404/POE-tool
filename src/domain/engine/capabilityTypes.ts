@@ -3,6 +3,7 @@ import type { GameEngine } from './types';
 export type FeatureCategory = 'core' | 'trade' | 'wealth' | 'progression' | 'endgame' | 'crafting';
 
 export type FeatureId =
+  | 'dashboard'
   | 'price'
   | 'exchange'
   | 'wealth'
