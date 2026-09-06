@@ -8,6 +8,7 @@ import type {
   TravelToHideoutResult, NinjaPricesResult, BuildCostResult, WealthSnapshot,
   StashTabMeta, StashProgress
 } from '../../types/poe';
+import type { DiagnosticBundle } from '../../domain/logger/types';
 
 export class HttpFallbackClient implements IPoeApiClient {
   private async safeGet<T>(url: string, options?: AxiosRequestConfig, fallback?: T): Promise<T> {
@@ -147,5 +148,19 @@ export class HttpFallbackClient implements IPoeApiClient {
   async getPendingOverlayItem(): Promise<string | null> { return Promise.resolve(null); }
   async getLogContents(_lines?: number): Promise<string> { return ''; }
   async getLogFilePath(): Promise<string> { return ''; }
+  async writeLogEntry(_level: string, _message: string, _context?: string): Promise<void> {}
+  async clearLogs(): Promise<{ success: boolean }> { return { success: true }; }
+  async getDiagnosticBundle(): Promise<DiagnosticBundle> {
+    return {
+      app_version: 'web-fallback',
+      os: 'browser',
+      timestamp: new Date().toISOString(),
+      log_file_path: 'browser-fallback',
+      log_file_size_bytes: 0,
+      total_lines: 0,
+      recent_logs: '',
+    };
+  }
+  async openLogDirectory(): Promise<{ success: boolean }> { return { success: false }; }
 }
 

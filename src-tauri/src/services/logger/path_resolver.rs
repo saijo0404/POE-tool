@@ -1,8 +1,7 @@
+use super::rotator::{rotate_logs, should_rotate, DEFAULT_MAX_BACKUPS, MAX_LOG_SIZE_BYTES};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
-
-const MAX_LOG_SIZE_BYTES: u64 = 10 * 1024 * 1024; // 10 MB
 
 pub fn get_exe_dir() -> PathBuf {
     if let Ok(exe_path) = std::env::current_exe() {
@@ -46,10 +45,10 @@ pub fn open_or_create_writable_log(path: &Path) -> Result<File, std::io::Error> 
             perms.set_readonly(false);
             let _ = std::fs::set_permissions(path, perms);
         }
-        if metadata.len() > MAX_LOG_SIZE_BYTES {
-            let backup_path = path.with_extension("log.old");
-            let _ = std::fs::rename(path, backup_path);
-        }
+    }
+
+    if should_rotate(path, MAX_LOG_SIZE_BYTES) {
+        let _ = rotate_logs(path, DEFAULT_MAX_BACKUPS);
     }
 
     let mut file = OpenOptions::new().create(true).append(true).open(path)?;

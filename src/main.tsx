@@ -4,6 +4,9 @@ import './index.css';
 import App from './App.tsx';
 import { SettingsProvider } from './context/SettingsContext.tsx';
 import { GameEngineProvider } from './context/GameEngineContext.tsx';
+import { initGlobalErrorLogging } from './infrastructure/logging/logger';
+
+initGlobalErrorLogging();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -25,6 +25,7 @@ import type {
   BuildCostResult,
   NinjaPricesResult
 } from '../../domain/build/types';
+import type { DiagnosticBundle } from '../../domain/logger/types';
 
 export class TauriBridgeClient implements IPoeApiClient {
   private async invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -170,4 +171,18 @@ export class TauriBridgeClient implements IPoeApiClient {
   async getPendingOverlayItem(): Promise<string | null> { return this.invoke<string | null>('get_pending_overlay_item'); }
   async getLogContents(lines?: number): Promise<string> { return this.invoke<string>('get_log_contents', { lines }); }
   async getLogFilePath(): Promise<string> { return this.invoke<string>('get_log_file_path'); }
+  async writeLogEntry(level: string, message: string, context?: string): Promise<void> {
+    return this.invoke<void>('write_log_entry', { level, message, context });
+  }
+  async clearLogs(): Promise<{ success: boolean }> {
+    await this.invoke<void>('clear_logs');
+    return { success: true };
+  }
+  async getDiagnosticBundle(): Promise<DiagnosticBundle> {
+    return this.invoke<DiagnosticBundle>('get_diagnostic_bundle');
+  }
+  async openLogDirectory(): Promise<{ success: boolean }> {
+    await this.invoke<void>('open_log_directory');
+    return { success: true };
+  }
 }

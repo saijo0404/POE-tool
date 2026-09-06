@@ -24,6 +24,7 @@ import type {
   BuildCostResult,
   NinjaPricesResult
 } from '../../domain/build/types';
+import type { DiagnosticBundle } from '../../domain/logger/types';
 
 export interface IPoeApiClient {
   // Settings & Auth
@@ -75,5 +76,9 @@ export interface IPoeApiClient {
   // Logger
   getLogContents(lines?: number): Promise<string>;
   getLogFilePath(): Promise<string>;
+  writeLogEntry(level: string, message: string, context?: string): Promise<void>;
+  clearLogs(): Promise<{ success: boolean }>;
+  getDiagnosticBundle(): Promise<DiagnosticBundle>;
+  openLogDirectory(): Promise<{ success: boolean }>;
 }
 
