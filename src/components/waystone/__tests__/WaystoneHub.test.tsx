@@ -6,7 +6,7 @@ describe('WaystoneHub', () => {
   it('renders defense profile, risk card, rolling card, and mechanics guide', () => {
     render(<WaystoneHub />);
 
-    expect(screen.getByText(/PoE 2 銘刻地圖 \(Waystone\) 詞綴評鑑與洗圖精算/i)).toBeInTheDocument();
+    expect(screen.getByText(/PoE 2 銘刻地圖 \(Waystone\) 評鑑/i)).toBeInTheDocument();
     expect(screen.getByText(/機體防禦屬性與弱點配置/i)).toBeInTheDocument();
     expect(screen.getByText(/銘刻地圖即時詞綴評鑑/i)).toBeInTheDocument();
     expect(screen.getByText(/洗圖通貨成本期望精算/i)).toBeInTheDocument();
@@ -21,5 +21,15 @@ describe('WaystoneHub', () => {
     fireEvent.click(loadBtn);
     expect(onShowToast).toHaveBeenCalledWith('已載入範例 T15 稀有銘刻地圖');
     expect(screen.getByText(/安全評分：/i)).toBeInTheDocument();
+  });
+
+  it('switches to precursor towers and biome optimizer tab', () => {
+    render(<WaystoneHub />);
+
+    const towerTab = screen.getByRole('button', { name: /先祖塔台與生物群落/i });
+    fireEvent.click(towerTab);
+
+    expect(screen.getByText(/先祖石塔連線與碑牌插槽/)).toBeInTheDocument();
+    expect(screen.getByText('生物群落 (Biome) 策略優化器')).toBeInTheDocument();
   });
 });

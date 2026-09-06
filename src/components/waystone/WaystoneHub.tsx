@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { ShieldAlert, Compass } from 'lucide-react';
+import { ShieldAlert, Compass, Radio } from 'lucide-react';
 import { PlayerDefenseProfileCard } from './PlayerDefenseProfileCard';
 import { WaystoneRiskCard } from './WaystoneRiskCard';
 import { WaystoneRollingCard } from './WaystoneRollingCard';
+import { WaystoneTowerPanel } from './WaystoneTowerPanel';
 import { DEFAULT_PLAYER_PROFILE } from '../../domain/waystone/waystoneModsCatalog';
 import { evaluateWaystone } from '../../domain/waystone/waystoneRiskEvaluator';
 import { forecastWaystoneRolling } from '../../domain/waystone/waystoneRollingForecaster';
@@ -30,6 +31,7 @@ Players have 50% less Recovery Rate of Life and Energy Shield
 Patches of Chilled Ground`;
 
 export const WaystoneHub: React.FC<WaystoneHubProps> = ({ onShowToast }) => {
+  const [waystoneTab, setWaystoneTab] = useState<'risk' | 'towers'>('risk');
   const [rawText, setRawText] = useState<string>(SAMPLE_WAYSTONE);
   const [profile, setProfile] = useState<PlayerDefensiveProfile>(DEFAULT_PLAYER_PROFILE);
   const [strategy, setStrategy] = useState<WaystoneRollingStrategy>('alch_scour');
@@ -81,42 +83,64 @@ export const WaystoneHub: React.FC<WaystoneHubProps> = ({ onShowToast }) => {
           </div>
           <div>
             <h2 className="poe-font" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--text-gold)', letterSpacing: '0.5px' }}>
-              PoE 2 銘刻地圖 (Waystone) 詞綴評鑑與洗圖精算
+              PoE 2 銘刻地圖 (Waystone) 評鑑與終局塔台最佳化
             </h2>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              機體弱點秒殺警示、安全評分檢驗與洗圖通貨期望成本精確預測
+              機體弱點秒殺警示、洗圖通貨期望成本與先祖石塔生態系策略優化
             </span>
           </div>
         </div>
-      </div>
 
-      {/* 2-Column Responsive Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(520px, 1fr))', gap: '20px', alignItems: 'start' }}>
-        {/* Left Column: Player Profile + Waystone Tester */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <PlayerDefenseProfileCard
-            profile={profile}
-            onChange={patch => setProfile(prev => ({ ...prev, ...patch }))}
-          />
-          <WaystoneRiskCard
-            evaluation={evaluation}
-            rawText={rawText}
-            onRawTextChange={setRawText}
-            onLoadSample={handleLoadSample}
-          />
-        </div>
-
-        {/* Right Column: Rolling Simulator + Guide */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <WaystoneRollingCard
-            criteria={criteria}
-            forecast={forecast}
-            onCriteriaChange={patch => setCriteria(prev => ({ ...prev, ...patch }))}
-            onStrategyChange={setStrategy}
-          />
-          <WaystoneGuideCard />
+        {/* Sub-tab Navigation */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            type="button"
+            className={waystoneTab === 'risk' ? 'poe-button' : 'poe-button-secondary'}
+            onClick={() => setWaystoneTab('risk')}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', padding: '6px 14px' }}
+          >
+            <Compass size={15} /> 🗿 詞綴危險評鑑與洗圖
+          </button>
+          <button
+            type="button"
+            className={waystoneTab === 'towers' ? 'poe-button' : 'poe-button-secondary'}
+            onClick={() => setWaystoneTab('towers')}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', padding: '6px 14px' }}
+          >
+            <Radio size={15} /> 🗼 先祖塔台與生物群落
+          </button>
         </div>
       </div>
+
+      {waystoneTab === 'towers' ? (
+        <WaystoneTowerPanel onShowToast={onShowToast} />
+      ) : (
+        /* 2-Column Responsive Grid for Risk & Rolling */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(520px, 1fr))', gap: '20px', alignItems: 'start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <PlayerDefenseProfileCard
+              profile={profile}
+              onChange={patch => setProfile(prev => ({ ...prev, ...patch }))}
+            />
+            <WaystoneRiskCard
+              evaluation={evaluation}
+              rawText={rawText}
+              onRawTextChange={setRawText}
+              onLoadSample={handleLoadSample}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <WaystoneRollingCard
+              criteria={criteria}
+              forecast={forecast}
+              onCriteriaChange={patch => setCriteria(prev => ({ ...prev, ...patch }))}
+              onStrategyChange={setStrategy}
+            />
+            <WaystoneGuideCard />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
