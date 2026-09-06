@@ -60,16 +60,21 @@ describe('App Component and Hotkey Integration', () => {
     });
   });
 
-  it('renders application navbar and default price checker tab', async () => {
+  it('renders application navbar and default dashboard, and can navigate to price checker tab', async () => {
     const { unmount } = render(
       <SettingsProvider>
         <App />
       </SettingsProvider>
     );
 
-    const priceTab = await screen.findAllByText(/裝備查價/i);
-    expect(priceTab[0]).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/在遊戲中對著裝備按 Ctrl\+C，然後貼上至此處/i)).toBeInTheDocument();
+    const dashboardEls = await screen.findAllByText(/首頁儀表板/i);
+    expect(dashboardEls.length).toBeGreaterThan(0);
+    expect(await screen.findByText(/神聖石即時匯率/i)).toBeInTheDocument();
+
+    const priceNavBtns = screen.getAllByRole('button', { name: /裝備查價/i });
+    fireEvent.click(priceNavBtns[0]);
+
+    expect(await screen.findByPlaceholderText(/在遊戲中對著裝備按 Ctrl\+C，然後貼上至此處/i)).toBeInTheDocument();
     unmount();
   });
 

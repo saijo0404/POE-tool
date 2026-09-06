@@ -11,6 +11,7 @@ const AtlasStrategyHub = lazy(() => import('./AtlasStrategyHub'));
 const MapModHub = lazy(() => import('./MapModHub'));
 const CraftingSimulatorHub = lazy(() => import('./CraftingSimulatorHub'));
 const FaustusExchangeHub = lazy(() => import('./exchange/FaustusExchangeHub'));
+const HomeDashboard = lazy(() => import('./dashboard/HomeDashboard').then(m => ({ default: m.HomeDashboard })));
 
 export const LoadingFallback: React.FC = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: 'var(--text-gold)', gap: '10px' }}>
@@ -25,6 +26,8 @@ export interface AppRouterProps {
   divineRate: number;
   pastedText: string;
   showToast: (msg: string) => void;
+  onNavigate?: (tab: AppTabType) => void;
+  onOpenTradeWhisper?: () => void;
 }
 
 export const AppRouter: React.FC<AppRouterProps> = ({
@@ -33,10 +36,21 @@ export const AppRouter: React.FC<AppRouterProps> = ({
   divineRate,
   pastedText,
   showToast,
+  onNavigate,
+  onOpenTradeWhisper
 }) => {
   return (
     <ErrorBoundary>
       <Suspense fallback={<LoadingFallback />}>
+        {activeTab === 'dashboard' && (
+          <HomeDashboard
+            league={activeLeague}
+            divineRate={divineRate}
+            onNavigate={onNavigate || (() => {})}
+            onOpenTradeWhisper={onOpenTradeWhisper}
+            onShowToast={showToast}
+          />
+        )}
         {activeTab === 'price' && <PriceChecker league={activeLeague} onShowToast={showToast} externalText={pastedText} />}
         {activeTab === 'exchange' && <FaustusExchangeHub league={activeLeague} onShowToast={showToast} />}
         {activeTab === 'build' && <BuildCalculator league={activeLeague} onShowToast={showToast} />}

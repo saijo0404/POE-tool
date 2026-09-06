@@ -1,6 +1,14 @@
 import type { FeatureId, FeatureCapability } from './capabilityTypes';
 
 export const FEATURE_CAPABILITIES: Record<FeatureId, FeatureCapability> = {
+  dashboard: {
+    id: 'dashboard',
+    name: '首頁儀表板',
+    description: '即時市場經濟概況、快捷操作與系統狀態全局檢視',
+    supportedEngines: ['poe1', 'poe2'],
+    category: 'core',
+    isTab: true
+  },
   price: {
     id: 'price',
     name: '裝備即時查價',
